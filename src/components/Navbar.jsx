@@ -89,6 +89,27 @@ function Navbar() {
                         Ver perfil
                       </p>
                     </Link>
+                    {user?.role === 'admin' && (
+                      <div className="mt-4">
+                        <p className="font-semibold text-gray-700">Opciones de Administrador:</p>
+                        {/* Botones para admin */}
+                        <Link href="/admin/dashboard">
+                          <p className="mt-2 text-blue-600 hover:text-blue-400">Dashboard Admin</p>
+                        </Link>
+                        <Link href="/adminUsuarios">
+                          <p className="mt-2 text-blue-600 hover:text-blue-400">Gestión de Usuarios</p>
+                        </Link>
+                        <Link href="/admin/productos">
+                          <p className="mt-2 text-blue-600 hover:text-blue-400">Gestión de Productos</p>
+                        </Link>
+                        <Link href="/admin/ordenes">
+                          <p className="mt-2 text-blue-600 hover:text-blue-400">Gestión de Órdenes</p>
+                        </Link>
+                        <Link href="/admin/reportes">
+                          <p className="mt-2 text-blue-600 hover:text-blue-400">Reportes</p>
+                        </Link>
+                      </div>
+                    )}
                     <button
                       onClick={logout} // Llamar a la función logout
                       className="mt-2 text-red-500 hover:text-red-400"

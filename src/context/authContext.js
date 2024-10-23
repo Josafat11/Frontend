@@ -10,30 +10,33 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-  // Función para manejar el login
-  const login = async (email, password) => {
-    try {
-      const response = await fetch('http://localhost:4000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include',
-      });
+// Función para manejar el login
+const login = async (email, password) => {
+  try {
+    const response = await fetch('http://localhost:4000/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        setIsAuthenticated(true);
-        setUser(data.user); // Aquí se establece la información del usuario
-      } else {
-        console.error('Error al iniciar sesión:', data.message);
-      }
-    } catch (error) {
-      console.error('Error en la solicitud de login:', error);
+    if (response.ok) {
+      setIsAuthenticated(true);
+      setUser(data.user); // Aquí se establece la información del usuario
+      return { success: true };
+    } else {
+      // Devolver el mensaje de error del backend
+      return { success: false, message: data.message };
     }
-  };
+  } catch (error) {
+    console.error('Error en la solicitud de login:', error);
+    return { success: false, message: 'Error interno del servidor' };
+  }
+};
 
   // Función para verificar la sesión
   useEffect(() => {
@@ -46,7 +49,10 @@ export const AuthProvider = ({ children }) => {
         const data = await response.json();
         if (response.ok && data.isAuthenticated) {
           setIsAuthenticated(true);
-          setUser(data.user);
+          setUser({
+            ...data.user,
+            role: data.user.role, // Incluir el rol del usuario en la sesión
+          });
         } else {
           setIsAuthenticated(false);
         }

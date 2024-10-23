@@ -10,16 +10,20 @@ const LoginPage = () => {
   const [message, setMessage] = useState('');
   const { login } = useAuth(); // Obtenemos la función de login del contexto
 
-  // Manejador del submit del formulario
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevenir el refresh de la página
-
+  
     try {
       // Llamamos a la función login del contexto
-      await login(email, password);
-      setMessage('Inicio de sesión exitoso');
-      // Aquí puedes redirigir al usuario después de un login exitoso
-      // Por ejemplo, usando Router.push('/ruta-destino')
+      const result = await login(email, password);
+  
+      if (result.success) {
+        setMessage('Inicio de sesión exitoso');
+        // Aquí puedes redirigir al usuario después de un login exitoso
+        // Por ejemplo, usando Router.push('/ruta-destino')
+      } else {
+        setMessage(result.message);  // Mostrar el mensaje de error
+      }
     } catch (error) {
       console.error('Error en el inicio de sesión:', error);
       setMessage('Error interno del servidor');
