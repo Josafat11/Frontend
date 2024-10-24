@@ -8,35 +8,35 @@ function HomePage() {
       nombre: 'Batería para auto',
       descripcion: 'Batería de alto rendimiento para cualquier tipo de vehículo.',
       precio: '$1,200 MXN',
-      imagen: '/bateria.jpg', // Ruta de la imagen del producto
+      imagen: '', 
     },
     {
       id: 2,
       nombre: 'Aceite para motor',
       descripcion: 'Aceite sintético premium para mayor durabilidad del motor.',
       precio: '$500 MXN',
-      imagen: '/aceite.jpg',
+      imagen: '',
     },
     {
       id: 3,
       nombre: 'Filtro de aire',
       descripcion: 'Filtro de aire para mejorar la eficiencia del combustible.',
       precio: '$300 MXN',
-      imagen: '/filtro-aire.jpg',
+      imagen: '',
     },
     {
       id: 4,
       nombre: 'Bujías',
       descripcion: 'Juego de 4 bujías de encendido de alto rendimiento.',
       precio: '$450 MXN',
-      imagen: '/bujias.jpg',
+      imagen: '',
     },
     {
       id: 5,
       nombre: 'Pastillas de freno',
       descripcion: 'Pastillas de freno resistentes para mayor seguridad.',
       precio: '$750 MXN',
-      imagen: '/frenos.jpg',
+      imagen: '',
     },
   ];
 

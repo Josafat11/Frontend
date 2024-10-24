@@ -1,30 +1,36 @@
-'use client';  // Esta línea es importante para habilitar el uso de hooks en este componente
+'use client';  // Indicamos que es un Client Component para poder usar hooks
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';  // Importamos useRouter para redirigir
 import { useAuth } from '../../context/authContext'; // Importamos el contexto de autenticación
 
 const LoginPage = () => {
+  // Definimos los estados del formulario y los mensajes
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const { login } = useAuth(); // Obtenemos la función de login del contexto
+  const { login } = useAuth(); // Obtenemos la función login desde el contexto de autenticación
+  const router = useRouter();  // Usamos useRouter para manejar las redirecciones
 
+  // Función que maneja el envío del formulario
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevenir el refresh de la página
-  
+    e.preventDefault(); // Prevenimos que la página se recargue
+
     try {
-      // Llamamos a la función login del contexto
+      // Llamamos a la función login del contexto de autenticación
       const result = await login(email, password);
-  
+
       if (result.success) {
+        // Si el login es exitoso, mostramos un mensaje y redirigimos al inicio
         setMessage('Inicio de sesión exitoso');
-        // Aquí puedes redirigir al usuario después de un login exitoso
-        // Por ejemplo, usando Router.push('/ruta-destino')
+        router.push('/');  // Redirigimos a la página de inicio
       } else {
-        setMessage(result.message);  // Mostrar el mensaje de error
+        // Si hay un error en las credenciales, mostramos el mensaje de error
+        setMessage(result.message);
       }
     } catch (error) {
+      // Si ocurre un error inesperado (como problemas de servidor)
       console.error('Error en el inicio de sesión:', error);
       setMessage('Error interno del servidor');
     }
@@ -40,6 +46,7 @@ const LoginPage = () => {
         <div className="flex flex-col justify-center h-full text-white p-8 bg-green-700 bg-opacity-80">
           <h2 className="text-3xl font-bold mb-4">Beneficios:</h2>
           <ul className="space-y-4">
+            {/* Listado de beneficios que se muestran en la sección izquierda */}
             <li className="flex items-center space-x-2">
               <span>Recibe las mejores promociones</span>
             </li>
@@ -62,6 +69,7 @@ const LoginPage = () => {
 
           <h2 className="text-2xl font-bold mb-4">Inicia Sesión</h2>
           
+          {/* Mostrar mensajes de error o éxito */}
           {message && <p className="text-center text-red-500 mb-4">{message}</p>}
 
           <form onSubmit={handleSubmit}>
@@ -71,7 +79,7 @@ const LoginPage = () => {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)} // Actualizar el estado del email
                 placeholder="Correo electrónico"
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
@@ -83,7 +91,7 @@ const LoginPage = () => {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)} // Actualizar el estado de la contraseña
                 placeholder="Contraseña"
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
@@ -97,19 +105,19 @@ const LoginPage = () => {
               Iniciar Sesión
             </button>
 
-            {/* Crear cuenta */}
+            {/* Enlace para crear una nueva cuenta */}
             <p className="text-sm text-gray-500 mt-4 text-center">
               ¿No tienes una cuenta?{" "}
               <Link href="/register">
-                <span className="text-green-700 font font-semibold">Crear una cuenta</span>
+                <span className="text-green-700 font-semibold">Crear una cuenta</span>
               </Link>
             </p>
 
-            {/* Botón para restablecer la contraseña */}
+            {/* Enlace para restablecer la contraseña */}
             <p className="text-sm text-gray-500 mt-4 text-center">
               ¿Olvidaste tu contraseña?{" "}
               <Link href="/resetpassword">
-                <span className="text-green-700 font font-semibold">Restablecer contraseña</span>
+                <span className="text-green-700 font-semibold">Restablecer contraseña</span>
               </Link>
             </p>
           </form>
