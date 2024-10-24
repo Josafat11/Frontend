@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FaUser, FaShoppingCart, FaBars } from "react-icons/fa";
 import logo from "../assets/munoz-logo.jpg";
 import { useAuth } from "../context/authContext"; // Importa el contexto de autenticación
+import { useRouter } from 'next/navigation'; // Importa el hook de useRouter para la redirección
 
 function Navbar() {
   const { isAuthenticated, user, logout } = useAuth(); // Extraer logout del contexto de autenticación
@@ -14,6 +15,7 @@ function Navbar() {
   const [documentAdminMenuOpen, setDocumentAdminMenuOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const router = useRouter(); // Inicializamos el router para manejar redirección
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -37,7 +39,7 @@ function Navbar() {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
         setAdminMenuOpen(false); // Cerrar el menú admin si está abierto
-        setDocumentAdminMenuOpen (false);
+        setDocumentAdminMenuOpen(false);
       }
     };
 
@@ -46,6 +48,12 @@ function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Manejar el cierre de sesión con redirección
+  const handleLogout = async () => {
+    await logout(); // Llamar a la función de logout desde el contexto
+    router.push('/'); // Redirigir al inicio después de cerrar sesión
+  };
 
   return (
     <nav className="bg-yellow-300 border-b-2 rounded-lg border-gray-200 fixed top-0 w-full z-50 pb-4">
@@ -131,7 +139,7 @@ function Navbar() {
                               </p>
                             </Link>
                             <Link href="/adminUsuarios">
-                              <p className="mt-2 hover:text-green-700 hover:font-bold" >
+                              <p className="mt-2 hover:text-green-700 hover:font-bold">
                                 Gestión de Usuarios
                               </p>
                             </Link>
@@ -186,7 +194,7 @@ function Navbar() {
                     )}
 
                     <button
-                      onClick={logout} // Llamar a la función logout
+                      onClick={handleLogout} // Llamar a la función handleLogout
                       className="mt-2 text-red-500 hover:text-red-400"
                     >
                       Cerrar sesión
