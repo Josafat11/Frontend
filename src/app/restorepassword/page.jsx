@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // Importar desde 'next/navigation'
 import { useEffect } from 'react';
-
+import { CONFIGURACIONES } from '../config/config';
 function ResetPasswordPage({ params }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -22,7 +22,7 @@ function ResetPasswordPage({ params }) {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/reset-password/${token}`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/reset-password/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

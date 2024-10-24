@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation'; // Cambio aquí
 import Swal from 'sweetalert2';
-
+import { CONFIGURACIONES } from '../../config/config';
 export default function VerifyPage() {
   const router = useRouter();
   const [verificationStatus, setVerificationStatus] = useState(null);
@@ -18,7 +18,7 @@ export default function VerifyPage() {
 
   const verifyToken = async (token) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/auth/verify/${token}`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/verify/${token}`, {
         method: 'GET',
       });
       

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/authContext';
 import Image from 'next/image';
-
+import { CONFIGURACIONES } from '../config/config';
 function AdminPage() {
   const { user, isAuthenticated } = useAuth();
   const [users, setUsers] = useState([]); // Inicializar como un arreglo vacío
@@ -21,7 +21,7 @@ function AdminPage() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/auth/users', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/users`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -42,7 +42,7 @@ function AdminPage() {
 
   const handleDelete = async (userId) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/auth/users/${userId}`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/users/${userId}`, {
         method: 'DELETE',
         credentials: 'include',
       });

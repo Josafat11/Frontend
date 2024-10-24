@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/authContext';
-
+import { CONFIGURACIONES } from '../config/config'; // Importar las configuraciones
 function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
   const [recentUsers, setRecentUsers] = useState([]);
@@ -19,7 +19,7 @@ function AdminDashboard() {
     if (isAuthenticated && user?.role === 'admin') {
       // Obtener usuarios recientes
       const fetchRecentUsers = async () => {
-        const response = await fetch('http://localhost:4000/api/auth/admin/recent-users', {
+        const response = await fetch('/auth/admin/recent-users', {
           credentials: 'include',  // Asegura que las cookies se envíen
         });
         const data = await response.json();
@@ -28,7 +28,7 @@ function AdminDashboard() {
 
       // Obtener usuarios bloqueados
       const fetchBlockedUsers = async () => {
-        const response = await fetch('http://localhost:4000/api/auth/admin/recent-blocked', {
+        const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/admin/recent-blocked`, {
           credentials: 'include',  // Asegura que las cookies se envíen
         });
         const data = await response.json();

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/authContext';
-
+import { CONFIGURACIONES } from '../config/config'; // Importar las configuraciones
 function PrivacyPolicyPage() {
   const { user, isAuthenticated } = useAuth();
   const [policies, setPolicies] = useState([]); // Inicializar como un arreglo vacío para las políticas
@@ -21,7 +21,7 @@ function PrivacyPolicyPage() {
 
   const fetchPolicies = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/docs/privacy-policy/current', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/privacy-policy/current`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -46,7 +46,7 @@ function PrivacyPolicyPage() {
 
   const handleCreatePolicy = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/docs/privacy-policy', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/privacy-policy`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

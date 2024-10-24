@@ -1,7 +1,7 @@
 "use client"; // Indica que es un componente del lado del cliente
 
 import { createContext, useContext, useState, useEffect } from 'react';
-
+import { CONFIGURACIONES } from '../app/config/config'; // Importar las configuraciones
 // Crear el contexto de autenticación
 const AuthContext = createContext();
 
@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
 // Función para manejar el login
 const login = async (email, password) => {
   try {
-    const response = await fetch('http://localhost:4000/api/auth/login', {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ const checkSession = async () => {
       return;
     }
 
-    const response = await fetch('http://localhost:4000/api/auth/check-session', {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/check-session`, {
       method: 'GET',
       credentials: 'include', // Para mantener la cookie de la sesión
     });
@@ -82,7 +82,7 @@ const checkSession = async () => {
 // Función para cerrar sesión
 const logout = async () => {
   try {
-    const response = await fetch('http://localhost:4000/api/auth/logout', {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/logout`, {
       method: 'POST',
       credentials: 'include', // Importante para cerrar la sesión correctamente en el servidor
     });

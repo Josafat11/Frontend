@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";  // Para hacer las solicitudes HTTP
 import { useAuth } from '../../context/authContext'; // Usamos el contexto para obtener el ID del usuario o la sesión
-
+import { CONFIGURACIONES } from '../config/config';
 function UserProfile() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ function UserProfile() {
     async function fetchUserData() {
       if (user) {  // Asegurarse de que el usuario esté autenticado y haya un ID
         try {
-          const response = await axios.get(`http://localhost:4000/api/auth/users/${user.userId}`, {
+          const response = await axios.get(`${CONFIGURACIONES.BASEURL}/auth/users/${user.userId}`, {
             withCredentials: true, // Incluir las cookies (credenciales) en la solicitud
           });
           setUserData(response.data);

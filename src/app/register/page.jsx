@@ -6,7 +6,7 @@ import CryptoJS from "crypto-js";
 import ReCAPTCHA from "react-google-recaptcha";
 import Swal from 'sweetalert2';
 import { useRouter } from 'next/navigation';
-
+import { CONFIGURACIONES } from '../config/config';
 
 function RegisterPage() {
   const [password, setPassword] = useState("");
@@ -190,7 +190,7 @@ function RegisterPage() {
     event.preventDefault();
     setOnSubmitLoading(true); // Mostrar loading al enviar
     try {
-      const response = await fetch("http://localhost:4000/api/auth/signup", {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

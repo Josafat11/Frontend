@@ -1,7 +1,7 @@
 "use client"; // Para asegurar que es un componente del cliente
 //este es el que manda
 import { useState } from 'react';
-
+import { CONFIGURACIONES } from '../config/config';
 function RequestPasswordResetPage() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -20,7 +20,7 @@ function RequestPasswordResetPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:4000/api/auth/send-reset-email', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/send-reset-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

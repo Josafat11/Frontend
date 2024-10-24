@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/authContext';
-
+import { CONFIGURACIONES } from '../config/config';
 function TermsConditionsPage() {
   const { user, isAuthenticated } = useAuth();
   const [termsConditions, setTermsConditions] = useState(null); // Almacena los términos actuales
@@ -21,7 +21,7 @@ function TermsConditionsPage() {
 
   const fetchTermsConditions = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/docs/terms-conditions/current', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/terms-conditions/current`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -40,7 +40,7 @@ function TermsConditionsPage() {
 
   const handleCreateTerms = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/docs/terms-conditions', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/terms-conditions`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

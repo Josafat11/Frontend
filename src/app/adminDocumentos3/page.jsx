@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/authContext';
-
+import { CONFIGURACIONES } from '../config/config';
 function DeslindeLegalPage() {
   const { user, isAuthenticated } = useAuth();
   const [deslindeLegal, setDeslindeLegal] = useState(null); // Almacena el deslinde legal actual
@@ -21,7 +21,7 @@ function DeslindeLegalPage() {
 
   const fetchDeslindeLegal = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/docs/deslinde-legal/current', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/deslinde-legal/current`, {
         method: 'GET',
         credentials: 'include',
       });
@@ -40,7 +40,7 @@ function DeslindeLegalPage() {
 
   const handleCreateDeslinde = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/docs/deslinde-legal', {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/deslinde-legal`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
