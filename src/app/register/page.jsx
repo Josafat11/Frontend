@@ -5,7 +5,7 @@ import Link from "next/link";
 import CryptoJS from "crypto-js";
 import ReCAPTCHA from "react-google-recaptcha";
 import Swal from 'sweetalert2';
-
+import { useRouter } from 'next/navigation';
 
 
 function RegisterPage() {
@@ -183,6 +183,9 @@ function RegisterPage() {
   };
 
   // Función para manejar el envío del formulario al backend
+  const router = useRouter(); // Inicializa el hook de enrutamiento
+
+  // Función para manejar el envío del formulario al backend
   const onSubmit = async (event) => {
     event.preventDefault();
     setOnSubmitLoading(true); // Mostrar loading al enviar
@@ -204,13 +207,16 @@ function RegisterPage() {
           respuestaSecreta,
         }),
       });
-
+  
       const data = await response.json();
       if (response.ok) {
         Swal.fire({
           icon: "success",
           title: "Registro exitoso",
           text: "¡Te has registrado con éxito!",
+        }).then(() => {
+          // Redireccionar al login después de que el usuario haga clic en "OK"
+          router.push('/login');
         });
       } else {
         Swal.fire({
@@ -229,6 +235,7 @@ function RegisterPage() {
       setOnSubmitLoading(false); // Dejar de mostrar loading
     }
   };
+  
 
   return (
     <div className="min-h-screen flex pt-28">

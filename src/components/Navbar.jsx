@@ -170,6 +170,16 @@ function Navbar() {
                                 Administrar Pepe
                               </p>
                             </Link>
+                            <Link href="/adminDocumentos2">
+                              <p className="mt-2 font-semibold hover:text-green-700 hover:font-bold">
+                                Administrar Terminos
+                              </p>
+                            </Link>
+                            <Link href="/adminDocumentos3">
+                              <p className="mt-2 font-semibold hover:text-green-700 hover:font-bold">
+                                Administrar Deslinde
+                              </p>
+                            </Link>
                           </div>
                         )}
                       </div>
