@@ -10,9 +10,11 @@ export default function VerifyPage() {
 
   // Verifica si hay un token en la URL
   useEffect(() => {
-    const token = window.location.pathname.split('/').pop(); // Obtener el token de la URL
-    if (token) {
-      verifyToken(token);
+    if (typeof window !== 'undefined') {
+      const token = window.location.pathname.split('/').pop(); // Obtener el token de la URL
+      if (token) {
+        verifyToken(token);
+      }
     }
   }, []);
 
