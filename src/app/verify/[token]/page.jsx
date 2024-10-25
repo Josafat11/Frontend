@@ -1,63 +1,57 @@
 "use client"; // Indicar que es un Client Component
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Cambio aquí
-import Swal from 'sweetalert2';
-import { CONFIGURACIONES } from '../../config/config';
+import { useRouter } from 'next/navigation'; // Uso del router para redirección
+import { CONFIGURACIONES } from '../../config/config'; // Importar configuración
+
 export default function VerifyPage() {
   const router = useRouter();
-  const [verificationStatus, setVerificationStatus] = useState(null);
+  const [verificationStatus, setVerificationStatus] = useState(null); // Estado para el estado de verificación
+  const [loading, setLoading] = useState(true); // Estado para mostrar el proceso de carga
 
-  // Verifica si hay un token en la URL
+  // Verifica si hay un token en la URL y llama a la función de verificación
   useEffect(() => {
+    // Ejecutar solo en el cliente (para evitar errores en SSR)
     if (typeof window !== 'undefined') {
       const token = window.location.pathname.split('/').pop(); // Obtener el token de la URL
       if (token) {
-        verifyToken(token);
+        verifyToken(token); // Llamar a la función para verificar el token
+      } else {
+        setLoading(false); // Detener la carga si no hay token
       }
     }
   }, []);
 
+  // Función para verificar el token con el backend
   const verifyToken = async (token) => {
     try {
       const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/verify/${token}`, {
         method: 'GET',
       });
-      
       const data = await response.json();
 
       if (response.ok) {
-        setVerificationStatus('success');
-        Swal.fire({
-          icon: 'success',
-          title: 'Cuenta verificada',
-          text: 'Tu cuenta ha sido verificada con éxito.',
-        });
-        router.push('/login'); // Redirigir al login si es necesario
+        setVerificationStatus('success'); // Estado de éxito
+        setTimeout(() => {
+          router.push('/login'); // Redirigir al login después de unos segundos
+        }, 2000);
       } else {
-        setVerificationStatus('error');
-        Swal.fire({
-          icon: 'error',
-          title: 'Error en la verificación',
-          text: data.message || 'El enlace de verificación ha expirado o es inválido.',
-        });
+        setVerificationStatus('error'); // Estado de error
       }
     } catch (error) {
-      setVerificationStatus('error');
-      Swal.fire({
-        icon: 'error',
-        title: 'Error en el servidor',
-        text: 'Hubo un problema verificando tu cuenta.',
-      });
+      setVerificationStatus('error'); // Estado de error en caso de excepción
+    } finally {
+      setLoading(false); // Detener la carga una vez que se obtenga la respuesta
     }
   };
 
+  // Contenido que se mostrará en la página según el estado de verificación
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      {verificationStatus === null ? (
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      {loading ? (
         <p>Verificando tu cuenta...</p>
       ) : verificationStatus === 'success' ? (
-        <p>¡Cuenta verificada exitosamente! Redirigiendo...</p>
+        <p>¡Cuenta verificada exitosamente! Redirigiendo al login...</p>
       ) : (
         <p>Error en la verificación. Por favor, intenta nuevamente.</p>
       )}
