@@ -50,7 +50,7 @@ const checkSession = async () => {
       return;
     }
 
-    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/check-session`, {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/check-session`, {
       method: 'GET',
       credentials: 'include', // Para mantener la cookie de la sesión
     });
@@ -82,7 +82,7 @@ const checkSession = async () => {
 // Función para cerrar sesión
 const logout = async () => {
   try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/logout`, {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/logout`, {
       method: 'POST',
       credentials: 'include', // Importante para cerrar la sesión correctamente en el servidor
     });
