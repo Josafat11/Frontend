@@ -19,7 +19,7 @@ function AdminDashboard() {
     if (isAuthenticated && user?.role === 'admin') {
       // Obtener usuarios recientes
       const fetchRecentUsers = async () => {
-        const response = await fetch('/auth/admin/recent-users', {
+        const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/admin/recent-users`, {
           credentials: 'include',  // Asegura que las cookies se envíen
         });
         const data = await response.json();
@@ -41,8 +41,8 @@ function AdminDashboard() {
   }, [isAuthenticated, user]);
 
   return (
-    <div className="container mx-auto py-8 pt-32">
-      <h1 className="text-3xl font-bold mb-8 text-center">Dashboard Admin</h1>
+    <div className="container mx-auto py-8 pt-36">
+      <h1 className="text-3xl font-bold mb-8 text-center pt-10">Dashboard Admin</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Usuarios Recientes */}

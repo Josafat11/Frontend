@@ -27,7 +27,7 @@ function UserProfile() {
       }
     }
     fetchUserData();
-  }, [user]);  // Se ejecuta cada vez que el `user` cambie
+  }, [user]);  // Se ejecuta cada vez que el user cambie
 
   if (loading) {
     return <p>Cargando...</p>;
