@@ -13,13 +13,13 @@ export const AuthProvider = ({ children }) => {
 // Función para manejar el login
 const login = async (email, password) => {
   try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/login`, {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/login`, { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
-      credentials: 'include', // Importante para enviar las cookies de sesión al servidor
+      credentials: 'include', 
     });
 
     const data = await response.json();
@@ -50,7 +50,7 @@ const checkSession = async () => {
       return;
     }
 
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/check-session`, {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/check-session`, {
       method: 'GET',
       credentials: 'include', // Para mantener la cookie de la sesión
     });
@@ -82,7 +82,7 @@ const checkSession = async () => {
 // Función para cerrar sesión
 const logout = async () => {
   try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/logout`, {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/logout`, {
       method: 'POST',
       credentials: 'include', // Importante para cerrar la sesión correctamente en el servidor
     });
