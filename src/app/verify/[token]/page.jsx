@@ -1,26 +1,26 @@
 "use client"; // Indicar que es un Client Component
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation'; // Uso del router para redirección
+import { useRouter, useSearchParams } from 'next/navigation'; // Uso del router para redirección
 import { CONFIGURACIONES } from '../../config/config'; // Importar configuración
 
 export default function VerifyPage() {
   const router = useRouter();
+  const searchParams = useSearchParams(); // Obtener los parámetros de la URL
   const [verificationStatus, setVerificationStatus] = useState(null); // Estado para el estado de verificación
   const [loading, setLoading] = useState(true); // Estado para mostrar el proceso de carga
 
   // Verifica si hay un token en la URL y llama a la función de verificación
   useEffect(() => {
-    // Ejecutar solo en el cliente (para evitar errores en SSR)
     if (typeof window !== 'undefined') {
-      const token = window.location.pathname.split('/').pop(); // Obtener el token de la URL
+      const token = searchParams.get('token'); // Obtener el token de los parámetros de búsqueda
       if (token) {
         verifyToken(token); // Llamar a la función para verificar el token
       } else {
         setLoading(false); // Detener la carga si no hay token
       }
     }
-  }, []);
+  }, [searchParams]);
 
   // Función para verificar el token con el backend
   const verifyToken = async (token) => {
