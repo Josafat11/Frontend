@@ -25,7 +25,7 @@ export default function VerifyPage() {
   // Función para verificar el token con el backend
   const verifyToken = async (token) => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/verify/${token}`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/verify/${token}`, {
         method: 'GET',
       });
       const data = await response.json();

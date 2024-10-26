@@ -1,9 +1,10 @@
-'use client'; // Indica que es un componente del lado del cliente
+"use client"; // Indica que es un componente del lado del cliente
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/authContext';
 import { CONFIGURACIONES } from '../config/config';
+
 function DeslindeLegalPage() {
   const { user, isAuthenticated } = useAuth();
   const [deslindeLegal, setDeslindeLegal] = useState(null); // Almacena el deslinde legal actual
@@ -21,14 +22,22 @@ function DeslindeLegalPage() {
 
   const fetchDeslindeLegal = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/deslinde-legal/current`, {
+      const token = localStorage.getItem('token'); // Obtener el token JWT desde el almacenamiento local
+      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/docs/deslinde-legal/current`, {
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`, // Incluir el token JWT en el encabezado de autorización
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
       });
       const data = await response.json();
 
-      if (data) {
+      if (response.ok) {
         setDeslindeLegal(data); // Establece el deslinde legal actual
+      } else if (response.status === 401) {
+        console.error('Token expirado o inválido');
+        router.push('/login'); // Redirige al inicio de sesión si el token es inválido
       }
 
       setLoading(false);
@@ -40,10 +49,12 @@ function DeslindeLegalPage() {
 
   const handleCreateDeslinde = async () => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/docs/deslinde-legal`, {
+      const token = localStorage.getItem('token'); // Obtener el token JWT desde el almacenamiento local
+      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/docs/deslinde-legal`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Incluir el token JWT en el encabezado de autorización
         },
         credentials: 'include',
         body: JSON.stringify(newDeslinde),
@@ -52,6 +63,9 @@ function DeslindeLegalPage() {
       if (response.ok) {
         fetchDeslindeLegal(); // Actualiza el deslinde legal actual
         setNewDeslinde({ title: '', content: '', effectiveDate: '' }); // Resetea el formulario
+      } else if (response.status === 401) {
+        console.error('Token expirado o inválido');
+        router.push('/login'); // Redirige al inicio de sesión si el token es inválido
       }
     } catch (error) {
       console.error('Error al crear el deslinde legal:', error);

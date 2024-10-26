@@ -1,62 +1,62 @@
-'use client'; // Indica que es un componente del lado del cliente
+"use client"; // Indica que es un componente del lado del cliente
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/authContext';
-import Image from 'next/image';
 import { CONFIGURACIONES } from '../config/config';
+
 function AdminPage() {
   const { user, isAuthenticated } = useAuth();
   const [users, setUsers] = useState([]); // Inicializar como un arreglo vacío
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
+    // Verificar si el usuario es admin, si no redirigir manualmente
     if (!isAuthenticated || user?.role !== 'admin') {
-      router.push('/'); // Redirige a la página principal si no es admin o no está autenticado
-    } else {
-      fetchUsers(); // Cargar los usuarios si el usuario autenticado es admin
+      window.location.href = '/login';  // Redirige manualmente
     }
   }, [isAuthenticated, user]);
 
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'admin') {
+
   const fetchUsers = async () => {
-    try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/users`, {
+    const token = localStorage.getItem('token');  // Obtiene el token del localStorage
+      console.log("mando", token);
+      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/users`, {
         method: 'GET',
-        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Incluye el token en el encabezado
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include', // Solo si usas cookies
       });
       const data = await response.json();
-
-      if (Array.isArray(data)) {
-        setUsers(data); // Asegúrate de que data sea un arreglo
-      } else {
-        setUsers([]); // Si no es un arreglo, asegúrate de no romper la UI
-      }
-
-      setLoading(false);
-    } catch (error) {
-      console.error('Error al cargar los usuarios:', error);
-      setLoading(false);
+      setUsers(data); 
+      };
+      fetchUsers();
     }
-  };
+  }, [isAuthenticated, user]);
 
-  const handleDelete = async (userId) => {
-    try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/users/${userId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-      if (response.ok) {
-        setUsers(users.filter((user) => user._id !== userId)); // Elimina el usuario de la lista
-      }
-    } catch (error) {
-      console.error('Error al eliminar el usuario:', error);
-    }
-  };
-
-  if (loading) {
-    return <p className="text-center mt-20">Cargando usuarios...</p>;
-  }
+      const handleDelete = async (userId) => {
+        const token = localStorage.getItem("token"); // Obtiene el token del localStorage
+        try {
+          const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/users/${userId}`, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+          });
+    
+          if (response.ok) {
+            setUsers(users.filter((user) => user._id !== userId)); // Elimina el usuario de la lista
+          }
+        } catch (error) {
+          console.error("Error al eliminar el usuario:", error);
+        }
+      };
 
   return (
     <div className="container mx-auto py-8 pt-36">

@@ -20,7 +20,7 @@ function RequestPasswordResetPage() {
     }
 
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/send-reset-email`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/send-reset-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),

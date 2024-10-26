@@ -10,10 +10,10 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
-// Función para manejar el login
+// Función para manejar el login en AuthProvider
 const login = async (email, password) => {
   try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/login`, { 
+    const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/login`, { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -23,14 +23,16 @@ const login = async (email, password) => {
     });
 
     const data = await response.json();
+    console.log(data); // Verifica el objeto recibido en la consola
 
     if (response.ok) {
       setIsAuthenticated(true);
-      setUser(data.user); // Aquí se establece la información del usuario (nombre, email, role, etc.)
-      localStorage.setItem('user', JSON.stringify(data.user)); // Guarda la información del usuario en localStorage
+      setUser(data.user);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      localStorage.setItem('token', data.token); // Guarda el token en localStorage
       return { success: true };
     } else {
-      return { success: false, message: data.message }; // Manejo de errores
+      return { success: false, message: data.message };
     }
   } catch (error) {
     console.error('Error en la solicitud de login:', error);
@@ -39,40 +41,36 @@ const login = async (email, password) => {
 };
 
   // Función para verificar la sesión cuando la página se recarga
-// Función para verificar la sesión cuando la página se recarga
-const checkSession = async () => {
-  try {
-    const localUser = localStorage.getItem('user');
-    if (localUser) {
-      // Si el usuario ya está guardado en localStorage, cargarlo directamente
-      setUser(JSON.parse(localUser));
-      setIsAuthenticated(true);
-      return;
-    }
-
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/check-session`, {
-      method: 'GET',
-      credentials: 'include', // Para mantener la cookie de la sesión
-    });
-    const data = await response.json();
-
-    if (response.ok && data.isAuthenticated) {
-      setIsAuthenticated(true);
-      setUser(data.user); // Recupera el usuario desde el backend, incluido su rol
-      localStorage.setItem('user', JSON.stringify(data.user)); // Guarda al usuario en localStorage
-    } else {
+  const checkSession = async () => {
+    const storedToken = localStorage.getItem('token');
+    if (!storedToken) {
       setIsAuthenticated(false);
       setUser(null);
-      localStorage.removeItem('user'); // Limpia el localStorage si no hay sesión activa
+      return;
     }
-  } catch (error) {
-    console.error('Error verificando la sesión:', error);
-    setIsAuthenticated(false);
-    setUser(null);
-    localStorage.removeItem('user'); // Limpia el localStorage en caso de error
-  }
-};
+  
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/check-session`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${storedToken}` // Envía el token JWT en el header
+        },
+      });
+      
+      const data = await response.json();
+      if (response.ok && data.isAuthenticated) {
+        setIsAuthenticated(true);
+        setUser(data.user);
+      } else {
+        logout(); // Cierra sesión si el token no es válido
+      }
+    } catch (error) {
+      console.error('Error verificando la sesión:', error);
+      logout();
+    }
+  };
 
+  
   // Verificar la sesión al cargar la aplicación o al recargar la página
   useEffect(() => {
     checkSession();
@@ -80,23 +78,12 @@ const checkSession = async () => {
 
   // Función para cerrar sesión
 // Función para cerrar sesión
-const logout = async () => {
-  try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/logout`, {
-      method: 'POST',
-      credentials: 'include', // Importante para cerrar la sesión correctamente en el servidor
-    });
-
-    if (response.ok) {
-      setIsAuthenticated(false);
-      setUser(null);
-      localStorage.removeItem('user'); // Limpia el localStorage al cerrar sesión
-    } else {
-      console.error('Error al cerrar sesión');
-    }
-  } catch (error) {
-    console.error('Error en la solicitud de logout:', error);
-  }
+const logout = () => {
+  setIsAuthenticated(false);
+  setUser(null);
+  localStorage.removeItem('user'); // Borra el usuario almacenado
+  localStorage.removeItem('token'); // Borra el token almacenado
+  console.log('Sesión cerrada con éxito');
 };
 
 

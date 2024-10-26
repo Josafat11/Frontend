@@ -19,21 +19,34 @@ function AdminDashboard() {
     if (isAuthenticated && user?.role === 'admin') {
       // Obtener usuarios recientes
       const fetchRecentUsers = async () => {
-        const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/admin/recent-users`, {
-          credentials: 'include',  // Asegura que las cookies se envíen
+        const token = localStorage.getItem('token');  // Obtén el token almacenado en localStorage
+        console.log("mando", token);
+        const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/admin/recent-users`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,  // Incluye el token en el encabezado
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',  // Solo si también usas cookies
         });
         const data = await response.json();
         setRecentUsers(data);
       };
-
-      // Obtener usuarios bloqueados
+      
       const fetchBlockedUsers = async () => {
-        const response = await fetch(`${CONFIGURACIONES.BASEURL}/auth/admin/recent-blocked`, {
-          credentials: 'include',  // Asegura que las cookies se envíen
+        const token = localStorage.getItem('token');  // Obtén el token almacenado en localStorage
+        const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/admin/recent-blocked`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,  // Incluye el token en el encabezado
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
         });
         const data = await response.json();
         setBlockedUsers(data);
       };
+      
 
       fetchRecentUsers();
       fetchBlockedUsers();

@@ -24,6 +24,8 @@ const LoginPage = () => {
       if (result.success) {
         // Si el login es exitoso, mostramos un mensaje y redirigimos al inicio
         setMessage('Inicio de sesión exitoso');
+        console.log("sesion iniciada");
+        
         router.push('/');  // Redirigimos a la página de inicio
       } else {
         // Si hay un error en las credenciales, mostramos el mensaje de error
