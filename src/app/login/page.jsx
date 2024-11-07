@@ -1,54 +1,46 @@
-'use client';  // Indicamos que es un Client Component para poder usar hooks
+'use client'; // Indicar que es un Client Component para poder usar hooks
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';  // Importamos useRouter para redirigir
-import { useAuth } from '../../context/authContext'; // Importamos el contexto de autenticación
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../context/authContext';
 
 const LoginPage = () => {
   // Definimos los estados del formulario y los mensajes
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const { login } = useAuth(); // Obtenemos la función login desde el contexto de autenticación
-  const router = useRouter();  // Usamos useRouter para manejar las redirecciones
+  const { login, theme } = useAuth(); // Obtén `login` y `theme` desde el contexto
+  const router = useRouter();
 
   // Función que maneja el envío del formulario
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevenimos que la página se recargue
+    e.preventDefault();
 
     try {
-      // Llamamos a la función login del contexto de autenticación
       const result = await login(email, password);
-
       if (result.success) {
-        // Si el login es exitoso, mostramos un mensaje y redirigimos al inicio
         setMessage('Inicio de sesión exitoso');
-        console.log("sesion iniciada");
-        
-        router.push('/');  // Redirigimos a la página de inicio
+        router.push('/');
       } else {
-        // Si hay un error en las credenciales, mostramos el mensaje de error
         setMessage(result.message);
       }
     } catch (error) {
-      // Si ocurre un error inesperado (como problemas de servidor)
       console.error('Error en el inicio de sesión:', error);
       setMessage('Error interno del servidor');
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row pt-28">
+    <div className={`min-h-screen flex flex-col md:flex-row pt-28 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
       {/* Sección izquierda: Imagen y beneficios */}
       <div
         className="w-full md:w-1/2 bg-cover bg-center"
         style={{ backgroundImage: "url('/images/beneficios-login.jpg')" }}
       >
-        <div className="flex flex-col justify-center h-full text-white p-8 bg-green-700 bg-opacity-80">
+        <div className={`flex flex-col justify-center h-full text-white p-8 ${theme === 'dark' ? 'bg-green-800 bg-opacity-90' : 'bg-green-700 bg-opacity-80'}`}>
           <h2 className="text-3xl font-bold mb-4">Beneficios:</h2>
           <ul className="space-y-4">
-            {/* Listado de beneficios que se muestran en la sección izquierda */}
             <li className="flex items-center space-x-2">
               <span>Recibe las mejores promociones</span>
             </li>
@@ -63,63 +55,57 @@ const LoginPage = () => {
       </div>
 
       {/* Sección derecha: Formulario de login */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
+      <div className={`w-full md:w-1/2 flex flex-col justify-center items-center p-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="w-full max-w-md">
           <Link href="/">
-            <p className="text-green-700 font-bold mb-6 flex hover:text-green-600">&larr; Atrás</p>
+            <p className={`font-bold mb-6 flex ${theme === 'dark' ? 'text-green-400 hover:text-green-300' : 'text-green-700 hover:text-green-600'}`}>&larr; Atrás</p>
           </Link>
 
           <h2 className="text-2xl font-bold mb-4">Inicia Sesión</h2>
           
-          {/* Mostrar mensajes de error o éxito */}
           {message && <p className="text-center text-red-500 mb-4">{message}</p>}
 
           <form onSubmit={handleSubmit}>
-            {/* Correo Electrónico */}
             <div className="mb-4">
-              <label className="block text-gray-700">Correo electrónico</label>
+              <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Correo electrónico</label>
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)} // Actualizar el estado del email
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Correo electrónico"
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
               />
             </div>
 
-            {/* Contraseña */}
             <div className="mb-4">
-              <label className="block text-gray-700">Contraseña</label>
+              <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Contraseña</label>
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} // Actualizar el estado de la contraseña
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Contraseña"
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className={`w-full p-2 rounded-lg ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
               />
             </div>
 
-            {/* Botón de Iniciar Sesión */}
             <button
               type="submit"
-              className="w-full bg-green-700 text-white py-2 px-4 rounded-lg hover:bg-green-600"
+              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-500"
             >
               Iniciar Sesión
             </button>
 
-            {/* Enlace para crear una nueva cuenta */}
-            <p className="text-sm text-gray-500 mt-4 text-center">
+            <p className={`text-sm mt-4 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
               ¿No tienes una cuenta?{" "}
               <Link href="/register">
-                <span className="text-green-700 font-semibold">Crear una cuenta</span>
+                <span className="font-semibold hover:underline" style={{ color: theme === 'dark' ? '#9ae6b4' : '#2f855a' }}>Crear una cuenta</span>
               </Link>
             </p>
 
-            {/* Enlace para restablecer la contraseña */}
-            <p className="text-sm text-gray-500 mt-4 text-center">
+            <p className={`text-sm mt-4 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
               ¿Olvidaste tu contraseña?{" "}
               <Link href="/resetpassword">
-                <span className="text-green-700 font-semibold">Restablecer contraseña</span>
+                <span className="font-semibold hover:underline" style={{ color: theme === 'dark' ? '#9ae6b4' : '#2f855a' }}>Restablecer contraseña</span>
               </Link>
             </p>
           </form>

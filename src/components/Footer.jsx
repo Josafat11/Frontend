@@ -9,11 +9,11 @@ import {
   FaInstagram,
 } from "react-icons/fa"; // Importamos los íconos
 import Image from "next/image";
-import logo from "../assets/munoz-logo.jpg";
+import logo from "../assets/munoz-logo.png";
 
 function Footer() {
   return (
-    <footer className="bg-gray-900 text-white py-8">
+    <footer className="bg-pakistanGreen text-white py-8">
       <div className="container mx-auto">
         <div className="flex justify-center space-x-6 py-4">
           <Image src={logo} alt="Muñoz Logo" width={120} height={120} />

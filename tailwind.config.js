@@ -11,6 +11,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        orangeWeb: '#F9A620',
+        mustard: '#FFD449',
+        appleGreen: '#AAB03C',
+        forestGreen: '#548C2F',
+        pakistanGreen: '#104911',
+        frenchGray: '#EDEDED',
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
