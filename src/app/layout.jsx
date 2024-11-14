@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "../context/authContext";
+import { LogoProvider } from "../context/LogoContext"; // Importa LogoProvider
 
 // Definir los fonts como localFont
 const geistSans = localFont({
@@ -24,10 +25,12 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider> {/* Envuelve toda la aplicación con AuthProvider */}
-          <Navbar />
-          {children}
-          <Footer />
+        <AuthProvider>
+          <LogoProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </LogoProvider>
         </AuthProvider>
       </body>
     </html>

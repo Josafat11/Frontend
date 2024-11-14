@@ -12,9 +12,10 @@ import {
   FaSun,
 } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
-import logo from "../assets/munoz-logo.png";
+import { useLogo } from "../context/LogoContext";
 import { useAuth } from "../context/authContext"; // Importa el contexto de autenticación
 import { useRouter } from "next/navigation"; // Importa el hook de useRouter para la redirección
+import { CONFIGURACIONES } from "../app/config/config";
 
 function Navbar() {
   const { isAuthenticated, user, logout, theme, toggleTheme } = useAuth();
@@ -24,6 +25,7 @@ function Navbar() {
   const [documentAdminMenuOpen, setDocumentAdminMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
+  const { logoUrl } = useLogo();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleAdminMenu = () => setAdminMenuOpen(!adminMenuOpen);
@@ -42,6 +44,23 @@ function Navbar() {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Función para obtener el logo más reciente
+  const fetchLogo = async () => {
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/logo/ultimo`);
+      if (response.ok) {
+        const data = await response.json();
+        setLogoUrl(`${data.url}?timestamp=${new Date().getTime()}`);
+      }
+    } catch (error) {
+      console.error("Error al obtener el logo:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLogo(); // Cargar logo al iniciar la app
   }, []);
 
   const handleLogout = async () => {
@@ -84,15 +103,15 @@ function Navbar() {
         <div className="container mx-auto flex justify-between items-center py-4">
           {/* Logo y Menú de Categorías */}
           <div className="flex items-center space-x-4">
-            <Link href={"/"} className="flex items-center">
-              <Image
-                src={logo}
-                alt="Muñoz Logo"
-                width={100}
-                height={40}
-                className="object-contain"
-              />
-            </Link>
+          <Link href="/" className="flex items-center">
+        <Image
+          src={logoUrl || "/fallback-logo.png"}
+          alt="Muñoz Logo"
+          width={100}
+          height={40}
+          className="object-contain"
+        />
+      </Link>
             <button
               className={`flex items-center font-bold ${
                 theme === "dark"
@@ -283,6 +302,17 @@ function Navbar() {
                                       }`}
                                     >
                                       Administrar Deslinde
+                                    </p>
+                                  </Link>
+                                  <Link href="/adminLogo">
+                                    <p
+                                      className={`mt-2 ${
+                                        theme === "dark"
+                                          ? "hover:text-yellow-400"
+                                          : "hover:text-green-700"
+                                      }`}
+                                    >
+                                      Administrar Logo
                                     </p>
                                   </Link>
                                 </div>
