@@ -235,7 +235,7 @@ function Navbar() {
                           {user?.role === "admin" && (
                             <div className="mt-4">
                               <button
-                                onClick={toggleAdminMenu}
+                                onClick={toggleDocumentAdminMenu}
                                 className={`w-full text-left font-semibold ${
                                   theme === "dark"
                                     ? "hover:text-yellow-400"

@@ -190,7 +190,7 @@ function RegisterPage() {
     event.preventDefault();
     setOnSubmitLoading(true); // Mostrar loading al enviar
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/signup`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

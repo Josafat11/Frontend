@@ -23,7 +23,7 @@ function AdminPage() {
   const fetchUsers = async () => {
     const token = localStorage.getItem('token');  // Obtiene el token del localStorage
       console.log("mando", token);
-      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/users`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/users`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,  // Incluye el token en el encabezado
@@ -41,7 +41,7 @@ function AdminPage() {
       const handleDelete = async (userId) => {
         const token = localStorage.getItem("token"); // Obtiene el token del localStorage
         try {
-          const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/users/${userId}`, {
+          const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/users/${userId}`, {
             method: "DELETE",
             headers: {
               Authorization: `Bearer ${token}`, // Incluye el token en el encabezado

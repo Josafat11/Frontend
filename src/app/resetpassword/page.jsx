@@ -1,11 +1,14 @@
 "use client"; // Para asegurar que es un componente del cliente
-//este es el que manda
+
 import { useState } from 'react';
+import { useAuth } from '../../context/authContext'; // Importar el contexto
 import { CONFIGURACIONES } from '../config/config';
+
 function RequestPasswordResetPage() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const { theme } = useAuth(); // Obtener el tema desde el contexto
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -20,7 +23,7 @@ function RequestPasswordResetPage() {
     }
 
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/send-reset-email`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/send-reset-email`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -39,8 +42,8 @@ function RequestPasswordResetPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+    <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+      <div className={`w-full max-w-md p-8 rounded-lg shadow-md ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
         <h2 className="text-2xl font-bold text-center mb-6">Restablecer Contraseña</h2>
         
         {message && (
@@ -53,13 +56,13 @@ function RequestPasswordResetPage() {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700">Correo electrónico</label>
+            <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Correo electrónico</label>
             <input
               type="email"
               placeholder="Ingresa tu correo electrónico"
               value={email}
               onChange={handleEmailChange}
-              className="w-full border border-gray-300 p-2 rounded-lg"
+              className={`w-full p-2 rounded-lg ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
               required
             />
           </div>

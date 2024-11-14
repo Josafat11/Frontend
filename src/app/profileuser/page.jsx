@@ -15,7 +15,7 @@ function UserProfile() {
     async function fetchUserData() {
       if (user) {  // Asegurarse de que el usuario esté autenticado y haya un ID
         try {
-          const response = await axios.get(`${CONFIGURACIONES.BASEURL3}/auth/users/${user.userId}`, {
+          const response = await axios.get(`${CONFIGURACIONES.BASEURL2}/auth/users/${user.userId}`, {
             withCredentials: true, // Incluir las cookies (credenciales) en la solicitud
           });
           setUserData(response.data);

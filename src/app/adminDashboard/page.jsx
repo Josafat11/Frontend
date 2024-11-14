@@ -21,7 +21,7 @@ function AdminDashboard() {
       const fetchRecentUsers = async () => {
         const token = localStorage.getItem('token');  // Obtén el token almacenado en localStorage
         console.log("mando", token);
-        const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/admin/recent-users`, {
+        const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/admin/recent-users`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,  // Incluye el token en el encabezado
@@ -35,7 +35,7 @@ function AdminDashboard() {
       
       const fetchBlockedUsers = async () => {
         const token = localStorage.getItem('token');  // Obtén el token almacenado en localStorage
-        const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/admin/recent-blocked`, {
+        const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/admin/recent-blocked`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,  // Incluye el token en el encabezado

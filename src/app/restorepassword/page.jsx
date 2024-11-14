@@ -22,7 +22,7 @@ function ResetPasswordPage({ params }) {
     }
 
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/reset-password/${token}`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/reset-password/${token}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

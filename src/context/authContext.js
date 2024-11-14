@@ -49,7 +49,7 @@ useEffect(() => {
   // Función para manejar el login en AuthProvider
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/login`, { 
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/login`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,7 +86,7 @@ useEffect(() => {
     }
 
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/check-session`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/check-session`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${storedToken}`

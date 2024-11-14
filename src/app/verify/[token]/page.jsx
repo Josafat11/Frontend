@@ -1,31 +1,19 @@
 "use client"; // Indicar que es un Client Component
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation'; // Uso del router para redirección
+import { useRouter, useParams } from 'next/navigation'; // Ajuste de `useParams` para obtener el token
 import { CONFIGURACIONES } from '../../config/config'; // Importar configuración
 
 export default function VerifyPage() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // Obtener los parámetros de la URL
+  const { token } = useParams(); // Obtener el token de los parámetros de la URL
   const [verificationStatus, setVerificationStatus] = useState(null); // Estado para el estado de verificación
   const [loading, setLoading] = useState(true); // Estado para mostrar el proceso de carga
-
-  // Verifica si hay un token en la URL y llama a la función de verificación
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const token = searchParams.get('token'); // Obtener el token de los parámetros de búsqueda
-      if (token) {
-        verifyToken(token); // Llamar a la función para verificar el token
-      } else {
-        setLoading(false); // Detener la carga si no hay token
-      }
-    }
-  }, [searchParams]);
 
   // Función para verificar el token con el backend
   const verifyToken = async (token) => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL3}/auth/verify/${token}`, {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/verify/${token}`, {
         method: 'GET',
       });
       const data = await response.json();
@@ -36,14 +24,25 @@ export default function VerifyPage() {
           router.push('/login'); // Redirigir al login después de unos segundos
         }, 2000);
       } else {
-        setVerificationStatus('error'); // Estado de error
+        setVerificationStatus(data.message || 'error'); // Estado de error
       }
     } catch (error) {
+      console.error("Error en la verificación:", error);
       setVerificationStatus('error'); // Estado de error en caso de excepción
     } finally {
       setLoading(false); // Detener la carga una vez que se obtenga la respuesta
     }
   };
+
+  // Ejecutar la verificación del token en cuanto se cargue el componente
+  useEffect(() => {
+    if (token) {
+      verifyToken(token);
+    } else {
+      setLoading(false); // Detener la carga si no hay token
+      setVerificationStatus('error');
+    }
+  }, [token]);
 
   // Contenido que se mostrará en la página según el estado de verificación
   return (
@@ -53,7 +52,7 @@ export default function VerifyPage() {
       ) : verificationStatus === 'success' ? (
         <p>¡Cuenta verificada exitosamente! Redirigiendo al login...</p>
       ) : (
-        <p>Error en la verificación. Por favor, intenta nuevamente.</p>
+        <p>{verificationStatus === 'error' ? "Error en la verificación. Por favor, intenta nuevamente." : verificationStatus}</p>
       )}
     </div>
   );
