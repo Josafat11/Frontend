@@ -4,9 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import CryptoJS from "crypto-js";
 import ReCAPTCHA from "react-google-recaptcha";
-import Swal from 'sweetalert2';
-import { useRouter } from 'next/navigation';
-import { CONFIGURACIONES } from '../config/config';
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
+import { CONFIGURACIONES } from "../config/config";
 
 function RegisterPage() {
   const [password, setPassword] = useState("");
@@ -22,7 +22,7 @@ function RegisterPage() {
   const [apellido, setApellido] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [preguntaSecreta, setPreguntaSecreta] = useState("");
+  const [preguntaSecreta, setPreguntaSecreta] = useState("default");
   const [respuestaSecreta, setRespuestaSecreta] = useState("");
 
   // Función para manejar el token generado por el CAPTCHA
@@ -189,6 +189,15 @@ function RegisterPage() {
   const onSubmit = async (event) => {
     event.preventDefault();
     setOnSubmitLoading(true); // Mostrar loading al enviar
+    if (preguntaSecreta === "default") {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Por favor selecciona una pregunta secreta válida.",
+      });
+      setOnSubmitLoading(false); // Detener loading
+      return;
+    }
     try {
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/signup`, {
         method: "POST",
@@ -207,7 +216,7 @@ function RegisterPage() {
           respuestaSecreta,
         }),
       });
-  
+
       const data = await response.json();
       if (response.ok) {
         Swal.fire({
@@ -216,7 +225,7 @@ function RegisterPage() {
           text: "¡Te has registrado con éxito!",
         }).then(() => {
           // Redireccionar al login después de que el usuario haga clic en "OK"
-          router.push('/login');
+          router.push("/login");
         });
       } else {
         Swal.fire({
@@ -235,7 +244,6 @@ function RegisterPage() {
       setOnSubmitLoading(false); // Dejar de mostrar loading
     }
   };
-  
 
   return (
     <div className="min-h-screen flex pt-28">
@@ -328,26 +336,28 @@ function RegisterPage() {
               )}
             </div>
 
-            {/* Pregunta Secreta */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Pregunta Secreta</label>
-                <select
-                  value={preguntaSecreta}
-                  onChange={(e) => setPreguntaSecreta(e.target.value)}
-                  className="w-full border border-gray-300 p-2 rounded-lg"
-                >
-                <option value="¿Cuál es el nombre de tu primera mascota?">
-                  ¿Cuál es el nombre de tu primera mascota?
-                </option>
-                <option value="¿Cuál es tu película favorita?">
-                  ¿Cuál es tu película favorita?
-                </option>
-                <option value="¿En qué ciudad naciste?">
-                  ¿En qué ciudad naciste?
-                </option>
-              </select>
-            </div>
-
+{/* Pregunta Secreta */}
+<div className="mb-4">
+  <label className="block text-gray-700">Pregunta Secreta</label>
+  <select
+    value={preguntaSecreta}
+    onChange={(e) => setPreguntaSecreta(e.target.value)}
+    className="w-full border border-gray-300 p-2 rounded-lg"
+  >
+    <option value="default" disabled>
+      Selecciona una pregunta secreta
+    </option>
+    <option value="¿Cuál es el nombre de tu primera mascota?">
+      ¿Cuál es el nombre de tu primera mascota?
+    </option>
+    <option value="¿Cuál es tu película favorita?">
+      ¿Cuál es tu película favorita?
+    </option>
+    <option value="¿En qué ciudad naciste?">
+      ¿En qué ciudad naciste?
+    </option>
+  </select>
+</div>
             {/* Respuesta Secreta */}
             <div className="mb-4">
               <label className="block text-gray-700">Respuesta Secreta</label>
