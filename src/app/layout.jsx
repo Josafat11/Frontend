@@ -6,6 +6,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "../context/authContext";
 import { LogoProvider } from "../context/LogoContext"; // Importa LogoProvider
+import { ToastContainer } from "react-toastify"; // Importa ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Importa los estilos
 
 // Definir los fonts como localFont
 const geistSans = localFont({
@@ -30,6 +32,7 @@ export default function RootLayout({ children }) {
             <Navbar />
             {children}
             <Footer />
+            <ToastContainer position="top-center" autoClose={3000} /> {/* Aquí */}
           </LogoProvider>
         </AuthProvider>
       </body>
