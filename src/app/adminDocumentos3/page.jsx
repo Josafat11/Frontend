@@ -74,7 +74,11 @@ function DeslindePage() {
 
   // Crear un nuevo deslinde
   const handleCreateDeslinde = async () => {
-    if (!newDeslinde.title || !newDeslinde.content || !newDeslinde.effectiveDate) {
+    if (
+      !newDeslinde.title ||
+      !newDeslinde.content ||
+      !newDeslinde.effectiveDate
+    ) {
       toast.error("Todos los campos son obligatorios.", {
         position: "top-center",
       });
@@ -91,14 +95,17 @@ function DeslindePage() {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/deslinde`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newDeslinde),
-      });
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/docs/deslinde`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newDeslinde),
+        }
+      );
 
       if (response.ok) {
         toast.success("Deslinde creado exitosamente.", {
@@ -253,14 +260,19 @@ function DeslindePage() {
                     ...editingDeslinde,
                     effectiveDate: e.target.value,
                   })
-                : setNewDeslinde({ ...newDeslinde, effectiveDate: e.target.value })
+                : setNewDeslinde({
+                    ...newDeslinde,
+                    effectiveDate: e.target.value,
+                  })
             }
             className="w-full border p-2 rounded-lg"
-            min={new Date().toISOString().split("T")[0]}
+            min={new Date().toISOString().split("T")[0]} // Fecha mínima: Hoy
           />
         </div>
         <button
-          onClick={editingDeslinde ? handleUpdateDeslinde : handleCreateDeslinde}
+          onClick={
+            editingDeslinde ? handleUpdateDeslinde : handleCreateDeslinde
+          }
           className="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600"
         >
           {editingDeslinde ? "Guardar Cambios" : "Crear Deslinde"}
@@ -303,27 +315,58 @@ function DeslindePage() {
           <tbody>
             {Array.isArray(deslindes) &&
               deslindes.map((deslinde) => (
-                <tr key={deslinde._id}>
-                  <td className="px-4 py-2">{deslinde.title}</td>
+                <tr
+                  key={deslinde._id}
+                  className={deslinde.isCurrent ? "bg-green-100" : ""} // Fondo verde claro si es el actual
+                >
+                  {/* Título con etiqueta "Actual" si aplica */}
+                  <td className="px-4 py-2">
+                    {deslinde.title}{" "}
+                    {deslinde.isCurrent && (
+                      <span className="text-green-500 font-semibold">
+                        (Actual)
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Fecha de creación */}
                   <td className="px-4 py-2">
                     {new Date(deslinde.createdAt).toLocaleDateString()}
                   </td>
+
+                  {/* Fecha de vigencia */}
                   <td className="px-4 py-2">
                     {new Date(deslinde.effectiveDate).toLocaleDateString()}
                   </td>
+
+                  {/* Acciones */}
                   <td className="px-4 py-2">
+                    {/* Botón Editar */}
                     <button
                       className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
                       onClick={() => setEditingDeslinde(deslinde)}
                     >
                       Editar
                     </button>
-                    <button
-                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
-                      onClick={() => handleSetCurrentDeslinde(deslinde._id)}
-                    >
-                      Establecer como Actual
-                    </button>
+
+                    {/* Botón Establecer como Actual o deshabilitado si ya es actual */}
+                    {deslinde.isCurrent ? (
+                      <button
+                        className="bg-gray-500 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
+                        disabled
+                      >
+                        Actual
+                      </button>
+                    ) : (
+                      <button
+                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                        onClick={() => handleSetCurrentDeslinde(deslinde._id)}
+                      >
+                        Establecer como Actual
+                      </button>
+                    )}
+
+                    {/* Botón Eliminar */}
                     <button
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                       onClick={() => handleDeleteDeslinde(deslinde._id)}

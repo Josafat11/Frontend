@@ -296,27 +296,58 @@ function TermsPage() {
           <tbody>
             {Array.isArray(terms) &&
               terms.map((term) => (
-                <tr key={term._id}>
-                  <td className="px-4 py-2">{term.title}</td>
+                <tr
+                  key={term._id}
+                  className={term.isCurrent ? "bg-green-100" : ""} // Fondo verde claro si es actual
+                >
+                  {/* Título con etiqueta "Actual" si aplica */}
+                  <td className="px-4 py-2">
+                    {term.title}{" "}
+                    {term.isCurrent && (
+                      <span className="text-green-500 font-semibold">
+                        (Actual)
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Fecha de creación */}
                   <td className="px-4 py-2">
                     {new Date(term.createdAt).toLocaleDateString()}
                   </td>
+
+                  {/* Fecha de vigencia */}
                   <td className="px-4 py-2">
                     {new Date(term.effectiveDate).toLocaleDateString()}
                   </td>
+
+                  {/* Acciones */}
                   <td className="px-4 py-2">
+                    {/* Botón Editar */}
                     <button
                       className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
                       onClick={() => setEditingTerms(term)}
                     >
                       Editar
                     </button>
-                    <button
-                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
-                      onClick={() => handleSetCurrentTerms(term._id)}
-                    >
-                      Establecer como Actual
-                    </button>
+
+                    {/* Botón Establecer como Actual o deshabilitado si ya es actual */}
+                    {term.isCurrent ? (
+                      <button
+                        className="bg-gray-500 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
+                        disabled
+                      >
+                        Actual
+                      </button>
+                    ) : (
+                      <button
+                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                        onClick={() => handleSetCurrentTerms(term._id)}
+                      >
+                        Establecer como Actual
+                      </button>
+                    )}
+
+                    {/* Botón Eliminar */}
                     <button
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                       onClick={() => handleDeleteTerms(term._id)}

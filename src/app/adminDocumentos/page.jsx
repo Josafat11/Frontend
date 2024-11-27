@@ -304,27 +304,58 @@ function PrivacyPolicyPage() {
           <tbody>
             {Array.isArray(policies) &&
               policies.map((policy) => (
-                <tr key={policy._id}>
-                  <td className="px-4 py-2">{policy.title}</td>
+                <tr
+                  key={policy._id}
+                  className={policy.isCurrent ? "bg-green-100" : ""} // Fondo verde claro si es actual
+                >
+                  {/* Título con etiqueta "Actual" si aplica */}
+                  <td className="px-4 py-2">
+                    {policy.title}{" "}
+                    {policy.isCurrent && (
+                      <span className="text-green-500 font-semibold">
+                        (Actual)
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Fecha de creación */}
                   <td className="px-4 py-2">
                     {new Date(policy.createdAt).toLocaleDateString()}
                   </td>
+
+                  {/* Fecha de vigencia */}
                   <td className="px-4 py-2">
                     {new Date(policy.effectiveDate).toLocaleDateString()}
                   </td>
+
+                  {/* Acciones */}
                   <td className="px-4 py-2">
+                    {/* Botón Editar */}
                     <button
                       className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
                       onClick={() => setEditingPolicy(policy)}
                     >
                       Editar
                     </button>
-                    <button
-                      className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
-                      onClick={() => handleSetCurrentPolicy(policy._id)}
-                    >
-                      Establecer como Actual
-                    </button>
+
+                    {/* Botón Establecer como Actual o deshabilitado si ya es actual */}
+                    {policy.isCurrent ? (
+                      <button
+                        className="bg-gray-500 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
+                        disabled
+                      >
+                        Actual
+                      </button>
+                    ) : (
+                      <button
+                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
+                        onClick={() => handleSetCurrentPolicy(policy._id)}
+                      >
+                        Establecer como Actual
+                      </button>
+                    )}
+
+                    {/* Botón Eliminar */}
                     <button
                       className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                       onClick={() => handleDeletePolicy(policy._id)}
