@@ -346,7 +346,7 @@ function Navbar() {
             </Link>
 
             <Link
-              href="/cart"
+              href="/ventaProducto"
               className={`flex flex-col items-center ${
                 theme === "dark"
                   ? "text-gray-200 hover:text-yellow-400"
@@ -354,7 +354,7 @@ function Navbar() {
               }`}
             >
               <FaShoppingCart className="w-6 h-6" />
-              <span className="text-sm">Mi Carrito</span>
+              <span className="text-sm">Producto</span>
             </Link>
 
             {/* Botón de alternancia de tema con iconos de sol/luna */}

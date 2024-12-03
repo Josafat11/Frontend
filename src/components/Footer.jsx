@@ -9,7 +9,7 @@ import {
   FaInstagram,
 } from "react-icons/fa"; // Importamos los íconos
 import Image from "next/image";
-import logo from "../assets/munoz-logo.png";
+import logo from "./../../public/assets/munoz-logo.png";
 
 function Footer() {
   return (
