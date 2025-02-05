@@ -103,15 +103,15 @@ function Navbar() {
         <div className="container mx-auto flex justify-between items-center py-4">
           {/* Logo y Menú de Categorías */}
           <div className="flex items-center space-x-4">
-          <Link href="/" className="flex items-center">
-        <Image
-          src={logoUrl || "/fallback-logo.png"}
-          alt="Muñoz Logo"
-          width={100}
-          height={40}
-          className="object-contain"
-        />
-      </Link>
+            <Link href="/" className="flex items-center">
+              <Image
+                src={logoUrl || "/fallback-logo.png"}
+                alt="Muñoz Logo"
+                width={100}
+                height={40}
+                className="object-contain"
+              />
+            </Link>
             <button
               className={`flex items-center font-bold ${
                 theme === "dark"
@@ -125,10 +125,15 @@ function Navbar() {
           </div>
 
           {/* Campo de Búsqueda */}
-          <div className="flex items-center w-1/2">
+          <form
+            action="/ventaProducto" // Redirige a la página de productos
+            method="GET" // Usa el método GET para pasar el parámetro en la URL
+            className="flex items-center w-1/2"
+          >
             <input
               type="text"
-              placeholder="Buscar productos por número de parte"
+              name="search" // Nombre del parámetro que se enviará en la URL
+              placeholder="Buscar producto"
               className={`w-full px-4 py-2 rounded-l-lg focus:outline-none ${
                 theme === "dark"
                   ? "bg-gray-800 border-gray-700 text-gray-200"
@@ -136,6 +141,7 @@ function Navbar() {
               }`}
             />
             <button
+              type="submit" // Botón para enviar el formulario
               className={`px-4 py-2 rounded-r-lg ${
                 theme === "dark"
                   ? "bg-yellow-500 text-gray-900"
@@ -144,7 +150,7 @@ function Navbar() {
             >
               <FiSearch className="w-5 h-5" />
             </button>
-          </div>
+          </form>
 
           {/* Íconos de Usuario, Cotizador, Carrito y Menú */}
           <div className="flex items-center space-x-6">

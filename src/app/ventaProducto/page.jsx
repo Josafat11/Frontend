@@ -3,17 +3,31 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/authContext";
 import { CONFIGURACIONES } from "../config/config";
+import { useSearchParams } from "next/navigation";
+import Breadcrumbs from "../../components/Breadcrumbs"; // Importa el componente Breadcrumbs
 
 function ProductosPage() {
   const { user, isAuthenticated, theme } = useAuth();
   const [productos, setProductos] = useState([]);
   const [busquedaGeneral, setBusquedaGeneral] = useState("");
   const [filtroCategoria, setFiltroCategoria] = useState("");
-  const [filtroPrecioMin, setFiltroPrecioMin] = useState("");
-  const [filtroPrecioMax, setFiltroPrecioMax] = useState("");
-  const [filtroRating, setFiltroRating] = useState("");
+  const [filtroRangoPrecio, setFiltroRangoPrecio] = useState("");
+  const [filtroMarca, setFiltroMarca] = useState("");
+  const [filtroModelo, setFiltroModelo] = useState("");
+  const [filtroAnio, setFiltroAnio] = useState("");
+  const [filtroStock, setFiltroStock] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Captura el parámetro de búsqueda de la URL
+  const searchParams = useSearchParams();
+  const searchTerm = searchParams.get("search");
+
+  useEffect(() => {
+    if (searchTerm) {
+      setBusquedaGeneral(searchTerm);
+    }
+  }, [searchTerm]);
 
   // Obtener todos los productos al cargar la página
   useEffect(() => {
@@ -41,10 +55,8 @@ function ProductosPage() {
       }
     };
 
-    if (isAuthenticated) {
-      fetchProductos();
-    }
-  }, [isAuthenticated]);
+    fetchProductos();
+  }, []);
 
   // Filtrar productos
   const productosFiltrados = productos.filter((producto) => {
@@ -54,20 +66,46 @@ function ProductosPage() {
       producto.description.toLowerCase().includes(busquedaGeneral.toLowerCase()) ||
       producto.category.toLowerCase().includes(busquedaGeneral.toLowerCase());
 
+    const coincideConCategoria =
+      filtroCategoria === "" || producto.category === filtroCategoria;
+
+    const coincideConRangoPrecio =
+      filtroRangoPrecio === "" ||
+      (filtroRangoPrecio === "hasta400" && producto.price <= 400) ||
+      (filtroRangoPrecio === "400a1000" && producto.price > 400 && producto.price <= 1000) ||
+      (filtroRangoPrecio === "mas1000" && producto.price > 1000);
+
+    const coincideConMarca =
+      filtroMarca === "" ||
+      producto.compatibility.some((comp) => comp.make.toLowerCase().includes(filtroMarca.toLowerCase()));
+
+    const coincideConModelo =
+      filtroModelo === "" ||
+      producto.compatibility.some((comp) => comp.model.toLowerCase().includes(filtroModelo.toLowerCase()));
+
+    const coincideConAnio =
+      filtroAnio === "" ||
+      producto.compatibility.some((comp) => comp.year === parseInt(filtroAnio));
+
+    const coincideConStock =
+      filtroStock === "" || producto.stock >= parseInt(filtroStock);
+
     return (
       coincideConBusquedaGeneral &&
-      (filtroCategoria === "" || producto.category === filtroCategoria) &&
-      (filtroPrecioMin === "" || producto.price >= parseFloat(filtroPrecioMin)) &&
-      (filtroPrecioMax === "" || producto.price <= parseFloat(filtroPrecioMax)) &&
-      (filtroRating === "" || producto.rating >= parseFloat(filtroRating))
+      coincideConCategoria &&
+      coincideConRangoPrecio &&
+      coincideConMarca &&
+      coincideConModelo &&
+      coincideConAnio &&
+      coincideConStock
     );
   });
 
-  // Redirigir a login si no está autenticado
-  if (!isAuthenticated) {
-    window.location.href = "/login";
-    return null;
-  }
+  // Definir las migajas de pan
+  const breadcrumbsPages = [
+    { name: "Home", path: "/" },
+    { name: "Productos", path: null }, // Sin enlace porque es la página actual
+  ];
 
   return (
     <div
@@ -75,169 +113,193 @@ function ProductosPage() {
         theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
       }`}
     >
+      {/* Migajas de pan */}
+      <Breadcrumbs pages={breadcrumbsPages} />
+
       <h1 className="text-3xl font-bold text-center mb-8">Productos</h1>
 
-      {/* Buscador general */}
-      <div
-        className={`shadow-md rounded-lg overflow-hidden p-6 mb-8 ${
-          theme === "dark"
-            ? "bg-gray-800 text-gray-100"
-            : "bg-white text-gray-900"
-        }`}
-      >
-        <h2 className="text-2xl font-bold mb-4">Buscar Productos</h2>
-        <div className="flex items-center">
-          <input
-            type="text"
-            placeholder="Buscar productos..."
-            value={busquedaGeneral}
-            onChange={(e) => setBusquedaGeneral(e.target.value)}
-            className={`w-full border p-2 rounded-lg ${
+      <div className="flex flex-col md:flex-row gap-8">
+        {/* Filtros en la izquierda */}
+        <div className="w-full md:w-1/4">
+          <div
+            className={`shadow-md rounded-lg overflow-hidden p-6 mb-8 ${
               theme === "dark"
-                ? "bg-gray-700 border-gray-600 text-gray-200"
-                : "border-gray-300"
-            }`}
-          />
-          <button
-            className={`ml-2 p-2 rounded-lg ${
-              theme === "dark"
-                ? "bg-gray-700 text-gray-200"
-                : "bg-gray-200 text-gray-900"
+                ? "bg-gray-800 text-gray-100"
+                : "bg-white text-gray-900"
             }`}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            <h2 className="text-2xl font-bold mb-4">Filtrar Productos</h2>
+
+            {/* Buscador general */}
+            <div className="mb-6">
+              <label className="block mb-2">Buscar</label>
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={busquedaGeneral}
+                onChange={(e) => setBusquedaGeneral(e.target.value)}
+                className={`w-full border p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-gray-200"
+                    : "border-gray-300"
+                }`}
               />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Filtros */}
-      <div
-        className={`shadow-md rounded-lg overflow-hidden p-6 mb-8 ${
-          theme === "dark"
-            ? "bg-gray-800 text-gray-100"
-            : "bg-white text-gray-900"
-        }`}
-      >
-        <h2 className="text-2xl font-bold mb-4">Filtrar Productos</h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Filtro por categoría */}
-          <div>
-            <label className="block mb-2">Categoría</label>
-            <select
-              value={filtroCategoria}
-              onChange={(e) => setFiltroCategoria(e.target.value)}
-              className={`w-full border p-2 rounded-lg ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-gray-200"
-                  : "border-gray-300"
-              }`}
-            >
-              <option value="">Todas</option>
-              <option value="Electrónica">Electrónica</option>
-              <option value="Ropa">Ropa</option>
-              <option value="Hogar">Hogar</option>
-              <option value="Juguetes">Juguetes</option>
-              <option value="Otros">Otros</option>
-            </select>
-          </div>
-
-          {/* Filtro por precio mínimo */}
-          <div>
-            <label className="block mb-2">Precio Mínimo</label>
-            <input
-              type="number"
-              placeholder="Mínimo"
-              value={filtroPrecioMin}
-              onChange={(e) => setFiltroPrecioMin(e.target.value)}
-              className={`w-full border p-2 rounded-lg ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-gray-200"
-                  : "border-gray-300"
-              }`}
-            />
-          </div>
-
-          {/* Filtro por precio máximo */}
-          <div>
-            <label className="block mb-2">Precio Máximo</label>
-            <input
-              type="number"
-              placeholder="Máximo"
-              value={filtroPrecioMax}
-              onChange={(e) => setFiltroPrecioMax(e.target.value)}
-              className={`w-full border p-2 rounded-lg ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-gray-200"
-                  : "border-gray-300"
-              }`}
-            />
-          </div>
-
-          {/* Filtro por rating */}
-          <div>
-            <label className="block mb-2">Rating Mínimo</label>
-            <input
-              type="number"
-              placeholder="Rating mínimo"
-              value={filtroRating}
-              onChange={(e) => setFiltroRating(e.target.value)}
-              className={`w-full border p-2 rounded-lg ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-gray-200"
-                  : "border-gray-300"
-              }`}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Lista de productos */}
-      {isLoading ? (
-        <p className="text-center">Cargando productos...</p>
-      ) : error ? (
-        <p className="text-center text-red-500">{error}</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {productosFiltrados.map((producto) => (
-            <div
-              key={producto._id}
-              className={`shadow-md rounded-lg overflow-hidden ${
-                theme === "dark"
-                  ? "bg-gray-800 text-gray-100"
-                  : "bg-white text-gray-900"
-              }`}
-            >
-              <img
-                src={producto.image}
-                alt={producto.name}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h2 className="text-xl font-bold mb-2">{producto.name}</h2>
-                <p className="text-sm mb-2">{producto.description}</p>
-                <p className="text-lg font-bold">${producto.price}</p>
-                <p className="text-sm">Categoría: {producto.category}</p>
-                <p className="text-sm">Stock: {producto.stock}</p>
-                <p className="text-sm">Rating: {producto.rating}</p>
-              </div>
             </div>
-          ))}
+
+            {/* Filtro por categoría */}
+            <div className="mb-6">
+              <label className="block mb-2">Categoría</label>
+              <select
+                value={filtroCategoria}
+                onChange={(e) => setFiltroCategoria(e.target.value)}
+                className={`w-full border p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-gray-200"
+                    : "border-gray-300"
+                }`}
+              >
+                <option value="">Todas</option>
+                <option value="Motor">Motor</option>
+                <option value="Frenos">Frenos</option>
+                <option value="Suspensión">Suspensión</option>
+                <option value="Transmisión">Transmisión</option>
+                <option value="Eléctrico">Eléctrico</option>
+                <option value="Accesorios">Accesorios</option>
+                <option value="Lubricantes">Lubricantes</option>
+                <option value="Filtros">Filtros</option>
+                <option value="Otros">Otros</option>
+              </select>
+            </div>
+
+            {/* Filtro por rango de precio */}
+            <div className="mb-6">
+              <label className="block mb-2">Rango de Precio</label>
+              <select
+                value={filtroRangoPrecio}
+                onChange={(e) => setFiltroRangoPrecio(e.target.value)}
+                className={`w-full border p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-gray-200"
+                    : "border-gray-300"
+                }`}
+              >
+                <option value="">Todos</option>
+                <option value="hasta400">Hasta $400</option>
+                <option value="400a1000">$400 a $1,000</option>
+                <option value="mas1000">Más de $1,000</option>
+              </select>
+            </div>
+
+            {/* Filtro por marca */}
+            <div className="mb-6">
+              <label className="block mb-2">Marca</label>
+              <input
+                type="text"
+                placeholder="Marca"
+                value={filtroMarca}
+                onChange={(e) => setFiltroMarca(e.target.value)}
+                className={`w-full border p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-gray-200"
+                    : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* Filtro por modelo */}
+            <div className="mb-6">
+              <label className="block mb-2">Modelo</label>
+              <input
+                type="text"
+                placeholder="Modelo"
+                value={filtroModelo}
+                onChange={(e) => setFiltroModelo(e.target.value)}
+                className={`w-full border p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-gray-200"
+                    : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* Filtro por año */}
+            <div className="mb-6">
+              <label className="block mb-2">Año</label>
+              <input
+                type="number"
+                placeholder="Año"
+                value={filtroAnio}
+                onChange={(e) => setFiltroAnio(e.target.value)}
+                className={`w-full border p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-gray-200"
+                    : "border-gray-300"
+                }`}
+              />
+            </div>
+
+            {/* Filtro por stock */}
+            <div className="mb-6">
+              <label className="block mb-2">Stock Mínimo</label>
+              <input
+                type="number"
+                placeholder="Stock mínimo"
+                value={filtroStock}
+                onChange={(e) => setFiltroStock(e.target.value)}
+                className={`w-full border p-2 rounded-lg ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-gray-200"
+                    : "border-gray-300"
+                }`}
+              />
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Lista de productos en la derecha */}
+        <div className="w-full md:w-3/4">
+          {isLoading ? (
+            <p className="text-center">Cargando productos...</p>
+          ) : error ? (
+            <p className="text-center text-red-500">{error}</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {productosFiltrados.map((producto) => (
+                <div
+                  key={producto._id}
+                  className={`shadow-md rounded-lg overflow-hidden ${
+                    theme === "dark"
+                      ? "bg-gray-800 text-gray-100"
+                      : "bg-white text-gray-900"
+                  }`}
+                >
+                  <img
+                    src={producto.image}
+                    alt={producto.name}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4">
+                    <h2 className="text-xl font-bold mb-2">{producto.name}</h2>
+                    <p className="text-sm mb-2">{producto.description}</p>
+                    <p className="text-lg font-bold">${producto.price}</p>
+                    <p className="text-sm">Categoría: {producto.category}</p>
+                    <p className="text-sm">Stock: {producto.stock}</p>
+                    <p className="text-sm">Marca: {producto.brand}</p>
+                    <p className="text-sm">Compatibilidad:</p>
+                    <ul className="text-sm">
+                      {producto.compatibility.map((comp, index) => (
+                        <li key={index}>
+                          {comp.make} {comp.model} ({comp.year})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

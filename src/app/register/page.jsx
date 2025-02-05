@@ -182,13 +182,39 @@ function RegisterPage() {
     }
   };
 
+  const validarNombreApellido = (valor) => {
+    const regex = /^[A-Za-zÁáÉéÍíÓóÚúÜüÑñ\s]+$/; // Expresión regular para solo letras y espacios
+    return valor.length > 3 && regex.test(valor);
+  };
+
   // Función para manejar el envío del formulario al backend
   const router = useRouter(); // Inicializa el hook de enrutamiento
 
   // Función para manejar el envío del formulario al backend
   const onSubmit = async (event) => {
     event.preventDefault();
+
+    // Validar nombre y apellido
+    if (!validarNombreApellido(nombre)) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "El nombre debe tener más de 3 caracteres y solo contener letras.",
+      });
+      return;
+    }
+
+    if (!validarNombreApellido(apellido)) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "El apellido debe tener más de 3 caracteres y solo contener letras.",
+      });
+      return;
+    }
+
     setOnSubmitLoading(true); // Mostrar loading al enviar
+
     if (preguntaSecreta === "default") {
       Swal.fire({
         icon: "error",
@@ -198,6 +224,7 @@ function RegisterPage() {
       setOnSubmitLoading(false); // Detener loading
       return;
     }
+
     try {
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/signup`, {
         method: "POST",
@@ -271,9 +298,14 @@ function RegisterPage() {
                 onChange={(e) => setNombre(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
+              {nombre && !validarNombreApellido(nombre) && (
+                <p className="text-red-500 text-sm">
+                  El nombre debe tener más de 3 caracteres y solo contener
+                  letras.
+                </p>
+              )}
             </div>
 
-            {/* Apellido */}
             <div className="mb-4">
               <label className="block text-gray-700">Apellido</label>
               <input
@@ -283,6 +315,12 @@ function RegisterPage() {
                 onChange={(e) => setApellido(e.target.value)}
                 className="w-full border border-gray-300 p-2 rounded-lg"
               />
+              {apellido && !validarNombreApellido(apellido) && (
+                <p className="text-red-500 text-sm">
+                  El apellido debe tener más de 3 caracteres y solo contener
+                  letras.
+                </p>
+              )}
             </div>
 
             {/* Correo Electrónico */}
@@ -336,28 +374,28 @@ function RegisterPage() {
               )}
             </div>
 
-{/* Pregunta Secreta */}
-<div className="mb-4">
-  <label className="block text-gray-700">Pregunta Secreta</label>
-  <select
-    value={preguntaSecreta}
-    onChange={(e) => setPreguntaSecreta(e.target.value)}
-    className="w-full border border-gray-300 p-2 rounded-lg"
-  >
-    <option value="default" disabled>
-      Selecciona una pregunta secreta
-    </option>
-    <option value="¿Cuál es el nombre de tu primera mascota?">
-      ¿Cuál es el nombre de tu primera mascota?
-    </option>
-    <option value="¿Cuál es tu película favorita?">
-      ¿Cuál es tu película favorita?
-    </option>
-    <option value="¿En qué ciudad naciste?">
-      ¿En qué ciudad naciste?
-    </option>
-  </select>
-</div>
+            {/* Pregunta Secreta */}
+            <div className="mb-4">
+              <label className="block text-gray-700">Pregunta Secreta</label>
+              <select
+                value={preguntaSecreta}
+                onChange={(e) => setPreguntaSecreta(e.target.value)}
+                className="w-full border border-gray-300 p-2 rounded-lg"
+              >
+                <option value="default" disabled>
+                  Selecciona una pregunta secreta
+                </option>
+                <option value="¿Cuál es el nombre de tu primera mascota?">
+                  ¿Cuál es el nombre de tu primera mascota?
+                </option>
+                <option value="¿Cuál es tu película favorita?">
+                  ¿Cuál es tu película favorita?
+                </option>
+                <option value="¿En qué ciudad naciste?">
+                  ¿En qué ciudad naciste?
+                </option>
+              </select>
+            </div>
             {/* Respuesta Secreta */}
             <div className="mb-4">
               <label className="block text-gray-700">Respuesta Secreta</label>
