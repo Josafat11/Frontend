@@ -25,43 +25,42 @@ function DeslindePage() {
 
   // Obtener todos los deslindes
   const fetchDeslindes = async () => {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/deslinde`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/deslinde`, {
+        method: "GET",
+        credentials: "include", // Enviar cookie con el token
+      });
+      const data = await response.json();
 
-    if (Array.isArray(data)) {
-      setDeslindes(data);
-    } else {
-      setDeslindes([]);
-      console.error("La respuesta no es un array:", data);
+      if (Array.isArray(data)) {
+        setDeslindes(data);
+      } else {
+        setDeslindes([]);
+        console.error("La respuesta no es un array:", data);
+      }
+    } catch (error) {
+      console.error("Error al obtener los deslindes:", error);
     }
   };
 
   // Obtener el deslinde actual
   const fetchCurrentDeslinde = async () => {
-    const token = localStorage.getItem("token");
-    const response = await fetch(
-      `${CONFIGURACIONES.BASEURL2}/docs/deslinde/current`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+    try {
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/docs/deslinde/current`,
+        {
+          method: "GET",
+          credentials: "include", // Cookie
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentDeslinde(data);
+      } else {
+        console.error("Error al obtener el deslinde actual");
       }
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      setCurrentDeslinde(data);
-    } else {
-      console.error("Error al obtener el deslinde actual");
+    } catch (error) {
+      console.error("Error al obtener el deslinde actual:", error);
     }
   };
 
@@ -94,18 +93,14 @@ function DeslindePage() {
     }
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/deslinde`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(newDeslinde),
-        }
-      );
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/deslinde`, {
+        method: "POST",
+        credentials: "include", // Cookie
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newDeslinde),
+      });
 
       if (response.ok) {
         toast.success("Deslinde creado exitosamente.", {
@@ -125,14 +120,13 @@ function DeslindePage() {
 
   // Actualizar un deslinde existente
   const handleUpdateDeslinde = async () => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/deslinde/${editingDeslinde._id}`,
+        `${CONFIGURACIONES.BASEURL2}/docs/deslinde/${editingDeslinde.id}`,
         {
           method: "PUT",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(editingDeslinde),
@@ -150,14 +144,13 @@ function DeslindePage() {
 
   // Eliminar un deslinde
   const handleDeleteDeslinde = async (id) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/docs/deslinde/${id}`,
         {
           method: "DELETE",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -173,14 +166,13 @@ function DeslindePage() {
 
   // Establecer un deslinde como actual
   const handleSetCurrentDeslinde = async (id) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/docs/deslinde/${id}/set-current`,
         {
           method: "PUT",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -195,190 +187,158 @@ function DeslindePage() {
   };
 
   return (
-    <div
-      className={`container mx-auto py-8 pt-36 ${
-        theme === "dark"
-          ? "bg-gray-900 text-gray-100"
-          : "bg-white text-gray-900"
-      }`}
-    >
-      <h1 className="text-3xl font-bold text-center mb-8">
+    <div className="container mx-auto py-8 pt-36">
+      <h1 className="text-3xl font-bold mb-8 text-center pt-10">
         Gestión de Deslinde de Responsabilidad
       </h1>
 
-      {/* Crear o editar deslinde */}
-      <div className="shadow-md rounded-lg overflow-hidden p-6 mb-8">
-        <h2 className="text-2xl font-bold mb-4">
-          {editingDeslinde ? "Editar Deslinde" : "Crear Nuevo Deslinde"}
-        </h2>
-        <div className="mb-4">
-          <label className="block mb-2">Título</label>
-          <input
-            type="text"
-            value={editingDeslinde ? editingDeslinde.title : newDeslinde.title}
-            onChange={(e) =>
-              editingDeslinde
-                ? setEditingDeslinde({
-                    ...editingDeslinde,
-                    title: e.target.value,
-                  })
-                : setNewDeslinde({ ...newDeslinde, title: e.target.value })
-            }
-            className="w-full border p-2 rounded-lg"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Contenido</label>
-          <textarea
-            value={
-              editingDeslinde ? editingDeslinde.content : newDeslinde.content
-            }
-            onChange={(e) =>
-              editingDeslinde
-                ? setEditingDeslinde({
-                    ...editingDeslinde,
-                    content: e.target.value,
-                  })
-                : setNewDeslinde({ ...newDeslinde, content: e.target.value })
-            }
-            className="w-full border p-2 rounded-lg"
-            rows="6"
-          ></textarea>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Fecha de Vigencia</label>
-          <input
-            type="date"
-            value={
-              editingDeslinde
-                ? editingDeslinde.effectiveDate
-                : newDeslinde.effectiveDate
-            }
-            onChange={(e) =>
-              editingDeslinde
-                ? setEditingDeslinde({
-                    ...editingDeslinde,
-                    effectiveDate: e.target.value,
-                  })
-                : setNewDeslinde({
-                    ...newDeslinde,
-                    effectiveDate: e.target.value,
-                  })
-            }
-            className="w-full border p-2 rounded-lg"
-            min={new Date().toISOString().split("T")[0]} // Fecha mínima: Hoy
-          />
-        </div>
-        <button
-          onClick={
-            editingDeslinde ? handleUpdateDeslinde : handleCreateDeslinde
+      {/* Formulario para crear nuevo deslinde */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Crear Nuevo Deslinde</h2>
+        <input
+          type="text"
+          className="border p-2 mb-2 w-full"
+          placeholder="Título"
+          value={newDeslinde.title}
+          onChange={(e) =>
+            setNewDeslinde({ ...newDeslinde, title: e.target.value })
           }
-          className="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600"
+        />
+        <textarea
+          className="border p-2 mb-2 w-full"
+          placeholder="Contenido"
+          value={newDeslinde.content}
+          onChange={(e) =>
+            setNewDeslinde({ ...newDeslinde, content: e.target.value })
+          }
+        />
+        <input
+          type="date"
+          className="border p-2 mb-2 w-full"
+          value={newDeslinde.effectiveDate}
+          onChange={(e) =>
+            setNewDeslinde({ ...newDeslinde, effectiveDate: e.target.value })
+          }
+        />
+        <button
+          className="bg-green-600 text-white px-4 py-2 rounded"
+          onClick={handleCreateDeslinde}
         >
-          {editingDeslinde ? "Guardar Cambios" : "Crear Deslinde"}
+          Crear
         </button>
       </div>
 
-      {/* Mostrar el deslinde actual */}
-      {currentDeslinde && (
-        <div className="mb-8 shadow-md rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Deslinde Actual</h2>
-          <p>
-            <strong>Título:</strong> {currentDeslinde.title}
-          </p>
-          <p>
-            <strong>Contenido:</strong> {currentDeslinde.content}
-          </p>
-          <p>
-            <strong>Fecha de Creación:</strong>{" "}
-            {new Date(currentDeslinde.createdAt).toLocaleDateString()}
-          </p>
-          <p>
-            <strong>Fecha de Vigencia:</strong>{" "}
-            {new Date(currentDeslinde.effectiveDate).toLocaleDateString()}
-          </p>
-        </div>
-      )}
-
-      {/* Listar deslindes */}
-      <div className="shadow-md rounded-lg overflow-hidden p-6">
-        <h2 className="text-2xl font-bold mb-4">Listado de Deslindes</h2>
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Título</th>
-              <th className="px-4 py-2">Fecha de Creación</th>
-              <th className="px-4 py-2">Fecha de Vigencia</th>
-              <th className="px-4 py-2">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(deslindes) &&
-              deslindes.map((deslinde) => (
-                <tr
-                  key={deslinde._id}
-                  className={deslinde.isCurrent ? "bg-green-100" : ""} // Fondo verde claro si es el actual
-                >
-                  {/* Título con etiqueta "Actual" si aplica */}
-                  <td className="px-4 py-2">
-                    {deslinde.title}{" "}
-                    {deslinde.isCurrent && (
-                      <span className="text-green-500 font-semibold">
-                        (Actual)
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Fecha de creación */}
-                  <td className="px-4 py-2">
-                    {new Date(deslinde.createdAt).toLocaleDateString()}
-                  </td>
-
-                  {/* Fecha de vigencia */}
-                  <td className="px-4 py-2">
-                    {new Date(deslinde.effectiveDate).toLocaleDateString()}
-                  </td>
-
-                  {/* Acciones */}
-                  <td className="px-4 py-2">
-                    {/* Botón Editar */}
+      {/* Listado de deslindes */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Lista de Deslindes</h2>
+        {deslindes.length > 0 ? (
+          deslindes.map((des) => (
+            <div key={des.id} className="border p-4 mb-2">
+              {editingDeslinde && editingDeslinde.id === des.id ? (
+                <>
+                  <input
+                    type="text"
+                    className="border p-2 mb-2 w-full"
+                    value={editingDeslinde.title}
+                    onChange={(e) =>
+                      setEditingDeslinde({
+                        ...editingDeslinde,
+                        title: e.target.value,
+                      })
+                    }
+                  />
+                  <textarea
+                    className="border p-2 mb-2 w-full"
+                    value={editingDeslinde.content}
+                    onChange={(e) =>
+                      setEditingDeslinde({
+                        ...editingDeslinde,
+                        content: e.target.value,
+                      })
+                    }
+                  />
+                  <input
+                    type="date"
+                    className="border p-2 mb-2 w-full"
+                    value={editingDeslinde.effectiveDate?.split("T")[0] || ""}
+                    onChange={(e) =>
+                      setEditingDeslinde({
+                        ...editingDeslinde,
+                        effectiveDate: e.target.value,
+                      })
+                    }
+                  />
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                    onClick={handleUpdateDeslinde}
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    className="bg-gray-300 text-black px-4 py-2 rounded"
+                    onClick={() => setEditingDeslinde(null)}
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-bold text-lg">{des.title}</h3>
+                  <p>{des.content}</p>
+                  <p>
+                    <strong>Vigencia:</strong>{" "}
+                    {new Date(des.effectiveDate).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Actual:</strong> {des.isCurrent ? "Sí" : "No"}
+                  </p>
+                  <div className="mt-2">
                     <button
-                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
-                      onClick={() => setEditingDeslinde(deslinde)}
+                      className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
+                      onClick={() => setEditingDeslinde(des)}
                     >
                       Editar
                     </button>
-
-                    {/* Botón Establecer como Actual o deshabilitado si ya es actual */}
-                    {deslinde.isCurrent ? (
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                      onClick={() => handleDeleteDeslinde(des.id)}
+                    >
+                      Eliminar
+                    </button>
+                    {!des.isCurrent && (
                       <button
-                        className="bg-gray-500 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
-                        disabled
-                      >
-                        Actual
-                      </button>
-                    ) : (
-                      <button
-                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
-                        onClick={() => handleSetCurrentDeslinde(deslinde._id)}
+                        className="bg-green-600 text-white px-4 py-2 rounded"
+                        onClick={() => handleSetCurrentDeslinde(des.id)}
                       >
                         Establecer como Actual
                       </button>
                     )}
-
-                    {/* Botón Eliminar */}
-                    <button
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                      onClick={() => handleDeleteDeslinde(deslinde._id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+                  </div>
+                </>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No hay deslindes disponibles</p>
+        )}
       </div>
+
+      {/* Deslinde actual */}
+      {currentDeslinde && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">
+            Deslinde Actual
+          </h2>
+          <div className="border p-4">
+            <h3 className="font-bold text-lg">{currentDeslinde.title}</h3>
+            <p>{currentDeslinde.content}</p>
+            <p>
+              <strong>Vigencia:</strong>{" "}
+              {new Date(currentDeslinde.effectiveDate).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

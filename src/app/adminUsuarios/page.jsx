@@ -7,52 +7,45 @@ import { CONFIGURACIONES } from "../config/config";
 
 function AdminPage() {
   const { user, isAuthenticated } = useAuth();
-  const [users, setUsers] = useState([]); // Inicializar como un arreglo vacío
+  const [users, setUsers] = useState([]);
 
+  // Verificar si el usuario es admin; si no, redirigir manualmente
   useEffect(() => {
-    // Verificar si el usuario es admin, si no redirigir manualmente
     if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login"; // Redirige manualmente
+      window.location.href = "/login";
     }
   }, [isAuthenticated, user]);
 
+  // Cargar la lista de usuarios si es admin
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
       const fetchUsers = async () => {
-        const token = localStorage.getItem("token"); // Obtiene el token del localStorage
-        console.log("mando", token);
-        const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/users`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Solo si usas cookies
-        });
-        const data = await response.json();
-        setUsers(data);
+        try {
+          const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/users`, {
+            method: "GET",
+            credentials: "include", // Enviar la cookie con el token
+          });
+          const data = await response.json();
+          setUsers(data);
+        } catch (error) {
+          console.error("Error al obtener usuarios:", error);
+        }
       };
       fetchUsers();
     }
   }, [isAuthenticated, user]);
 
+  // Eliminar usuario
   const handleDelete = async (userId) => {
-    const token = localStorage.getItem("token"); // Obtiene el token del localStorage
     try {
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/auth/users/${userId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`, // Incluye el token en el encabezado
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      );
-
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/users/${userId}`, {
+        method: "DELETE",
+        credentials: "include", // Enviar la cookie
+      });
       if (response.ok) {
-        setUsers(users.filter((user) => user._id !== userId)); // Elimina el usuario de la lista
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+      } else {
+        console.error("Error al eliminar el usuario:", await response.text());
       }
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
@@ -80,7 +73,7 @@ function AdminPage() {
           <tbody>
             {users.length > 0 ? (
               users.map((user) => (
-                <tr key={user._id}>
+                <tr key={user.id}>
                   <td className="px-4 py-2 border">{user.name}</td>
                   <td className="px-4 py-2 border">{user.email}</td>
                   <td className="px-4 py-2 border capitalize">{user.role}</td>
@@ -88,7 +81,7 @@ function AdminPage() {
                     {user.role !== "admin" && (
                       <button
                         className="bg-red-500 text-white py-1 px-4 rounded hover:bg-red-600 mr-2"
-                        onClick={() => handleDelete(user._id)}
+                        onClick={() => handleDelete(user.id)}
                       >
                         Eliminar
                       </button>

@@ -17,6 +17,7 @@ function TermsPage() {
   });
   const [editingTerms, setEditingTerms] = useState(null);
 
+  // Verificar si el usuario es admin; si no, redirigir
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "admin") {
       window.location.href = "/login";
@@ -25,46 +26,45 @@ function TermsPage() {
 
   // Obtener todos los términos
   const fetchTerms = async () => {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/terms`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-
-    if (Array.isArray(data)) {
-      setTerms(data);
-    } else {
-      setTerms([]);
-      console.error("La respuesta no es un array:", data);
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/terms`, {
+        method: "GET",
+        credentials: "include", // Enviar cookie con el token
+      });
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setTerms(data);
+      } else {
+        setTerms([]);
+        console.error("La respuesta no es un array:", data);
+      }
+    } catch (error) {
+      console.error("Error al obtener términos:", error);
     }
   };
 
   // Obtener los términos actuales
   const fetchCurrentTerms = async () => {
-    const token = localStorage.getItem("token");
-    const response = await fetch(
-      `${CONFIGURACIONES.BASEURL2}/docs/terms/current`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+    try {
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/docs/terms/current`,
+        {
+          method: "GET",
+          credentials: "include", // Enviar cookie con el token
+        }
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentTerms(data);
+      } else {
+        console.error("Error al obtener los términos actuales");
       }
-    );
-
-    if (response.ok) {
-      const data = await response.json();
-      setCurrentTerms(data);
-    } else {
-      console.error("Error al obtener los términos actuales");
+    } catch (error) {
+      console.error("Error al obtener términos actuales:", error);
     }
   };
 
+  // Cargar datos iniciales si es admin
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
       fetchTerms();
@@ -90,11 +90,10 @@ function TermsPage() {
     }
 
     try {
-      const token = localStorage.getItem("token");
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/docs/terms`, {
         method: "POST",
+        credentials: "include", // Cookie
         headers: {
-          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(newTerms),
@@ -118,14 +117,13 @@ function TermsPage() {
 
   // Actualizar términos existentes
   const handleUpdateTerms = async () => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/terms/${editingTerms._id}`,
+        `${CONFIGURACIONES.BASEURL2}/docs/terms/${editingTerms.id}`,
         {
           method: "PUT",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(editingTerms),
@@ -135,6 +133,8 @@ function TermsPage() {
         setEditingTerms(null);
         fetchTerms();
         fetchCurrentTerms();
+      } else {
+        console.error("Error al actualizar los términos");
       }
     } catch (error) {
       console.error("Error al actualizar los términos:", error);
@@ -143,16 +143,12 @@ function TermsPage() {
 
   // Eliminar términos
   const handleDeleteTerms = async (id) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/docs/terms/${id}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          credentials: "include", // Cookie
         }
       );
       if (response.ok) {
@@ -166,14 +162,13 @@ function TermsPage() {
 
   // Establecer términos como actuales
   const handleSetCurrentTerms = async (id) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/docs/terms/${id}/set-current`,
         {
           method: "PUT",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         }
@@ -188,178 +183,157 @@ function TermsPage() {
   };
 
   return (
-    <div
-      className={`container mx-auto py-8 pt-36 ${
-        theme === "dark"
-          ? "bg-gray-900 text-gray-100"
-          : "bg-white text-gray-900"
-      }`}
-    >
-      <h1 className="text-3xl font-bold text-center mb-8">
+    <div className="container mx-auto py-8 pt-36">
+      <h1 className="text-3xl font-bold mb-8 text-center pt-10">
         Gestión de Términos y Condiciones
       </h1>
 
-      {/* Crear o editar términos */}
-      <div className="shadow-md rounded-lg overflow-hidden p-6 mb-8">
-        <h2 className="text-2xl font-bold mb-4">
-          {editingTerms ? "Editar Términos" : "Crear Nuevos Términos"}
-        </h2>
-        <div className="mb-4">
-          <label className="block mb-2">Título</label>
-          <input
-            type="text"
-            value={editingTerms ? editingTerms.title : newTerms.title}
-            onChange={(e) =>
-              editingTerms
-                ? setEditingTerms({ ...editingTerms, title: e.target.value })
-                : setNewTerms({ ...newTerms, title: e.target.value })
-            }
-            className="w-full border p-2 rounded-lg"
-          />
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Contenido</label>
-          <textarea
-            value={editingTerms ? editingTerms.content : newTerms.content}
-            onChange={(e) =>
-              editingTerms
-                ? setEditingTerms({
-                    ...editingTerms,
-                    content: e.target.value,
-                  })
-                : setNewTerms({ ...newTerms, content: e.target.value })
-            }
-            className="w-full border p-2 rounded-lg"
-            rows="6"
-          ></textarea>
-        </div>
-        <div className="mb-4">
-          <label className="block mb-2">Fecha de Vigencia</label>
-          <input
-            type="date"
-            value={
-              editingTerms ? editingTerms.effectiveDate : newTerms.effectiveDate
-            }
-            onChange={(e) =>
-              editingTerms
-                ? setEditingTerms({
-                    ...editingTerms,
-                    effectiveDate: e.target.value,
-                  })
-                : setNewTerms({ ...newTerms, effectiveDate: e.target.value })
-            }
-            className="w-full border p-2 rounded-lg"
-            min={new Date().toISOString().split("T")[0]}
-          />
-        </div>
+      {/* Formulario para crear nuevos términos */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Crear Nuevos Términos</h2>
+        <input
+          type="text"
+          className="border p-2 mb-2 w-full"
+          placeholder="Título"
+          value={newTerms.title}
+          onChange={(e) => setNewTerms({ ...newTerms, title: e.target.value })}
+        />
+        <textarea
+          className="border p-2 mb-2 w-full"
+          placeholder="Contenido"
+          value={newTerms.content}
+          onChange={(e) =>
+            setNewTerms({ ...newTerms, content: e.target.value })
+          }
+        />
+        <input
+          type="date"
+          className="border p-2 mb-2 w-full"
+          value={newTerms.effectiveDate}
+          onChange={(e) =>
+            setNewTerms({ ...newTerms, effectiveDate: e.target.value })
+          }
+        />
         <button
-          onClick={editingTerms ? handleUpdateTerms : handleCreateTerms}
-          className="py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600"
+          className="bg-green-600 text-white px-4 py-2 rounded"
+          onClick={handleCreateTerms}
         >
-          {editingTerms ? "Guardar Cambios" : "Crear Términos"}
+          Crear
         </button>
       </div>
 
-      {/* Mostrar los términos actuales */}
-      {currentTerms && (
-        <div className="mb-8 shadow-md rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Términos Actuales</h2>
-          <p>
-            <strong>Título:</strong> {currentTerms.title}
-          </p>
-          <p>
-            <strong>Contenido:</strong> {currentTerms.content}
-          </p>
-          <p>
-            <strong>Fecha de Creación:</strong>{" "}
-            {new Date(currentTerms.createdAt).toLocaleDateString()}
-          </p>
-          <p>
-            <strong>Fecha de Vigencia:</strong>{" "}
-            {new Date(currentTerms.effectiveDate).toLocaleDateString()}
-          </p>
-        </div>
-      )}
-
-      {/* Listar términos */}
-      <div className="shadow-md rounded-lg overflow-hidden p-6">
-        <h2 className="text-2xl font-bold mb-4">Listado de Términos</h2>
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr>
-              <th className="px-4 py-2">Título</th>
-              <th className="px-4 py-2">Fecha de Creación</th>
-              <th className="px-4 py-2">Fecha de Vigencia</th>
-              <th className="px-4 py-2">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Array.isArray(terms) &&
-              terms.map((term) => (
-                <tr
-                  key={term._id}
-                  className={term.isCurrent ? "bg-green-100" : ""} // Fondo verde claro si es actual
-                >
-                  {/* Título con etiqueta "Actual" si aplica */}
-                  <td className="px-4 py-2">
-                    {term.title}{" "}
-                    {term.isCurrent && (
-                      <span className="text-green-500 font-semibold">
-                        (Actual)
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Fecha de creación */}
-                  <td className="px-4 py-2">
-                    {new Date(term.createdAt).toLocaleDateString()}
-                  </td>
-
-                  {/* Fecha de vigencia */}
-                  <td className="px-4 py-2">
+      {/* Listado de términos */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Lista de Términos</h2>
+        {terms.length > 0 ? (
+          terms.map((term) => (
+            <div key={term.id} className="border p-4 mb-2">
+              {editingTerms && editingTerms.id === term.id ? (
+                <>
+                  <input
+                    type="text"
+                    className="border p-2 mb-2 w-full"
+                    value={editingTerms.title}
+                    onChange={(e) =>
+                      setEditingTerms({
+                        ...editingTerms,
+                        title: e.target.value,
+                      })
+                    }
+                  />
+                  <textarea
+                    className="border p-2 mb-2 w-full"
+                    value={editingTerms.content}
+                    onChange={(e) =>
+                      setEditingTerms({
+                        ...editingTerms,
+                        content: e.target.value,
+                      })
+                    }
+                  />
+                  <input
+                    type="date"
+                    className="border p-2 mb-2 w-full"
+                    value={editingTerms.effectiveDate?.split("T")[0] || ""}
+                    onChange={(e) =>
+                      setEditingTerms({
+                        ...editingTerms,
+                        effectiveDate: e.target.value,
+                      })
+                    }
+                  />
+                  <button
+                    className="bg-blue-500 text-white px-4 py-2 rounded mr-2"
+                    onClick={handleUpdateTerms}
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    className="bg-gray-300 text-black px-4 py-2 rounded"
+                    onClick={() => setEditingTerms(null)}
+                  >
+                    Cancelar
+                  </button>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-bold text-lg">{term.title}</h3>
+                  <p>{term.content}</p>
+                  <p>
+                    <strong>Vigencia:</strong>{" "}
                     {new Date(term.effectiveDate).toLocaleDateString()}
-                  </td>
-
-                  {/* Acciones */}
-                  <td className="px-4 py-2">
-                    {/* Botón Editar */}
+                  </p>
+                  <p>
+                    <strong>Actual:</strong>{" "}
+                    {term.isCurrent ? "Sí" : "No"}
+                  </p>
+                  <div className="mt-2">
                     <button
-                      className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
+                      className="bg-yellow-500 text-white px-4 py-2 rounded mr-2"
                       onClick={() => setEditingTerms(term)}
                     >
                       Editar
                     </button>
-
-                    {/* Botón Establecer como Actual o deshabilitado si ya es actual */}
-                    {term.isCurrent ? (
+                    <button
+                      className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                      onClick={() => handleDeleteTerms(term.id)}
+                    >
+                      Eliminar
+                    </button>
+                    {!term.isCurrent && (
                       <button
-                        className="bg-gray-500 text-white px-2 py-1 rounded mr-2 cursor-not-allowed"
-                        disabled
-                      >
-                        Actual
-                      </button>
-                    ) : (
-                      <button
-                        className="bg-blue-500 text-white px-2 py-1 rounded mr-2 hover:bg-blue-600"
-                        onClick={() => handleSetCurrentTerms(term._id)}
+                        className="bg-green-600 text-white px-4 py-2 rounded"
+                        onClick={() => handleSetCurrentTerms(term.id)}
                       >
                         Establecer como Actual
                       </button>
                     )}
-
-                    {/* Botón Eliminar */}
-                    <button
-                      className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                      onClick={() => handleDeleteTerms(term._id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+                  </div>
+                </>
+              )}
+            </div>
+          ))
+        ) : (
+          <p>No hay términos disponibles</p>
+        )}
       </div>
+
+      {/* Términos actuales */}
+      {currentTerms && (
+        <div className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">
+            Términos Actuales
+          </h2>
+          <div className="border p-4">
+            <h3 className="font-bold text-lg">{currentTerms.title}</h3>
+            <p>{currentTerms.content}</p>
+            <p>
+              <strong>Vigencia:</strong>{" "}
+              {new Date(currentTerms.effectiveDate).toLocaleDateString()}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

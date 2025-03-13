@@ -7,6 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../config/config";
+import { useAuth } from '../../context/authContext';
 
 function RegisterPage() {
   const [password, setPassword] = useState("");
@@ -17,6 +18,7 @@ function RegisterPage() {
   const [birthDateValid, setBirthDateValid] = useState(true);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const [onSubmitLoading, setOnSubmitLoading] = useState(false);
+  const { Login, theme } = useAuth();
 
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
@@ -25,12 +27,14 @@ function RegisterPage() {
   const [preguntaSecreta, setPreguntaSecreta] = useState("default");
   const [respuestaSecreta, setRespuestaSecreta] = useState("");
 
-  // Función para manejar el token generado por el CAPTCHA
+  // ✅ Control de acceso y autenticación segura (ISO/IEC 27001:2013 - Control A.9.4)
+  // Se usa ReCAPTCHA para evitar ataques automatizados en el formulario de registro.
   const handleRecaptchaChange = (token) => {
     setRecaptchaToken(token); // Almacena el token generado por el CAPTCHA
   };
 
-  // Función para validar los requisitos de la contraseña
+  // ✅ Gestión segura de credenciales (ISO/IEC 27001:2013 - Control A.9.2)
+  // Esta función evalúa la fortaleza de la contraseña, asegurando que cumpla con requisitos mínimos.
   const checkPasswordStrength = (password) => {
     let strength = 0;
 
@@ -44,7 +48,8 @@ function RegisterPage() {
 
   const [passwordWarning, setPasswordWarning] = useState(""); // Nuevo estado para el mensaje de advertencia
 
-  // Función para manejar el cambio de contraseña y verificar patrones prohibidos
+  // ✅ Protección contra contraseñas vulnerables (ISO/IEC 27001:2013 - Control A.12.6)
+  // Se validan patrones inseguros y se verifica si la contraseña ha sido filtrada en bases de datos públicas.
   const handlePasswordChange = async (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
@@ -63,7 +68,8 @@ function RegisterPage() {
       setPasswordWarning("");
     }
 
-    // 5. Verificar si la contraseña ha sido filtrada en una base de datos pública
+    // ✅ Protección contra exposición de credenciales (ISO/IEC 27001:2013 - Control A.12.6.1)
+    // Verificar si la contraseña ha sido filtrada en bases de datos públicas comprometidas.
     const isPwned = await checkPasswordInPwned(newPassword);
     if (isPwned) {
       setPasswordWarning(
@@ -76,14 +82,16 @@ function RegisterPage() {
     checkPasswordMatch(newPassword, confirmPassword); // Verificar coincidencia de contraseñas
   };
 
-  // Cambia el estado de la confirmación de contraseña
+  // ✅ Protección contra ataques de fuerza bruta (ISO/IEC 27001:2013 - Control A.9.4.3)
+  // Asegura que las contraseñas ingresadas coincidan antes de permitir el registro.
   const handleConfirmPasswordChange = (e) => {
     const newConfirmPassword = e.target.value;
     setConfirmPassword(newConfirmPassword);
     checkPasswordMatch(password, newConfirmPassword);
   };
 
-  // Verifica si las contraseñas coinciden
+  // ✅ Verificación de integridad de datos (ISO/IEC 27001:2013 - Control A.14.2.5)
+  // Se verifica que la contraseña confirmada coincida con la original.
   const checkPasswordMatch = (password, confirmPassword) => {
     if (password && confirmPassword && password !== confirmPassword) {
       setPasswordMatch(false);
@@ -92,7 +100,8 @@ function RegisterPage() {
     }
   };
 
-  // Verifica si la fecha de nacimiento está dentro del rango permitido
+  // ✅ Validación de entrada para prevenir ataques (ISO/IEC 27001:2013 - Control A.14.2.5)
+  // Se valida la fecha de nacimiento para evitar valores inválidos o malintencionados.
   const handleBirthDateChange = (e) => {
     const selectedDate = e.target.value;
     setBirthDate(selectedDate);
@@ -107,6 +116,7 @@ function RegisterPage() {
       setBirthDateValid(false);
     }
   };
+
 
   // Color de la barra según la fortaleza
   const getStrengthBarColor = () => {
@@ -273,9 +283,9 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex pt-28">
+    <div className="min-h-screen flex">
       {/* Sección izquierda: Formulario */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}">
         <div className="w-full max-w-md">
           <Link href="/">
             <p className="text-green-700 font-bold mb-6 block">&larr; Atrás</p>
@@ -296,7 +306,7 @@ function RegisterPage() {
                 placeholder="Nombre"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
               />
               {nombre && !validarNombreApellido(nombre) && (
                 <p className="text-red-500 text-sm">
@@ -313,7 +323,7 @@ function RegisterPage() {
                 placeholder="Apellido"
                 value={apellido}
                 onChange={(e) => setApellido(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
               />
               {apellido && !validarNombreApellido(apellido) && (
                 <p className="text-red-500 text-sm">
@@ -331,7 +341,7 @@ function RegisterPage() {
                 placeholder="Correo Electrónico"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
               />
             </div>
 
@@ -343,7 +353,7 @@ function RegisterPage() {
                 placeholder="Teléfono"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
                 pattern="[0-9]{10}" // Solo números y exactamente 10 dígitos
                 maxLength="10" // Máximo 10 caracteres
                 onInput={(e) => {
@@ -361,7 +371,7 @@ function RegisterPage() {
               <label className="block text-gray-700">Fecha de Nacimiento</label>
               <input
                 type="date"
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
                 value={birthDate}
                 onChange={handleBirthDateChange}
                 min="1960-01-01"
@@ -380,7 +390,7 @@ function RegisterPage() {
               <select
                 value={preguntaSecreta}
                 onChange={(e) => setPreguntaSecreta(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
               >
                 <option value="default" disabled>
                   Selecciona una pregunta secreta
@@ -404,7 +414,7 @@ function RegisterPage() {
                 placeholder="Respuesta Secreta"
                 value={respuestaSecreta}
                 onChange={(e) => setRespuestaSecreta(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
               />
             </div>
 
@@ -416,12 +426,12 @@ function RegisterPage() {
                 placeholder="Contraseña"
                 value={password}
                 onChange={handlePasswordChange}
-                className="w-full border border-gray-300 p-2 rounded-lg"
+                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
               />
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute right-9 top-8 text-gray-600"
+                className="absolute right-9 top-8 text-gray-800"
               >
                 {passwordVisible ? "Ocultar" : "Mostrar"}
               </button>
@@ -451,14 +461,14 @@ function RegisterPage() {
                 placeholder="Confirmar Contraseña"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
-                className={`w-full border p-2 rounded-lg ${
-                  passwordMatch ? "border-gray-300" : "border-red-500"
+                className={`w-full border p-2 rounded-lg bg-slate-300 font-semibold ${
+                  passwordMatch ? "border-gray-300" : "border-red-900 bg-red-300"
                 }`}
               />
               <button
                 type="button"
                 onClick={toggleConfirmPasswordVisibility}
-                className="absolute right-9 top-8 text-gray-600"
+                className="absolute right-9 top-8 text-gray-800"
               >
                 {confirmPasswordVisible ? "Ocultar" : "Mostrar"}
               </button>

@@ -49,23 +49,24 @@ useEffect(() => {
   // Función para manejar el login en AuthProvider
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/login`, { 
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', 
+        credentials: 'include', // Importante para que la cookie se reciba
       });
-
+  
       const data = await response.json();
       console.log(data);
-
+  
       if (response.ok) {
+        // El token se almacena en la cookie (httpOnly), no en localStorage
         setIsAuthenticated(true);
         setUser(data.user);
+  
+        // Opcional: guardar datos del usuario en localStorage (no el token)
         localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('token', data.token);
+  
         return { success: true };
       } else {
         return { success: false, message: data.message };
@@ -78,33 +79,31 @@ useEffect(() => {
 
   // Función para verificar la sesión cuando la página se recarga
   const checkSession = async () => {
-    const storedToken = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-    if (!storedToken) {
+  try {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/check-session`, {
+      method: 'GET',
+      credentials: 'include',
+    });
+    const data = await response.json();
+
+    // Revisamos si la respuesta fue 2xx y data.isAuthenticated === true
+    if (response.ok && data.isAuthenticated) {
+      setIsAuthenticated(true);
+      setUser(data.user);
+      // Opcional: localStorage.setItem('user', JSON.stringify(data.user));
+    } else {
+      // Cualquier otra cosa se considera sin sesión
       setIsAuthenticated(false);
       setUser(null);
-      return;
+      // Opcional: localStorage.removeItem('user');
     }
+  } catch (error) {
+    console.error('Error verificando la sesión:', error);
+    logout(); // O solo setIsAuthenticated(false); setUser(null);
+  }
+};
 
-    try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/check-session`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${storedToken}`
-        },
-      });
-
-      const data = await response.json();
-      if (response.ok && data.isAuthenticated) {
-        setIsAuthenticated(true);
-        setUser(data.user);
-      } else {
-        logout();
-      }
-    } catch (error) {
-      console.error('Error verificando la sesión:', error);
-      logout();
-    }
-  };
+  
 
   // Verificar la sesión al cargar la aplicación o al recargar la página
   useEffect(() => {
@@ -112,15 +111,16 @@ useEffect(() => {
   }, []);
 
   // Función para cerrar sesión
-  const logout = () => {
+  const logout = async () => {
+    await fetch(`${CONFIGURACIONES.BASEURL2}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
     setIsAuthenticated(false);
     setUser(null);
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-    }
-    console.log('Sesión cerrada con éxito');
+    localStorage.removeItem('user');
   };
+  
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, logout, theme, toggleTheme }}>

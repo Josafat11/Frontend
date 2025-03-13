@@ -13,28 +13,27 @@ import {
 } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { useLogo } from "../context/LogoContext";
-import { useAuth } from "../context/authContext"; // Importa el contexto de autenticación
-import { useRouter } from "next/navigation"; // Importa el hook de useRouter para la redirección
+import { useAuth } from "../context/authContext";
+import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../app/config/config";
 
 function Navbar() {
   const { isAuthenticated, user, logout, theme, toggleTheme } = useAuth();
-  const [isMounted, setIsMounted] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const [documentAdminMenuOpen, setDocumentAdminMenuOpen] = useState(false);
+  const [productAdminMenuOpen, setProductAdminMenuOpen] = useState(false); // Definición añadida para menú de productos
   const dropdownRef = useRef(null);
   const router = useRouter();
-  const { logoUrl } = useLogo();
+  // Tomamos `logoUrl`, `setLogoUrl` y `fetchLogo` del LogoContext
+  const { logoUrl, setLogoUrl, fetchLogo } = useLogo();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleAdminMenu = () => setAdminMenuOpen(!adminMenuOpen);
   const toggleDocumentAdminMenu = () =>
     setDocumentAdminMenuOpen(!documentAdminMenuOpen);
 
-  // Este useEffect asegura que el componente se renderice solo después de que esté montado en el cliente
   useEffect(() => {
-    setIsMounted(true);
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
@@ -46,51 +45,58 @@ function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Función para obtener el logo más reciente
-  const fetchLogo = async () => {
-    try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/logo/ultimo`);
-      if (response.ok) {
-        const data = await response.json();
-        setLogoUrl(`${data.url}?timestamp=${new Date().getTime()}`);
-      }
-    } catch (error) {
-      console.error("Error al obtener el logo:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchLogo(); // Cargar logo al iniciar la app
-  }, []);
+  // Si deseas refrescar el logo manualmente (por ejemplo, en un botón), puedes llamar `fetchLogo()`.
+  // useEffect(() => {
+  //   fetchLogo();
+  // }, []);
 
   const handleLogout = async () => {
     await logout();
     router.push("/");
   };
 
-  if (!isMounted) return null;
-
   return (
     <>
       {/* Barra superior con mensaje desplazable */}
       <div
-        className={`text-sm py-2 overflow-hidden ${
+        className={`relative py-3 overflow-hidden ${
           theme === "dark"
-            ? "bg-gray-800 text-gray-200"
-            : "bg-yellow-500 text-white"
+            ? "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-gray-200"
+            : "bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 text-white"
         }`}
       >
-        <div className="whitespace-nowrap animate-marquee">
-          <span className="mx-4">La pieza exacta para cada necesidad</span>
-          <span className="mx-4">
-            Grandes descuentos y promociones de temporada aquí
-          </span>
-          <span className="mx-4">La pieza exacta para cada necesidad</span>
-          <span className="mx-4">
-            Grandes descuentos y promociones de temporada aquí
-          </span>
+        <div className="flex items-center justify-center overflow-hidden">
+          <div className="whitespace-nowrap animate-marquee flex space-x-8 text-lg font-semibold tracking-wide">
+            <span className="px-4">
+              ✨ La pieza exacta para cada necesidad ✨
+            </span>
+            <span className="px-4">
+              🔥 Grandes descuentos y promociones de temporada 🔥
+            </span>
+            <span className="px-4">
+              🚀 La pieza exacta para cada necesidad 🚀
+            </span>
+            <span className="px-4">
+              🎉 Grandes descuentos y promociones de temporada 🎉
+            </span>
+          </div>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes marquee {
+          0% {
+            transform: translateX(100%);
+          }
+          100% {
+            transform: translateX(-100%);
+          }
+        }
+        .animate-marquee {
+          display: flex;
+          animation: marquee 15s linear infinite;
+        }
+      `}</style>
 
       {/* Navbar principal */}
       <nav
@@ -104,13 +110,18 @@ function Navbar() {
           {/* Logo y Menú de Categorías */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center">
-              <Image
-                src={logoUrl || "/fallback-logo.png"}
-                alt="Muñoz Logo"
-                width={100}
-                height={40}
-                className="object-contain"
-              />
+              {/* Si logoUrl está cargando (null), muestra un placeholder */}
+              {logoUrl ? (
+                <Image
+                  src={logoUrl}
+                  alt="Muñoz Logo"
+                  width={100}
+                  height={40}
+                  className="object-contain"
+                />
+              ) : (
+                <div className="w-[100px] h-[40px] bg-gray-300 animate-pulse" />
+              )}
             </Link>
             <button
               className={`flex items-center font-bold ${
@@ -123,7 +134,6 @@ function Navbar() {
               Menú de Categorías
             </button>
           </div>
-
           {/* Campo de Búsqueda */}
           <form
             action="/ventaProducto" // Redirige a la página de productos
@@ -285,7 +295,7 @@ function Navbar() {
                                           : "hover:text-green-700"
                                       }`}
                                     >
-                                      Administrar Pepe
+                                      Administrar Politicas
                                     </p>
                                   </Link>
                                   <Link href="/adminDocumentos2">
@@ -323,6 +333,39 @@ function Navbar() {
                                   </Link>
                                 </div>
                               )}
+                              <button
+                                onClick={() =>
+                                  setProductAdminMenuOpen(!productAdminMenuOpen)
+                                }
+                                className={`${
+                                  theme === "dark"
+                                    ? "hover:text-yellow-400"
+                                    : "hover:text-green-700"
+                                }`}
+                              >
+                                Gestión de Productos
+                              </button>
+                              {productAdminMenuOpen && (
+                                <div
+                                  className={`mt-2 border-t ${
+                                    theme === "dark"
+                                      ? "bg-gray-800 border-gray-700"
+                                      : "bg-gray-50 border-gray-200"
+                                  }`}
+                                >
+                                  <Link href="/adminProductos">
+                                    <p
+                                      className={`mt-2 ${
+                                        theme === "dark"
+                                          ? "hover:text-yellow-400"
+                                          : "hover:text-green-700"
+                                      }`}
+                                    >
+                                      Administrar Todos los Productos
+                                    </p>
+                                  </Link>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -348,7 +391,7 @@ function Navbar() {
               }`}
             >
               <FaFileInvoice className="w-6 h-6" />
-              <span className="text-sm">Cotizador</span>
+              <span className="text-sm">Facturar</span>
             </Link>
 
             <Link
@@ -360,7 +403,7 @@ function Navbar() {
               }`}
             >
               <FaShoppingCart className="w-6 h-6" />
-              <span className="text-sm">Producto</span>
+              <span className="text-sm">Tienda</span>
             </Link>
 
             {/* Botón de alternancia de tema con iconos de sol/luna */}

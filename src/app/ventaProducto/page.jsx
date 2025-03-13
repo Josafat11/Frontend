@@ -101,18 +101,19 @@ function ProductosPage() {
     );
   });
 
-  // Definir las migajas de pan
-  const breadcrumbsPages = [
-    { name: "Home", path: "/" },
-    { name: "Productos", path: null }, // Sin enlace porque es la página actual
-  ];
+// Definir las migajas de pan
+const breadcrumbsPages = [
+  { name: "Home", path: "/" },
+  { name: "Productos", path: "/ventaProducto" }
+];
+
 
   return (
     <div
       className={`container mx-auto py-8 pt-36 ${
         theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
       }`}
-    >
+    > 
       {/* Migajas de pan */}
       <Breadcrumbs pages={breadcrumbsPages} />
 

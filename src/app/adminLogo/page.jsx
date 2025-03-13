@@ -14,26 +14,29 @@ function AdminLogoPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  // Redirigir a login si no está autenticado o no es admin
+  // Verificar si el usuario es admin; si no, redirigir
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login";
+      router.push("/login");
     }
   }, [isAuthenticated, user]);
 
-  // Validar tipo de archivo en el frontend
+  // Manejar selección de archivo
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file && file.type.startsWith("image/")) {
+    if (file) {
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+      if (!allowedTypes.includes(file.type)) {
+        setLogo(null);
+        setMessage("Formato de imagen no permitido. Usa JPG, PNG o GIF.");
+        return;
+      }
       setLogo(file);
       setMessage("");
-    } else {
-      setLogo(null);
-      setMessage("Por favor, selecciona un archivo de imagen válido (JPG, PNG, etc.).");
     }
   };
 
-  // Subir el archivo al backend
+  // Subir el logo a tu servidor
   const handleUploadLogo = async () => {
     if (!logo) {
       setMessage("Selecciona un archivo antes de subir.");
@@ -45,14 +48,11 @@ function AdminLogoPage() {
     formData.append("file", logo);
     formData.append("autor", user.name);
 
-    const token = localStorage.getItem("token");
-
     try {
+      // Enviamos la cookie automáticamente con credentials: 'include'
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/logo/subir`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: "include", // <-- Enviar cookie con el token
         body: formData,
       });
 
@@ -60,7 +60,8 @@ function AdminLogoPage() {
         const data = await response.json();
         setMessage("Logo subido correctamente.");
         setLogo(null);
-        await fetchLogo(); // Refresca el logo en el frontend
+        // Refresca el logo en el front
+        await fetchLogo();
       } else {
         const error = await response.json();
         setMessage(error.message || "Error al subir el logo.");

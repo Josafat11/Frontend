@@ -20,6 +20,7 @@ const LoginPage = () => {
     try {
       const result = await login(email, password);
       if (result.success) {
+        console.log("Usuario completo tras login:", result.user);
         setMessage('Inicio de sesión exitoso');
         router.push('/');
       } else {
@@ -32,7 +33,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row pt-28 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
+    <div className={`min-h-screen flex flex-col md:flex-row ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
       {/* Sección izquierda: Imagen y beneficios */}
       <div
         className="w-full md:w-1/2 bg-cover bg-center"
@@ -73,7 +74,7 @@ const LoginPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Correo electrónico"
-                className={`w-full p-2 rounded-lg ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
+                className={`w-full p-2 rounded-lg border border-gray-400 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-slate-300 border-gray-300 text-gray-900 font-semibold'}`}
               />
             </div>
 
@@ -84,7 +85,7 @@ const LoginPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Contraseña"
-                className={`w-full p-2 rounded-lg ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-900'}`}
+                className={`w-full p-2 rounded-lg border border-gray-400 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-slate-300 border-gray-300 text-gray-900 font-semibold'}`}
               />
             </div>
 

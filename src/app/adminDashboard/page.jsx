@@ -31,74 +31,67 @@ function AdminDashboard() {
     setModalData({ email: null, duration: "" }); // Reinicia los datos del modal
   };
 
+  // Cargar datos si el usuario es admin
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
-      // Función para obtener datos del backend
       const fetchData = async () => {
-        const token = localStorage.getItem("token");
-
         try {
-          // Usuarios recientes
+          // 1. Usuarios recientes
           const recentUsersResponse = await fetch(
             `${CONFIGURACIONES.BASEURL2}/auth/admin/recent-users`,
             {
               method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
+              credentials: "include", // Enviar la cookie
             }
           );
           const recentUsersData = await recentUsersResponse.json();
           setRecentUsers(recentUsersData);
 
-          // Usuarios bloqueados
+          // 2. Usuarios bloqueados
           await fetchBlockedUsers();
 
-          // Intentos fallidos
+          // 3. Intentos fallidos
           const failedAttemptsResponse = await fetch(
             `${CONFIGURACIONES.BASEURL2}/auth/admin/failed-login-attempts`,
             {
               method: "GET",
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-              },
+              credentials: "include", // Enviar la cookie
             }
           );
           const failedAttemptsData = await failedAttemptsResponse.json();
           setFailedAttempts(failedAttemptsData);
+
+          // 4. Inicios de sesión recientes
           await fetchRecentLogins();
         } catch (error) {
           console.error("Error al obtener datos del backend:", error);
         }
       };
 
-      // Ejecutar la función por primera vez y luego cada 30 segundos
+      // Ejecutar la función la primera vez y luego cada X tiempo (aquí cada 30s)
       fetchData();
-      const intervalId = setInterval(fetchData, 1000); // 30 segundos
+      const intervalId = setInterval(fetchData, 30_000);
 
-      // Limpiar el intervalo al desmontar el componente
+      // Limpiar el intervalo al desmontar
       return () => clearInterval(intervalId);
     }
   }, [isAuthenticated, user]);
 
-  // Función para manejar el envío de datos del modal
+
+  // Bloqueo temporal de usuario
   const blockUserTemporarily = async ({ email, duration }) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/auth/admin/block-user-temporarily`,
         {
           method: "POST",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, lockDuration: duration }), // Enviar email y duración
+          body: JSON.stringify({ email, lockDuration: duration }),
         }
       );
-  
       if (response.ok) {
         console.log("Usuario bloqueado temporalmente");
         closeModal();
@@ -112,21 +105,20 @@ function AdminDashboard() {
   };
   
 
+  // Bloqueo permanente de usuario
   const blockUser = async (userId) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/auth/admin/block-user`,
         {
           method: "POST",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ userId }),
         }
       );
-
       if (response.ok) {
         console.log("Usuario bloqueado exitosamente");
       } else {
@@ -138,61 +130,53 @@ function AdminDashboard() {
     }
   };
 
+  // Obtener usuarios bloqueados
   const fetchBlockedUsers = async () => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/auth/admin/recent-blocked`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          credentials: "include", // Cookie
         }
       );
       const data = await response.json();
-      setBlockedUsers(data); // Actualiza el estado de usuarios bloqueados
+      setBlockedUsers(data);
     } catch (error) {
       console.error("Error al obtener usuarios bloqueados:", error);
     }
   };
 
+  // Obtener inicios de sesión recientes
   const fetchRecentLogins = async () => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/auth/admin/recent-logins`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
+          credentials: "include", // Cookie
         }
       );
       const data = await response.json();
-      setRecentLogins(data); // Actualiza el estado con los inicios de sesión recientes
+      setRecentLogins(data);
     } catch (error) {
       console.error("Error al obtener los inicios de sesión recientes:", error);
     }
   };
-
+  // Desbloquear usuario
   const unblockUser = async (userId) => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/auth/admin/unblock-user`,
         {
           method: "POST",
+          credentials: "include", // Cookie
           headers: {
-            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ userId }),
         }
       );
-
       if (response.ok) {
         console.log("Usuario desbloqueado exitosamente");
         fetchBlockedUsers(); // Actualizar la lista de usuarios bloqueados
@@ -218,7 +202,7 @@ function AdminDashboard() {
           {recentUsers.length > 0 ? (
             recentUsers.map((user) => (
               <div
-                key={user._id}
+              key={user.id}
                 className="bg-green-200 rounded-lg p-4 mb-4 shadow"
               >
                 <p>
@@ -246,7 +230,7 @@ function AdminDashboard() {
           {blockedUsers.length > 0 ? (
             blockedUsers.map((user) => (
               <div
-                key={user.id}
+              key={user.id}
                 className={`rounded-lg p-4 mb-4 shadow ${
                   user.currentlyBlocked ? "bg-red-200" : "bg-yellow-200"
                 }`}
@@ -299,7 +283,7 @@ function AdminDashboard() {
           {failedAttempts.length > 0 ? (
             failedAttempts.map((user) => (
               <div
-                key={user.id}
+              key={user.id}
                 className="bg-yellow-200 rounded-lg p-4 mb-4 shadow"
               >
                 <p>
@@ -378,7 +362,7 @@ function AdminDashboard() {
           {recentLogins.length > 0 ? (
             recentLogins.map((login) => (
               <div
-                key={login._id}
+              key={user.id}
                 className="bg-blue-200 rounded-lg p-4 mb-4 shadow"
               >
                 <p>
