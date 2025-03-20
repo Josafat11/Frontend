@@ -12,15 +12,8 @@ function AdminDashboard() {
   const [recentLogins, setRecentLogins] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({ email: "", duration: "" });
+  const [loading, setLoading] = useState(true);
   
-  useEffect(() => {
-    // Verificar si el usuario es admin, si no redirigir manualmente
-    if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login"; // Redirige manualmente
-    }
-  }, [isAuthenticated, user]);
-
-  // Función para abrir el modal
   const openModal = (email) => {
     setModalData({ email, duration: "" }); // Captura el correo del usuario
     setIsModalOpen(true);
@@ -33,6 +26,11 @@ function AdminDashboard() {
 
   // Cargar datos si el usuario es admin
   useEffect(() => {
+    if (!isAuthenticated || user?.role !== "admin") {
+      window.location.href = "/login"; // Redirige manualmente
+    } else {
+      setLoading(false); // Solo permite mostrar la página si es admin
+    }
     if (isAuthenticated && user?.role === "admin") {
       const fetchData = async () => {
         try {
