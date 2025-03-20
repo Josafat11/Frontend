@@ -194,7 +194,7 @@ function AdminProductsPage() {
       setIsLoading(false);
     }
   };
-  
+    
   // Función para obtener la lista de productos
   const fetchProducts = async () => {
     setIsLoadingProducts(true);
