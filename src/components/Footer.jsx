@@ -31,7 +31,7 @@ function Footer() {
             <h3 className="font-bold mb-4 text-lg">ENCUENTRA</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/ubicaciones">
+                <Link href="/ubicacion">
                   <p className="hover:text-green-700 text-lg">Ubicacion</p>
                 </Link>
               </li>
@@ -82,14 +82,14 @@ function Footer() {
             <h3 className="font-bold mb-4 text-lg">SERVICIO AL CLIENTE</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/factura">
+                <Link href="/facturacion">
                   <p className="hover:text-green-700 text-lg">
                     Facturación Electrónica
                   </p>
                 </Link>
               </li>
               <li>
-                <Link href="/contactos">
+                <Link href="/contacto">
                   <p className="hover:text-green-700 text-lg">Contáctanos</p>
                 </Link>
               </li>

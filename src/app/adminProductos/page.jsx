@@ -111,89 +111,60 @@ function AdminProductsPage() {
     setImages([]);
   };
 
-  const handleCreateProduct = async (e) => {
-    e.preventDefault();
-  
-    // Validar campos obligatorios (sin supplierId)
-    if (!form.name || !form.partNumber) {
-      setMessage("Faltan campos obligatorios: name, partNumber.");
-      return;
+// Frontend: handleCreateProduct function
+const handleCreateProduct = async (e) => {
+  e.preventDefault();
+
+  // Validar campos obligatorios (sin supplierId)
+  if (!form.name || !form.partNumber) {
+    setMessage("Faltan campos obligatorios: name, partNumber.");
+    return;
+  }
+
+  // Convertir years a números solo si hay compatibilidad
+  const yearsAsNumbers = form.years.map((year) => parseInt(year, 10));
+
+  setIsLoading(true);
+  const formData = new FormData();
+
+  // Agregar campos del formulario al FormData (sin supplierId)
+  for (const key in form) {
+    if (key !== "makes" && key !== "models" && key !== "years") {
+      formData.append(key, form[key]);
     }
-  
-    // Solo validar compatibilidad si se han ingresado datos en makes, models y years
-    if (form.makes.length > 0 || form.models.length > 0 || form.years.length > 0) {
-      // Validar que makes, models y years sean arrays válidos
-      if (
-        !Array.isArray(form.makes) ||
-        !Array.isArray(form.models) ||
-        !Array.isArray(form.years)
-      ) {
-        setMessage("Los campos makes, models y years deben ser arrays válidos.");
-        return;
-      }
-  
-      // Validar que los arrays tengan la misma longitud
-      if (
-        form.makes.length !== form.models.length ||
-        form.makes.length !== form.years.length
-      ) {
-        setMessage("Los campos makes, models y years deben tener la misma longitud.");
-        return;
-      }
-  
-      // Validar que years sean números válidos
-      if (form.years.some((year) => isNaN(year))) {
-        setMessage("El campo years debe contener solo números válidos.");
-        return;
-      }
+  }
+
+  // Siempre agregar compatibilidades, incluso si están vacías
+  formData.append("makes", JSON.stringify(form.makes || []));
+  formData.append("models", JSON.stringify(form.models || []));
+  formData.append("years", JSON.stringify(yearsAsNumbers || []));
+
+  // Agregar imágenes al FormData
+  images.forEach((file) => formData.append("images", file));
+
+  try {
+    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/productos/crear`, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      setMessage("Producto creado exitosamente.");
+      clearForm();
+      if (activeTab === "list") fetchProducts();
+    } else {
+      const errorData = await response.json();
+      setMessage(errorData.message || "Error al crear el producto.");
     }
-  
-    // Convertir years a números solo si hay compatibilidad
-    const yearsAsNumbers = form.years.map((year) => parseInt(year, 10));
-  
-    setIsLoading(true);
-    const formData = new FormData();
-  
-    // Agregar campos del formulario al FormData (sin supplierId)
-    for (const key in form) {
-      if (key !== "makes" && key !== "models" && key !== "years") {
-        formData.append(key, form[key]);
-      }
-    }
-  
-    // Solo agregar compatibilidades si hay datos
-    if (form.makes.length > 0) {
-      formData.append("makes", JSON.stringify(form.makes));
-      formData.append("models", JSON.stringify(form.models));
-      formData.append("years", JSON.stringify(yearsAsNumbers));
-    }
-  
-    // Agregar imágenes al FormData
-    images.forEach((file) => formData.append("images", file));
-  
-    try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/productos/crear`, {
-        method: "POST",
-        credentials: "include",
-        body: formData,
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        setMessage("Producto creado exitosamente.");
-        clearForm();
-        if (activeTab === "list") fetchProducts();
-      } else {
-        const errorData = await response.json();
-        setMessage(errorData.message || "Error al crear el producto.");
-      }
-    } catch (error) {
-      console.error("Error al crear producto:", error);
-      setMessage("Error al crear el producto.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  } catch (error) {
+    console.error("Error al crear producto:", error);
+    setMessage("Error al crear el producto.");
+  } finally {
+    setIsLoading(false);
+  }
+};
     
   // Función para obtener la lista de productos
   const fetchProducts = async () => {
@@ -202,10 +173,14 @@ function AdminProductsPage() {
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/productos/`, {
         credentials: "include",
       });
+      console.log("Response status:", response.status); // Log the status
       if (response.ok) {
         const data = await response.json();
-        setProducts(data);
+        console.log("Products data:", data); // Log the data
+        setProducts(data.productos); // Set the productos array
       } else {
+        const errorData = await response.json();
+        console.error("Error response:", errorData); // Log the error
         setMessage("Error al obtener productos.");
       }
     } catch (error) {
