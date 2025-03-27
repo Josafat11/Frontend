@@ -1,115 +1,150 @@
-'use client'; // Indicar que es un Client Component para poder usar hooks
-
+'use client';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/authContext';
+import { FiArrowLeft, FiMail, FiLock, FiTool, FiShield, FiTag } from 'react-icons/fi';
+import Image from 'next/image';
+
 
 const LoginPage = () => {
-  // Definimos los estados del formulario y los mensajes
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const { login, theme } = useAuth(); // Obtén `login` y `theme` desde el contexto
+  const { login, theme } = useAuth();
   const router = useRouter();
 
-  // Función que maneja el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const result = await login(email, password);
       if (result.success) {
-        console.log("Usuario completo tras login:", result.user);
-        setMessage('Inicio de sesión exitoso');
         router.push('/');
       } else {
-        setMessage(result.message);
+        setMessage(result.message || 'Credenciales incorrectas');
       }
     } catch (error) {
       console.error('Error en el inicio de sesión:', error);
-      setMessage('Error interno del servidor');
+      setMessage('Error al conectar con el servidor');
     }
   };
 
   return (
-    <div className={`min-h-screen flex flex-col md:flex-row ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
-      {/* Sección izquierda: Imagen y beneficios */}
-      <div
-        className="w-full md:w-1/2 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/beneficios-login.jpg')" }}
-      >
-        <div className={`flex flex-col justify-center h-full text-white p-8 ${theme === 'dark' ? 'bg-green-800 bg-opacity-90' : 'bg-green-700 bg-opacity-80'}`}>
-          <h2 className="text-3xl font-bold mb-4">Beneficios:</h2>
-          <ul className="space-y-4">
-            <li className="flex items-center space-x-2">
-              <span>Recibe las mejores promociones</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span>Mejor calidad de servicio</span>
-            </li>
-            <li className="flex items-center space-x-2">
-              <span>Encuentra miles de productos que le quedan a tu vehículo</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+<div className={`min-h-screen flex flex-col md:flex-row ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+  {/* Sección izquierda - Imagen y beneficios */}
+  <div className="w-full md:w-1/2 relative">
+    <Image
+      src="/assets/login.jpg"
+      alt="Imagen de fondo"
+      layout="fill"
+      objectFit="cover"
+      className="absolute inset-0"
+      priority
+    />
+    <div className={`absolute inset-0 ${theme === 'dark' ? 'bg-gray-900 bg-opacity-70' : 'bg-green-800 bg-opacity-80'}`} />
+    <div className="relative h-full flex flex-col justify-center p-8 text-white">
+      <h2 className="text-3xl font-bold mb-6">Bienvenido a <span className="text-yellow-400">AutoPartes</span></h2>
+      <ul className="space-y-4">
+        <li className="flex items-start gap-3">
+          <FiTool className="text-yellow-400 mt-1 flex-shrink-0" size={20} />
+          <span>Acceso a más de 10,000 refacciones para tu vehículo</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <FiTag className="text-yellow-400 mt-1 flex-shrink-0" size={20} />
+          <span>Ofertas exclusivas para clientes registrados</span>
+        </li>
+        <li className="flex items-start gap-3">
+          <FiShield className="text-yellow-400 mt-1 flex-shrink-0" size={20} />
+          <span>Garantía en todas nuestras piezas automotrices</span>
+        </li>
+      </ul>
+    </div>
+  </div>
 
-      {/* Sección derecha: Formulario de login */}
-      <div className={`w-full md:w-1/2 flex flex-col justify-center items-center p-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+      {/* Sección derecha - Formulario */}
+      <div className={`w-full md:w-1/2 flex items-center justify-center p-8 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="w-full max-w-md">
-          <Link href="/">
-            <p className={`font-bold mb-6 flex ${theme === 'dark' ? 'text-green-400 hover:text-green-300' : 'text-green-700 hover:text-green-600'}`}>&larr; Atrás</p>
+          <Link href="/" className="inline-flex items-center gap-1 mb-6 hover:underline">
+            <FiArrowLeft className={`${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+            <span className={`font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>Volver al inicio</span>
           </Link>
 
-          <h2 className="text-2xl font-bold mb-4">Inicia Sesión</h2>
-          
-          {message && <p className="text-center text-red-500 mb-4">{message}</p>}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-2">Iniciar Sesión</h1>
+            <p className={`${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+              Accede a tu cuenta para gestionar tus pedidos de refacciones
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Correo electrónico</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Correo electrónico"
-                className={`w-full p-2 rounded-lg border border-gray-400 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-slate-300 border-gray-300 text-gray-900 font-semibold'}`}
-              />
+          {message && (
+            <div className={`p-3 rounded-lg mb-4 ${theme === 'dark' ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800'}`}>
+              {message}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className={`block mb-2 font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Correo electrónico
+              </label>
+              <div className={`flex items-center border rounded-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}>
+                <div className="px-3 py-2">
+                  <FiMail className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="tucorreo@ejemplo.com"
+                  className={`flex-1 p-2 outline-none ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
+                  required
+                />
+              </div>
             </div>
 
-            <div className="mb-4">
-              <label className={`block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Contraseña</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
-                className={`w-full p-2 rounded-lg border border-gray-400 ${theme === 'dark' ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-slate-300 border-gray-300 text-gray-900 font-semibold'}`}
-              />
+            <div>
+              <label className={`block mb-2 font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Contraseña
+              </label>
+              <div className={`flex items-center border rounded-lg overflow-hidden ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}>
+                <div className="px-3 py-2">
+                  <FiLock className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className={`flex-1 p-2 outline-none ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
+                  required
+                />
+              </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-500"
-            >
-              Iniciar Sesión
-            </button>
+            <div className="pt-2">
+              <button
+                type="submit"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+              >
+                Iniciar Sesión
+              </button>
+            </div>
 
-            <p className={`text-sm mt-4 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-              ¿No tienes una cuenta?{" "}
-              <Link href="/register">
-                <span className="font-semibold hover:underline" style={{ color: theme === 'dark' ? '#9ae6b4' : '#2f855a' }}>Crear una cuenta</span>
+            <div className="flex justify-between pt-2">
+              <Link href="/register" className={`text-sm ${theme === 'dark' ? 'text-green-400 hover:text-green-300' : 'text-green-600 hover:text-green-800'} font-medium`}>
+                Crear una cuenta
               </Link>
-            </p>
-
-            <p className={`text-sm mt-4 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-              ¿Olvidaste tu contraseña?{" "}
-              <Link href="/resetpassword">
-                <span className="font-semibold hover:underline" style={{ color: theme === 'dark' ? '#9ae6b4' : '#2f855a' }}>Restablecer contraseña</span>
+              <Link href="/resetpassword" className={`text-sm ${theme === 'dark' ? 'text-yellow-400 hover:text-yellow-300' : 'text-yellow-600 hover:text-yellow-800'} font-medium`}>
+                ¿Olvidaste tu contraseña?
               </Link>
-            </p>
+            </div>
           </form>
+
+          <div className={`mt-8 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-100'}`}>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+              ¿Alguna duda? Contactanos <Link href="/contacto" className={`font-medium ${theme === 'dark' ? 'text-yellow-400 hover:text-yellow-300' : 'text-yellow-600 hover:text-yellow-800'}`}>Click Aquí</Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

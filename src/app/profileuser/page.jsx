@@ -1,16 +1,19 @@
-"use client"; // Indicar que es un Client Component para Next.js
-
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../config/config";
-// Si en tu proyecto tienes un contexto de Auth con el tema, puedes importarlo así:
-// import { useAuth } from "../context/authContext";
+import { useAuth } from '../../context/authContext';
+import {
+  FiUser, FiMail, FiPhone, FiCalendar, FiKey, FiShield, FiClock, FiEdit, FiSave, FiX
+} from "react-icons/fi";
 
 function UserProfile() {
+  const { theme, toggleTheme } = useAuth();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  // const { theme } = useAuth(); // Si tu contexto maneja un "theme"
+  const [editMode, setEditMode] = useState(false);
+  const [formData, setFormData] = useState({});
   const router = useRouter();
 
   useEffect(() => {
@@ -18,15 +21,20 @@ function UserProfile() {
       try {
         const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/profile`, {
           method: 'GET',
-          credentials: 'include', // Para enviar la cookie JWT al backend
+          credentials: 'include',
         });
         const data = await response.json();
 
         if (response.ok) {
           setUserData(data);
+          setFormData({
+            name: data.name,
+            lastname: data.lastname,
+            telefono: data.telefono,
+            fechadenacimiento: data.fechadenacimiento
+          });
           setError("");
         } else {
-          // Si la respuesta no es OK, mostramos el mensaje de error devuelto por el backend
           setError(data.message || "Error al obtener el perfil");
         }
       } catch (err) {
@@ -40,80 +48,269 @@ function UserProfile() {
     fetchProfile();
   }, []);
 
-  // Manejo de estados de carga y error
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/update-profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUserData(data);
+        setEditMode(false);
+      } else {
+        setError(data.message || "Error al actualizar el perfil");
+      }
+    } catch (err) {
+      console.error("Error actualizando perfil:", err);
+      setError("Error interno del servidor");
+    }
+  };
+
   if (loading) {
-    return <p>Cargando...</p>;
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      </div>
+    );
   }
 
   if (error) {
-    return <p>{error}</p>;
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
+          <p>{error}</p>
+        </div>
+      </div>
+    );
   }
 
   if (!userData) {
-    return <p>No hay datos de usuario</p>;
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
+        <p>No hay datos de usuario</p>
+      </div>
+    );
   }
 
-  // Renderizado del perfil
   return (
-    <div
-      // Si quieres aplicar un tema, podrías hacer algo como:
-      // className={`min-h-screen p-8 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}
-      className="min-h-screen p-8 bg-white text-gray-900"
-    >
-      <h1 className="text-3xl font-bold mb-6 text-center">Perfil del Usuario</h1>
-      <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8">
-        <div className="grid grid-cols-1 gap-6">
+    <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold flex items-center">
+            <FiUser className="mr-2" /> Mi Perfil
+          </h1>
+        </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Nombre:</label>
-            <p className="text-lg text-gray-800">{userData.name}</p>
+        <div className={`rounded-lg shadow-xl overflow-hidden ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className={`p-6 ${theme === 'dark' ? 'bg-gray-700' : 'bg-green-600'} text-white`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-semibold">
+                  {userData.name} {userData.lastname}
+                </h2>
+                <p className="flex items-center mt-1">
+                  <FiMail className="mr-2" /> {userData.email}
+                </p>
+              </div>
+              <div className="flex space-x-2">
+                {!editMode ? (
+                  <button
+                    onClick={() => setEditMode(true)}
+                    className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-600 hover:bg-gray-500' : 'bg-green-700 hover:bg-blue-400'}`}
+                    title="Editar perfil"
+                  >
+                    <FiEdit />
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSubmit}
+                      className="p-2 rounded-full bg-green-500 hover:bg-green-400"
+                      title="Guardar cambios"
+                    >
+                      <FiSave />
+                    </button>
+                    <button
+                      onClick={() => setEditMode(false)}
+                      className="p-2 rounded-full bg-red-500 hover:bg-red-400"
+                      title="Cancelar edición"
+                    >
+                      <FiX />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Apellido:</label>
-            <p className="text-lg text-gray-800">{userData.lastname}</p>
-          </div>
+          <div className="p-6">
+            {editMode ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 flex items-center">
+                    <FiUser className="mr-2" /> Nombre
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    className={`w-full p-2 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                  />
+                </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Email:</label>
-            <p className="text-lg text-gray-800">{userData.email}</p>
-          </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 flex items-center">
+                    <FiUser className="mr-2" /> Apellido
+                  </label>
+                  <input
+                    type="text"
+                    name="lastname"
+                    value={formData.lastname}
+                    onChange={handleInputChange}
+                    className={`w-full p-2 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                  />
+                </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Teléfono:</label>
-            <p className="text-lg text-gray-800">{userData.telefono}</p>
-          </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 flex items-center">
+                    <FiPhone className="mr-2" /> Teléfono
+                  </label>
+                  <input
+                    type="text"
+                    name="telefono"
+                    value={formData.telefono}
+                    onChange={handleInputChange}
+                    className={`w-full p-2 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                  />
+                </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Fecha de Nacimiento:</label>
-            <p className="text-lg text-gray-800">
-              {new Date(userData.fechadenacimiento).toLocaleDateString()}
-            </p>
-          </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 flex items-center">
+                    <FiCalendar className="mr-2" /> Fecha de Nacimiento
+                  </label>
+                  <input
+                    type="date"
+                    name="fechadenacimiento"
+                    value={formData.fechadenacimiento ? new Date(formData.fechadenacimiento).toISOString().split('T')[0] : ''}
+                    onChange={handleInputChange}
+                    className={`w-full p-2 rounded border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-300'}`}
+                  />
+                </div>
+              </form>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <FiUser className="mr-2" /> Información Personal
+                    </h3>
+                    <div className="space-y-3">
+                      <p>
+                        <span className="font-medium">Nombre:</span> {userData.name}
+                      </p>
+                      <p>
+                        <span className="font-medium">Apellido:</span> {userData.lastname}
+                      </p>
+                      <p>
+                        <span className="font-medium">Teléfono:</span> {userData.telefono || 'No especificado'}
+                      </p>
+                      <p>
+                        <span className="font-medium">Fecha Nacimiento:</span>{" "}
+                        {new Date(userData.fechadenacimiento).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Pregunta Secreta:</label>
-            <p className="text-lg text-gray-800">{userData.preguntaSecreta}</p>
-          </div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <FiShield className="mr-2" /> Seguridad
+                    </h3>
+                    <div className="space-y-3">
+                      <p>
+                        <span className="font-medium">Pregunta Secreta:</span> {userData.preguntaSecreta}
+                      </p>
+                      <p>
+                        <span className="font-medium">Rol:</span>{" "}
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          userData.role === 'admin' 
+                            ? 'bg-purple-100 text-purple-800' 
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {userData.role}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Respuesta Secreta:</label>
-            <p className="text-lg text-gray-800">{userData.respuestaSecreta}</p>
-          </div>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <FiClock className="mr-2" /> Actividad
+                    </h3>
+                    <div className="space-y-3">
+                      <p>
+                        <span className="font-medium">Último inicio:</span>{" "}
+                        {userData.lastLogin
+                          ? new Date(userData.lastLogin).toLocaleString()
+                          : "Nunca"}
+                      </p>
+                      <p>
+                        <span className="font-medium">Cuenta creada:</span>{" "}
+                        {new Date(userData.createdAt).toLocaleDateString()}
+                      </p>
+                      <p>
+                        <span className="font-medium">Última actualización:</span>{" "}
+                        {new Date(userData.updatedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
 
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Rol:</label>
-            <p className="text-lg text-gray-800">{userData.role}</p>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                      <FiKey className="mr-2" /> Estado de la Cuenta
+                    </h3>
+                    <div className="space-y-3">
+                      <p>
+                        <span className="font-medium">Verificada:</span>{" "}
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          userData.verified 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {userData.verified ? "Sí" : "No"}
+                        </span>
+                      </p>
+                      <p>
+                        <span className="font-medium">Bloqueada:</span>{" "}
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          userData.blocked 
+                            ? 'bg-red-100 text-red-800' 
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {userData.blocked ? "Sí" : "No"}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-
-          <div className="mb-4">
-            <label className="block text-gray-700 font-semibold">Último Inicio de Sesión:</label>
-            <p className="text-lg text-gray-800">
-              {userData.lastLogin ? new Date(userData.lastLogin).toLocaleString() : "N/A"}
-            </p>
-          </div>
-
-          {/* Puedes agregar más campos si los tienes en tu modelo */}
         </div>
       </div>
     </div>

@@ -1,5 +1,4 @@
-"use client"; // Indicar que es un Client Component
-
+"use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -10,75 +9,160 @@ import {
   FaFileInvoice,
   FaMoon,
   FaSun,
+  FaChevronDown,
+  FaChevronUp,
+  FaHome,
+  FaBoxes,
+  FaTags,
+  FaInfoCircle,
+  FaPhone,
+  FaTruck,
+  FaSignInAlt,
+  FaUserPlus,
 } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { useLogo } from "../context/LogoContext";
 import { useAuth } from "../context/authContext";
 import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../app/config/config";
+import { useCart } from "../context/CartContext";
 
 function Navbar() {
   const { isAuthenticated, user, logout, theme, toggleTheme } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
-  const [documentAdminMenuOpen, setDocumentAdminMenuOpen] = useState(false);
-  const [productAdminMenuOpen, setProductAdminMenuOpen] = useState(false); // Definición añadida para menú de productos
+  const [documentsMenuOpen, setDocumentsMenuOpen] = useState(false);
+  const [productsMenuOpen, setProductsMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const dropdownRef = useRef(null);
   const router = useRouter();
-  // Tomamos `logoUrl`, `setLogoUrl` y `fetchLogo` del LogoContext
-  const { logoUrl, setLogoUrl, fetchLogo } = useLogo();
+  const { logoUrl } = useLogo();
+  const { cartCount } = useCart();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-  const toggleAdminMenu = () => setAdminMenuOpen(!adminMenuOpen);
-  const toggleDocumentAdminMenu = () =>
-    setDocumentAdminMenuOpen(!documentAdminMenuOpen);
+  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDropdownOpen(false);
         setAdminMenuOpen(false);
-        setDocumentAdminMenuOpen(false);
+        setDocumentsMenuOpen(false);
+        setProductsMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Si deseas refrescar el logo manualmente (por ejemplo, en un botón), puedes llamar `fetchLogo()`.
-  // useEffect(() => {
-  //   fetchLogo();
-  // }, []);
-
   const handleLogout = async () => {
     await logout();
     router.push("/");
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setIsSearching(true);
+      router.push(`/ventaProducto?search=${encodeURIComponent(searchQuery)}`);
+      // Resetear el estado de búsqueda después de un pequeño delay
+      setTimeout(() => setIsSearching(false), 1000);
+    }
+  };
+
+  // Navegación principal con íconos
+  const mainNavItems = [
+    { name: "Inicio", path: "/", icon: FaHome },
+    { name: "Catálogo", path: "/ventaProducto", icon: FaBoxes },
+    { name: "Marcas", path: "/", icon: FaTags },
+    { name: "Ofertas", path: "/", icon: FaTags },
+    { name: "Sobre Nosotros", path: "/nosotros", icon: FaInfoCircle },
+    { name: "Contacto", path: "/contacto", icon: FaPhone },
+    { name: "Seguimiento", path: "/", icon: FaTruck },
+  ];
+
   return (
     <>
-      {/* Barra superior con mensaje desplazable */}
+      {/* Barra superior promocional mejorada */}
       <div
-        className={`relative py-3 overflow-hidden ${
+        className={`w-full py-3 overflow-hidden relative ${
           theme === "dark"
-            ? "bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-gray-200"
-            : "bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-500 text-white"
+            ? "bg-gray-800"
+            : "bg-gradient-to-r from-green-600 to-green-700"
         }`}
       >
-        <div className="flex items-center justify-center overflow-hidden">
-          <div className="whitespace-nowrap animate-marquee flex space-x-8 text-lg font-semibold tracking-wide">
-            <span className="px-4">
-              ✨ La pieza exacta para cada necesidad ✨
-            </span>
-            <span className="px-4">
-              🔥 Grandes descuentos y promociones de temporada 🔥
-            </span>
-            <span className="px-4">
-              🚀 La pieza exacta para cada necesidad 🚀
-            </span>
-            <span className="px-4">
-              🎉 Grandes descuentos y promociones de temporada 🎉
-            </span>
+        <div className="absolute inset-0 overflow-hidden">
+          <div
+            className={`absolute inset-0 opacity-10 ${
+              theme === "dark"
+                ? "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZD0iTTAgMEwxMDAgMTAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')]"
+                : "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZD0iTTAgMEwxMDAgMTAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')]"
+            }`}
+          ></div>
+        </div>
+
+        <div className="relative flex items-center justify-center overflow-hidden">
+          <div className="whitespace-nowrap animate-marquee flex items-center space-x-16">
+            {/* Mensajes promocionales con íconos */}
+            {[
+              { icon: "check", text: "ENVÍO GRATIS EN COMPRAS MAYORES A $500" },
+              {
+                icon: "fire",
+                text: "PROMOCIONES ESPECIALES EN REFACCIONES ORIGINALES",
+              },
+              {
+                icon: "shield",
+                text: "GARANTÍA EN TODAS NUESTRAS PIEZAS AUTOMOTRICES",
+              },
+            ].map((item, index) => (
+              <div key={index} className="flex items-center space-x-3">
+                {item.icon === "check" && (
+                  <svg
+                    className="w-5 h-5 text-yellow-300"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+                {item.icon === "fire" && (
+                  <svg
+                    className="w-5 h-5 text-yellow-300"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+                {item.icon === "shield" && (
+                  <svg
+                    className="w-5 h-5 text-yellow-300"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z"
+                      clipRule="evenodd"
+                    />
+                    <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z" />
+                  </svg>
+                )}
+                <span className="text-sm font-semibold tracking-wide text-white">
+                  {item.text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -86,342 +170,623 @@ function Navbar() {
       <style jsx>{`
         @keyframes marquee {
           0% {
-            transform: translateX(100%);
+            transform: translateX(0);
           }
           100% {
-            transform: translateX(-100%);
+            transform: translateX(-50%);
           }
         }
         .animate-marquee {
-          display: flex;
-          animation: marquee 15s linear infinite;
+          display: inline-flex;
+          animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+          animation-play-state: paused;
         }
       `}</style>
 
       {/* Navbar principal */}
       <nav
-        className={`sticky top-0 w-full z-50 shadow-md ${
-          theme === "dark"
-            ? "bg-gray-900 border-gray-700 text-gray-200"
-            : "bg-white border-gray-200 text-gray-700"
-        }`}
+        className={`sticky top-0 w-full z-50 ${
+          theme === "dark" ? "bg-gray-900" : "bg-white"
+        } shadow-md`}
       >
-        <div className="container mx-auto flex justify-between items-center py-4">
-          {/* Logo y Menú de Categorías */}
-          <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center">
-              {/* Si logoUrl está cargando (null), muestra un placeholder */}
-              {logoUrl ? (
-                <Image
-                  src={logoUrl}
-                  alt="Muñoz Logo"
-                  width={100}
-                  height={40}
-                  className="object-contain"
-                />
-              ) : (
-                <div className="w-[100px] h-[40px] bg-gray-300 animate-pulse" />
-              )}
-            </Link>
-            <button
-              className={`flex items-center font-bold ${
-                theme === "dark"
-                  ? "text-gray-200 hover:text-yellow-400"
-                  : "text-black hover:text-yellow-600"
-              }`}
-            >
-              <FaBars className="mr-2" />
-              Menú de Categorías
-            </button>
-          </div>
-          {/* Campo de Búsqueda */}
-          <form
-            action="/ventaProducto" // Redirige a la página de productos
-            method="GET" // Usa el método GET para pasar el parámetro en la URL
-            className="flex items-center w-1/2"
-          >
-            <input
-              type="text"
-              name="search" // Nombre del parámetro que se enviará en la URL
-              placeholder="Buscar producto"
-              className={`w-full px-4 py-2 rounded-l-lg focus:outline-none ${
-                theme === "dark"
-                  ? "bg-gray-800 border-gray-700 text-gray-200"
-                  : "border-gray-300"
-              }`}
-            />
-            <button
-              type="submit" // Botón para enviar el formulario
-              className={`px-4 py-2 rounded-r-lg ${
-                theme === "dark"
-                  ? "bg-yellow-500 text-gray-900"
-                  : "bg-yellow-500 text-white hover:bg-yellow-600"
-              }`}
-            >
-              <FiSearch className="w-5 h-5" />
-            </button>
-          </form>
-
-          {/* Íconos de Usuario, Cotizador, Carrito y Menú */}
-          <div className="flex items-center space-x-6">
-            <div className="relative" ref={dropdownRef}>
+        <div className="container mx-auto px-4">
+          {/* Primera fila - Logo, búsqueda y acciones */}
+          <div className="flex items-center justify-between py-3">
+            {/* Logo y menú hamburguesa móvil */}
+            <div className="flex items-center">
               <button
-                onClick={toggleDropdown}
-                className={`flex flex-col items-center ${
+                onClick={toggleMobileMenu}
+                className={`mr-4 p-2 rounded-full md:hidden ${
                   theme === "dark"
-                    ? "text-gray-200 hover:text-yellow-400"
-                    : "text-gray-700 hover:text-yellow-600"
+                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
                 }`}
               >
-                <FaUser className="w-6 h-6" />
-                <span className="text-sm">
-                  {isAuthenticated ? user?.name : "Iniciar Sesión"}
-                </span>
+                <FaBars className="w-5 h-5" />
               </button>
 
-              {/* Dropdown de usuario */}
-              {dropdownOpen && (
-                <div
-                  className={`absolute right-0 mt-2 w-64 shadow-lg rounded-lg py-4 z-50 ${
-                    theme === "dark"
-                      ? "bg-gray-800 text-gray-200"
-                      : "bg-white text-gray-700"
-                  }`}
-                >
-                  {!isAuthenticated ? (
-                    <div className="flex justify-around items-center pb-4 border-b border-gray-300">
-                      <Link href="/login">
-                        <p
-                          className={`px-4 py-2 rounded-lg ${
-                            theme === "dark"
-                              ? "border border-gray-500 text-gray-300 hover:bg-gray-700"
-                              : "bg-transparent border border-gray-500 text-gray-500 hover:bg-gray-100 hover:text-green-700"
-                          }`}
-                        >
-                          Ingresar
-                        </p>
-                      </Link>
-                      <Link href="/register">
-                        <p className="bg-green-700 text-white hover:bg-green-600 px-4 py-2 rounded-lg">
-                          Crear Cuenta
-                        </p>
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="px-4 py-2">
-                      <p className="text-sm font-semibold">
-                        ¡Hola, {user?.name}!
-                      </p>
-                      <Link href="/profileuser">
-                        <p
-                          className={`mt-2 font-semibold ${
-                            theme === "dark"
-                              ? "hover:text-yellow-400"
-                              : "hover:text-green-700"
-                          }`}
-                        >
-                          Ver perfil
-                        </p>
-                      </Link>
-                      {user?.role === "admin" && (
-                        <div className="mt-4">
-                          <button
-                            onClick={toggleAdminMenu}
-                            className={`w-full text-left font-semibold ${
-                              theme === "dark"
-                                ? "hover:text-yellow-400"
-                                : "hover:text-green-700"
-                            }`}
-                          >
-                            Opciones de Administrador
-                          </button>
-                          {adminMenuOpen && (
-                            <div
-                              className={`mt-2 border-t ${
-                                theme === "dark"
-                                  ? "bg-gray-800 border-gray-700"
-                                  : "bg-gray-50 border-gray-200"
-                              }`}
-                            >
-                              <Link href="/adminDashboard">
-                                <p
-                                  className={`mt-2 ${
-                                    theme === "dark"
-                                      ? "hover:text-yellow-400"
-                                      : "hover:text-green-700"
-                                  }`}
-                                >
-                                  Dashboard Admin
-                                </p>
-                              </Link>
-                              <Link href="/adminUsuarios">
-                                <p
-                                  className={`mt-2 ${
-                                    theme === "dark"
-                                      ? "hover:text-yellow-400"
-                                      : "hover:text-green-700"
-                                  }`}
-                                >
-                                  Administrar Usuarios
-                                </p>
-                              </Link>
-                            </div>
-                          )}
-                          {user?.role === "admin" && (
-                            <div className="mt-4">
-                              <button
-                                onClick={toggleDocumentAdminMenu}
-                                className={`w-full text-left font-semibold ${
-                                  theme === "dark"
-                                    ? "hover:text-yellow-400"
-                                    : "hover:text-green-700"
-                                }`}
-                              >
-                                Gestión de Documentos
-                              </button>
-                              {documentAdminMenuOpen && (
-                                <div
-                                  className={`mt-2 border-t ${
-                                    theme === "dark"
-                                      ? "bg-gray-800 border-gray-700"
-                                      : "bg-gray-50 border-gray-200"
-                                  }`}
-                                >
-                                  <Link href="/adminDocumentos">
-                                    <p
-                                      className={`mt-2 ${
-                                        theme === "dark"
-                                          ? "hover:text-yellow-400"
-                                          : "hover:text-green-700"
-                                      }`}
-                                    >
-                                      Administrar Politicas
-                                    </p>
-                                  </Link>
-                                  <Link href="/adminDocumentos2">
-                                    <p
-                                      className={`mt-2 ${
-                                        theme === "dark"
-                                          ? "hover:text-yellow-400"
-                                          : "hover:text-green-700"
-                                      }`}
-                                    >
-                                      Administrar Terminos
-                                    </p>
-                                  </Link>
-                                  <Link href="/adminDocumentos3">
-                                    <p
-                                      className={`mt-2 ${
-                                        theme === "dark"
-                                          ? "hover:text-yellow-400"
-                                          : "hover:text-green-700"
-                                      }`}
-                                    >
-                                      Administrar Deslinde
-                                    </p>
-                                  </Link>
-                                  <Link href="/adminLogo">
-                                    <p
-                                      className={`mt-2 ${
-                                        theme === "dark"
-                                          ? "hover:text-yellow-400"
-                                          : "hover:text-green-700"
-                                      }`}
-                                    >
-                                      Administrar Logo
-                                    </p>
-                                  </Link>
-                                </div>
-                              )}
-                              <button
-                                onClick={() =>
-                                  setProductAdminMenuOpen(!productAdminMenuOpen)
-                                }
-                                className={`${
-                                  theme === "dark"
-                                    ? "hover:text-yellow-400"
-                                    : "hover:text-green-700"
-                                }`}
-                              >
-                                Gestión de Productos
-                              </button>
-                              {productAdminMenuOpen && (
-                                <div
-                                  className={`mt-2 border-t ${
-                                    theme === "dark"
-                                      ? "bg-gray-800 border-gray-700"
-                                      : "bg-gray-50 border-gray-200"
-                                  }`}
-                                >
-                                  <Link href="/adminProductos">
-                                    <p
-                                      className={`mt-2 ${
-                                        theme === "dark"
-                                          ? "hover:text-yellow-400"
-                                          : "hover:text-green-700"
-                                      }`}
-                                    >
-                                      Administrar Todos los Productos
-                                    </p>
-                                  </Link>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      )}
-                      <button
-                        onClick={handleLogout}
-                        className="mt-2 text-red-500 hover:text-red-400"
-                      >
-                        Cerrar sesión
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+              <Link href="/" className="flex items-center">
+                {logoUrl ? (
+                  <Image
+                    src={logoUrl}
+                    alt="Logo de la tienda"
+                    width={120}
+                    height={50}
+                    className="object-contain"
+                    priority
+                  />
+                ) : (
+                  <div className="w-[120px] h-[50px] bg-gray-300 animate-pulse" />
+                )}
+              </Link>
             </div>
 
-            <Link
-              href="/cotizador"
-              className={`flex flex-col items-center ${
-                theme === "dark"
-                  ? "text-gray-200 hover:text-yellow-400"
-                  : "text-gray-700 hover:text-yellow-600"
-              }`}
-            >
-              <FaFileInvoice className="w-6 h-6" />
-              <span className="text-sm">Facturar</span>
-            </Link>
+            {/* Búsqueda - Solo en desktop */}
+            <div className="hidden md:flex items-center flex-1 max-w-2xl mx-6">
+              <form onSubmit={handleSearch} className="flex w-full">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Buscar producto, marca, categoría..."
+                  className={`w-full px-4 py-2 rounded-l-lg border ${
+                    theme === "dark"
+                      ? "bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-400"
+                      : "border-gray-300 placeholder-gray-500"
+                  } focus:outline-none focus:ring-2 focus:ring-yellow-500`}
+                />
+                <button
+                  type="submit"
+                  disabled={isSearching}
+                  className={`px-4 py-2 rounded-r-lg flex items-center ${
+                    theme === "dark"
+                      ? "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
+                      : "bg-yellow-500 text-white hover:bg-yellow-600"
+                  } ${isSearching ? "opacity-75 cursor-not-allowed" : ""}`}
+                >
+                  {isSearching ? (
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-900"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    <FiSearch className="w-5 h-5" />
+                  )}
+                </button>
+              </form>
+            </div>
 
-            <Link
-              href="/ventaProducto"
-              className={`flex flex-col items-center ${
-                theme === "dark"
-                  ? "text-gray-200 hover:text-yellow-400"
-                  : "text-gray-700 hover:text-yellow-600"
-              }`}
-            >
-              <FaShoppingCart className="w-6 h-6" />
-              <span className="text-sm">Tienda</span>
-            </Link>
+            {/* Acciones */}
+            <div className="flex items-center space-x-4">
+              {/* Botón de tema */}
+              <button
+                onClick={toggleTheme}
+                className={`p-2 rounded-full hidden sm:inline-flex ${
+                  theme === "dark"
+                    ? "text-yellow-400 hover:bg-gray-700"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+                aria-label={`Cambiar a modo ${
+                  theme === "dark" ? "claro" : "oscuro"
+                }`}
+              >
+                {theme === "light" ? (
+                  <FaMoon className="w-5 h-5" />
+                ) : (
+                  <FaSun className="w-5 h-5" />
+                )}
+              </button>
 
-            {/* Botón de alternancia de tema con iconos de sol/luna */}
-            <button
-              onClick={toggleTheme}
-              className={`flex items-center justify-center ${
-                theme === "dark"
-                  ? "text-yellow-400"
-                  : "text-gray-700 hover:text-yellow-600"
-              }`}
-            >
-              {theme === "light" ? (
-                <FaMoon className="w-6 h-6" title="Modo Oscuro" />
-              ) : (
-                <FaSun className="w-6 h-6" title="Modo Claro" />
+              {/* Carrito con indicador */}
+              <Link
+                href="/carrito"
+                className={`p-2 rounded-full relative ${
+                  theme === "dark"
+                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                }`}
+                aria-label="Carrito de compras"
+              >
+                <FaShoppingCart className="w-5 h-5" />
+                {/* Indicador de items en carrito - ahora con el contador real */}
+                {cartCount > 0 && (
+                  <span
+                    className={`absolute -top-1 -right-1 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold ${
+                      theme === "dark"
+                        ? "bg-yellow-500 text-gray-900"
+                        : "bg-yellow-600 text-white"
+                    }`}
+                  >
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Facturación (solo visible para usuarios autenticados) */}
+              {(isAuthenticated || user?.role === "admin") && (
+                <Link
+                  href="/cotizador"
+                  className={`p-2 rounded-full ${
+                    theme === "dark"
+                      ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                      : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                  }`}
+                  aria-label="Facturación"
+                >
+                  <FaFileInvoice className="w-5 h-5" />
+                </Link>
               )}
-            </button>
+
+              {/* Usuario con tooltip */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={toggleDropdown}
+                  className={`p-2 rounded-full group relative ${
+                    theme === "dark"
+                      ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                      : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                  }`}
+                  aria-label="Menú de usuario"
+                >
+                  <FaUser className="w-5 h-5" />
+                  {/* Tooltip para indicar que es clickeable */}
+                  <span
+                    className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap text-xs px-2 py-1 rounded ${
+                      theme === "dark"
+                        ? "bg-gray-700 text-yellow-400"
+                        : "bg-gray-200 text-gray-700"
+                    } opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}
+                  >
+                    Mi cuenta
+                  </span>
+                </button>
+
+                {/* Dropdown de usuario */}
+                {dropdownOpen && (
+                  <div
+                    className={`absolute right-0 mt-2 w-64 shadow-lg rounded-lg py-2 z-50 ${
+                      theme === "dark"
+                        ? "bg-gray-800 text-gray-200 border border-gray-700"
+                        : "bg-white text-gray-700 border border-gray-200"
+                    }`}
+                  >
+                    {!isAuthenticated ? (
+                      <div className="p-4">
+                        <p className="mb-3 text-sm">Accede a tu cuenta</p>
+                        <div className="flex flex-col space-y-2">
+                          <Link href="/login">
+                            <button
+                              className={`w-full py-2 rounded-lg text-sm flex items-center justify-center ${
+                                theme === "dark"
+                                  ? "border border-gray-600 hover:bg-gray-700"
+                                  : "border border-gray-300 hover:bg-gray-50"
+                              }`}
+                            >
+                              <FaSignInAlt className="mr-2" /> Iniciar Sesión
+                            </button>
+                          </Link>
+                          <Link href="/register">
+                            <button className="w-full py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-sm flex items-center justify-center">
+                              <FaUserPlus className="mr-2" /> Crear Cuenta
+                            </button>
+                          </Link>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <div
+                            className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                              theme === "dark" ? "bg-gray-700" : "bg-gray-100"
+                            }`}
+                          >
+                            <FaUser className="text-lg" />
+                          </div>
+                          <div>
+                            <p className="font-medium">{user?.name}</p>
+                            <p className="text-xs opacity-75">{user?.email}</p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Link href="/profileuser">
+                            <p
+                              className={`flex items-center py-2 px-3 rounded ${
+                                theme === "dark"
+                                  ? "hover:bg-gray-700 hover:text-yellow-400"
+                                  : "hover:bg-gray-100 hover:text-yellow-600"
+                              }`}
+                            >
+                              <FaUser className="mr-2 text-sm" /> Mi perfil
+                            </p>
+                          </Link>
+
+                          {user?.role === "admin" && (
+                            <>
+                              {/* Menú de Administrador */}
+                              <div
+                                className={`py-2 px-3 rounded cursor-pointer ${
+                                  theme === "dark"
+                                    ? "hover:bg-gray-700 hover:text-yellow-400"
+                                    : "hover:bg-gray-100 hover:text-yellow-600"
+                                }`}
+                                onClick={() => setAdminMenuOpen(!adminMenuOpen)}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center">
+                                    <FaUser className="mr-2 text-sm" />{" "}
+                                    Administración
+                                  </span>
+                                  {adminMenuOpen ? (
+                                    <FaChevronUp size={12} />
+                                  ) : (
+                                    <FaChevronDown size={12} />
+                                  )}
+                                </div>
+                                {adminMenuOpen && (
+                                  <div className="mt-2 ml-4 space-y-2">
+                                    <Link href="/adminDashboard">
+                                      <p
+                                        className={`py-1 px-2 rounded flex items-center ${
+                                          theme === "dark"
+                                            ? "hover:bg-gray-700 hover:text-yellow-400"
+                                            : "hover:bg-gray-100 hover:text-yellow-600"
+                                        }`}
+                                      >
+                                        <span className="ml-4">Dashboard</span>
+                                      </p>
+                                    </Link>
+                                    <Link href="/adminUsuarios">
+                                      <p
+                                        className={`py-1 px-2 rounded flex items-center ${
+                                          theme === "dark"
+                                            ? "hover:bg-gray-700 hover:text-yellow-400"
+                                            : "hover:bg-gray-100 hover:text-yellow-600"
+                                        }`}
+                                      >
+                                        <span className="ml-4">Usuarios</span>
+                                      </p>
+                                    </Link>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Menú de Documentos */}
+                              <div
+                                className={`py-2 px-3 rounded cursor-pointer ${
+                                  theme === "dark"
+                                    ? "hover:bg-gray-700 hover:text-yellow-400"
+                                    : "hover:bg-gray-100 hover:text-yellow-600"
+                                }`}
+                                onClick={() =>
+                                  setDocumentsMenuOpen(!documentsMenuOpen)
+                                }
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center">
+                                    <FaFileInvoice className="mr-2 text-sm" />{" "}
+                                    Documentos
+                                  </span>
+                                  {documentsMenuOpen ? (
+                                    <FaChevronUp size={12} />
+                                  ) : (
+                                    <FaChevronDown size={12} />
+                                  )}
+                                </div>
+                                {documentsMenuOpen && (
+                                  <div className="mt-2 ml-4 space-y-2">
+                                    {[
+                                      {
+                                        path: "/adminDocumentos",
+                                        name: "Políticas",
+                                      },
+                                      {
+                                        path: "/adminDocumentos2",
+                                        name: "Términos",
+                                      },
+                                      {
+                                        path: "/adminDocumentos3",
+                                        name: "Deslinde",
+                                      },
+                                      { path: "/adminLogo", name: "Logo" },
+                                    ].map((doc, i) => (
+                                      <Link key={i} href={doc.path}>
+                                        <p
+                                          className={`py-1 px-2 rounded flex items-center ${
+                                            theme === "dark"
+                                              ? "hover:bg-gray-700 hover:text-yellow-400"
+                                              : "hover:bg-gray-100 hover:text-yellow-600"
+                                          }`}
+                                        >
+                                          <span className="ml-4">
+                                            {doc.name}
+                                          </span>
+                                        </p>
+                                      </Link>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Menú de Productos */}
+                              <div
+                                className={`py-2 px-3 rounded cursor-pointer ${
+                                  theme === "dark"
+                                    ? "hover:bg-gray-700 hover:text-yellow-400"
+                                    : "hover:bg-gray-100 hover:text-yellow-600"
+                                }`}
+                                onClick={() =>
+                                  setProductsMenuOpen(!productsMenuOpen)
+                                }
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="flex items-center">
+                                    <FaBoxes className="mr-2 text-sm" />{" "}
+                                    Productos
+                                  </span>
+                                  {productsMenuOpen ? (
+                                    <FaChevronUp size={12} />
+                                  ) : (
+                                    <FaChevronDown size={12} />
+                                  )}
+                                </div>
+                                {productsMenuOpen && (
+                                  <div className="mt-2 ml-4 space-y-2">
+                                    <Link href="/adminProductos">
+                                      <p
+                                        className={`py-1 px-2 rounded flex items-center ${
+                                          theme === "dark"
+                                            ? "hover:bg-gray-700 hover:text-yellow-400"
+                                            : "hover:bg-gray-100 hover:text-yellow-600"
+                                        }`}
+                                      >
+                                        <span className="ml-4">
+                                          Todos los Productos
+                                        </span>
+                                      </p>
+                                    </Link>
+                                    <Link href="/adminDashboardProductos">
+                                      <p
+                                        className={`py-1 px-2 rounded flex items-center ${
+                                          theme === "dark"
+                                            ? "hover:bg-gray-700 hover:text-yellow-400"
+                                            : "hover:bg-gray-100 hover:text-yellow-600"
+                                        }`}
+                                      >
+                                        <span className="ml-4">
+                                          Estadísticas
+                                        </span>
+                                      </p>
+                                    </Link>
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          )}
+
+                          <button
+                            onClick={handleLogout}
+                            className={`w-full text-left py-2 px-3 rounded flex items-center ${
+                              theme === "dark"
+                                ? "hover:bg-gray-700 text-red-400 hover:text-red-300"
+                                : "hover:bg-gray-100 text-red-600 hover:text-red-500"
+                            }`}
+                          >
+                            <FaSignInAlt className="mr-2 transform rotate-180" />{" "}
+                            Cerrar sesión
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+
+          {/* Segunda fila - Navegación principal */}
+          <div
+            className={`hidden md:flex items-center justify-center py-2 border-t ${
+              theme === "dark" ? "border-gray-700" : "border-gray-200"
+            }`}
+          >
+            <div className="flex space-x-6">
+              {mainNavItems.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.path}
+                  className={`py-2 px-1 text-sm font-medium flex items-center ${
+                    theme === "dark"
+                      ? "text-gray-300 hover:text-yellow-400"
+                      : "text-gray-700 hover:text-yellow-600"
+                  }`}
+                >
+                  <item.icon className="mr-2 text-sm" />
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Menú móvil desplegable */}
+          {mobileMenuOpen && (
+            <div
+              className={`md:hidden py-4 fixed inset-0 bg-black bg-opacity-50 z-40 ${
+                theme === "dark" ? "text-gray-200" : "text-gray-700"
+              }`}
+              onClick={toggleMobileMenu}
+            >
+              <div
+                className={`w-4/5 h-full overflow-y-auto ${
+                  theme === "dark" ? "bg-gray-800" : "bg-white"
+                }`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-4">
+                  {/* Búsqueda en móvil */}
+                  <form onSubmit={handleSearch} className="mb-6">
+                    <div className="flex w-full">
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Buscar producto..."
+                        className={`w-full px-4 py-2 rounded-l-lg border ${
+                          theme === "dark"
+                            ? "bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400"
+                            : "border-gray-300 placeholder-gray-500"
+                        } focus:outline-none focus:ring-2 focus:ring-yellow-500`}
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSearching}
+                        className={`px-4 py-2 rounded-r-lg ${
+                          theme === "dark"
+                            ? "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
+                            : "bg-yellow-500 text-white hover:bg-yellow-600"
+                        } ${
+                          isSearching ? "opacity-75 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        <FiSearch className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </form>
+
+                  {/* Navegación en móvil */}
+                  <div className="space-y-1">
+                    {mainNavItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.path}
+                        className={`block py-3 px-4 rounded flex items-center ${
+                          theme === "dark"
+                            ? "hover:bg-gray-700 hover:text-yellow-400"
+                            : "hover:bg-gray-100 hover:text-yellow-600"
+                        }`}
+                        onClick={toggleMobileMenu}
+                      >
+                        <item.icon className="mr-3" />
+                        {item.name}
+                      </Link>
+                    ))}
+
+                    {/* Opciones de cuenta */}
+                    <div className="border-t mt-4 pt-4">
+                      {!isAuthenticated ? (
+                        <>
+                          <Link href="/login">
+                            <div
+                              className={`block py-3 px-4 rounded flex items-center ${
+                                theme === "dark"
+                                  ? "hover:bg-gray-700 hover:text-yellow-400"
+                                  : "hover:bg-gray-100 hover:text-yellow-600"
+                              }`}
+                              onClick={toggleMobileMenu}
+                            >
+                              <FaSignInAlt className="mr-3" /> Iniciar Sesión
+                            </div>
+                          </Link>
+                          <Link href="/register">
+                            <div
+                              className={`block py-3 px-4 rounded flex items-center ${
+                                theme === "dark"
+                                  ? "hover:bg-gray-700 hover:text-yellow-400"
+                                  : "hover:bg-gray-100 hover:text-yellow-600"
+                              }`}
+                              onClick={toggleMobileMenu}
+                            >
+                              <FaUserPlus className="mr-3" /> Crear Cuenta
+                            </div>
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          <Link href="/profileuser">
+                            <div
+                              className={`block py-3 px-4 rounded flex items-center ${
+                                theme === "dark"
+                                  ? "hover:bg-gray-700 hover:text-yellow-400"
+                                  : "hover:bg-gray-100 hover:text-yellow-600"
+                              }`}
+                              onClick={toggleMobileMenu}
+                            >
+                              <FaUser className="mr-3" /> Mi Perfil
+                            </div>
+                          </Link>
+                          {user?.role === "admin" && (
+                            <>
+                              <div className="px-4 py-2 font-medium flex items-center">
+                                <FaUser className="mr-3" /> Administración
+                              </div>
+                              <div className="ml-6 space-y-1">
+                                <Link href="/adminDashboard">
+                                  <div
+                                    className={`block py-2 px-4 rounded flex items-center ${
+                                      theme === "dark"
+                                        ? "hover:bg-gray-700 hover:text-yellow-400"
+                                        : "hover:bg-gray-100 hover:text-yellow-600"
+                                    }`}
+                                    onClick={toggleMobileMenu}
+                                  >
+                                    Dashboard
+                                  </div>
+                                </Link>
+                                <Link href="/adminUsuarios">
+                                  <div
+                                    className={`block py-2 px-4 rounded flex items-center ${
+                                      theme === "dark"
+                                        ? "hover:bg-gray-700 hover:text-yellow-400"
+                                        : "hover:bg-gray-100 hover:text-yellow-600"
+                                    }`}
+                                    onClick={toggleMobileMenu}
+                                  >
+                                    Usuarios
+                                  </div>
+                                </Link>
+                              </div>
+                            </>
+                          )}
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              toggleMobileMenu();
+                            }}
+                            className={`w-full text-left py-3 px-4 rounded flex items-center ${
+                              theme === "dark"
+                                ? "hover:bg-gray-700 text-red-400 hover:text-red-300"
+                                : "hover:bg-gray-100 text-red-600 hover:text-red-500"
+                            }`}
+                          >
+                            <FaSignInAlt className="mr-3 transform rotate-180" />{" "}
+                            Cerrar Sesión
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
     </>

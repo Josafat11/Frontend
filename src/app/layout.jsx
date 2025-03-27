@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "../context/authContext";
 import { LogoProvider } from "../context/LogoContext"; // Importa LogoProvider
+import { CartProvider } from '../context/CartContext';
 import { ToastContainer } from "react-toastify"; // Importa ToastContainer
 import "react-toastify/dist/ReactToastify.css"; // Importa los estilos
 
@@ -29,10 +30,12 @@ export default function RootLayout({ children }) {
       >
         <AuthProvider>
           <LogoProvider>
+          <CartProvider>
             <Navbar />
             {children}
             <Footer />
             <ToastContainer position="top-center" autoClose={3000} /> {/* Aquí */}
+            </CartProvider>
           </LogoProvider>
         </AuthProvider>
       </body>
