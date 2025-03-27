@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from 'next/image';
 import { useAuth } from "../../context/authContext";
 import { useCart } from "../../context/CartContext";
 import { CONFIGURACIONES } from "../config/config";
 import { useRouter } from "next/navigation"; // Import correcto
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 import { useSearchParams } from "next/navigation";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import {
@@ -57,47 +58,47 @@ function ProductosPage() {
 
   // Obtener productos al cargar la página o cambiar filtros
 
-useEffect(() => {
-  const fetchProductos = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/productos?search=${busquedaGeneral}&categoria=${filtroCategoria}&minPrecio=${filtroRangoPrecio[0]}&maxPrecio=${filtroRangoPrecio[1]}&marca=${filtroMarca}&modelo=${filtroModelo}&anio=${filtroAnio}&stock=${filtroStock}&page=${paginacion.paginaActual}&pageSize=12`,
-        {
-          credentials: 'include', // Ahora usamos cookies en lugar de localStorage
+  useEffect(() => {
+    const fetchProductos = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(
+          `${CONFIGURACIONES.BASEURL2}/productos?search=${busquedaGeneral}&categoria=${filtroCategoria}&minPrecio=${filtroRangoPrecio[0]}&maxPrecio=${filtroRangoPrecio[1]}&marca=${filtroMarca}&modelo=${filtroModelo}&anio=${filtroAnio}&stock=${filtroStock}&page=${paginacion.paginaActual}&pageSize=12`,
+          {
+            credentials: "include", // Ahora usamos cookies en lugar de localStorage
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setProductos(data.productos);
+          setPaginacion({
+            paginaActual: data.paginacion.paginaActual,
+            totalPaginas: data.paginacion.totalPaginas,
+            totalProductos: data.paginacion.totalProductos,
+          });
+        } else {
+          throw new Error("Error al obtener los productos");
         }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setProductos(data.productos);
-        setPaginacion({
-          paginaActual: data.paginacion.paginaActual,
-          totalPaginas: data.paginacion.totalPaginas,
-          totalProductos: data.paginacion.totalProductos,
-        });
-      } else {
-        throw new Error("Error al obtener los productos");
+      } catch (error) {
+        console.error("Error:", error);
+        setError("Error al cargar los productos");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Error:", error);
-      setError("Error al cargar los productos");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    };
 
-  fetchProductos();
-}, [
-  busquedaGeneral,
-  filtroCategoria,
-  filtroRangoPrecio,
-  filtroMarca,
-  filtroModelo,
-  filtroAnio,
-  filtroStock,
-  paginacion.paginaActual,
-]);
+    fetchProductos();
+  }, [
+    busquedaGeneral,
+    filtroCategoria,
+    filtroRangoPrecio,
+    filtroMarca,
+    filtroModelo,
+    filtroAnio,
+    filtroStock,
+    paginacion.paginaActual,
+  ]);
 
   // Cambiar de página
   const cambiarPagina = (pagina) => {
@@ -148,36 +149,39 @@ useEffect(() => {
       });
       return;
     }
-  
+
     setIsAddingToCart(true);
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/carrito/agregar`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Se envían cookies automáticamente
-        body: JSON.stringify({
-          productId: Number(productId),
-          quantity: 1,
-        }),
-      });
-  
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/carrito/agregar`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Se envían cookies automáticamente
+          body: JSON.stringify({
+            productId: Number(productId),
+            quantity: 1,
+          }),
+        }
+      );
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Error al agregar al carrito");
       }
-  
+
       // Redirigir directamente al carrito
       router.push("/carrito");
     } catch (error) {
       console.error("Error al agregar al carrito:", error);
-  
+
       if (error.message.includes("stock")) {
         const stockMatch = error.message.match(/stockDisponible":(\d+)/);
         const stockDisponible = stockMatch ? stockMatch[1] : "desconocido";
-  
+
         Swal.fire({
           title: "Stock insuficiente",
           text: `No hay suficiente stock disponible. Stock actual: ${stockDisponible}`,
@@ -194,7 +198,6 @@ useEffect(() => {
       setIsAddingToCart(false);
     }
   };
-  
 
   const agregarAlCarrito = async (productId) => {
     if (!isAuthenticated) {
@@ -212,27 +215,30 @@ useEffect(() => {
       });
       return;
     }
-  
+
     setIsAddingToCart(true);
     try {
-      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/carrito/agregar`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Se envían cookies automáticamente
-        body: JSON.stringify({
-          productId: Number(productId),
-          quantity: 1,
-        }),
-      });
-  
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/carrito/agregar`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include", // Se envían cookies automáticamente
+          body: JSON.stringify({
+            productId: Number(productId),
+            quantity: 1,
+          }),
+        }
+      );
+
       const data = await response.json();
-  
+
       if (!response.ok) {
         throw new Error(data.message || "Error al agregar al carrito");
       }
-  
+
       // Mostrar confirmación sin redirigir
       Swal.fire({
         position: "top-end",
@@ -242,14 +248,14 @@ useEffect(() => {
         showConfirmButton: false,
         timer: 1500,
       });
-      refreshCart(); 
+      refreshCart();
     } catch (error) {
       console.error("Error al agregar al carrito:", error);
-  
+
       if (error.message.includes("stock")) {
         const stockMatch = error.message.match(/stockDisponible":(\d+)/);
         const stockDisponible = stockMatch ? stockMatch[1] : "desconocido";
-  
+
         Swal.fire({
           title: "Stock insuficiente",
           text: `No hay suficiente stock disponible. Stock actual: ${stockDisponible}`,
@@ -266,7 +272,6 @@ useEffect(() => {
       setIsAddingToCart(false);
     }
   };
-  
 
   return (
     <div
@@ -525,7 +530,7 @@ useEffect(() => {
                     theme === "dark" ? "bg-gray-700" : "bg-white"
                   }`}
                 >
-                  <FiSearch className="mr-1" /> "{busquedaGeneral}"
+                  <FiSearch className="mr-1" /> &quot;{busquedaGeneral}&quot;
                 </span>
               )}
 
@@ -629,10 +634,12 @@ useEffect(() => {
                       {/* Imagen del producto */}
                       <div className="relative h-48 bg-gray-100">
                         {producto.images.length > 0 ? (
-                          <img
+                          <Image
                             src={producto.images[0].url}
                             alt={producto.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            className="object-cover"
+                            unoptimized={true} // Necesario si usas output: 'export'
                           />
                         ) : (
                           <div
