@@ -29,21 +29,21 @@ function ContactoPage() {
 
   return (
     <div
-      className={`min-h-screen container mx-auto py-8 pt-36 ${
+      className={`min-h-screen container mx-auto py-8 pt-16 ${
         theme === "dark" ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
       }`}
     >
-      <h1 className="text-3xl font-bold text-center mb-8">Contacto</h1>
+      <h1 className="mb-8 text-3xl font-bold text-center">Contacto</h1>
 
       {/* Sección de información y formulario */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Información de contacto */}
         <div
           className={`p-6 rounded-lg shadow-lg ${
             theme === "dark" ? "bg-gray-700 text-gray-200" : "bg-gray-100 text-gray-900"
           }`}
         >
-          <h2 className="text-2xl font-bold mb-4">Información de Contacto</h2>
+          <h2 className="mb-4 text-2xl font-bold">Información de Contacto</h2>
           <p className="mb-4">
             Estamos aquí para ayudarte. Si tienes alguna pregunta o necesitas
             asistencia, no dudes en contactarnos.
@@ -115,7 +115,7 @@ function ContactoPage() {
             theme === "dark" ? "bg-gray-700 text-gray-200" : "bg-gray-100 text-gray-900"
           }`}
         >
-          <h2 className="text-2xl font-bold mb-4">Envíanos un Mensaje</h2>
+          <h2 className="mb-4 text-2xl font-bold">Envíanos un Mensaje</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block mb-2">Nombre</label>
@@ -193,7 +193,7 @@ function ContactoPage() {
 
       {/* Sección de redes sociales */}
       <div className="mt-8 text-center">
-        <h2 className="text-2xl font-bold mb-4">Síguenos en Redes Sociales</h2>
+        <h2 className="pt-16 mb-4 text-2xl font-bold">Contáctanos en Nuestras Redes Sociales</h2>
         <div className="flex justify-center space-x-4">
           <a
             href="https://facebook.com"

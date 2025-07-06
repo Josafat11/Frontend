@@ -73,16 +73,17 @@ function HomePage() {
   };
 
   return (
-    <div
-      className={`min-h-screen container mx-auto py-8 pt-36 ${
-        theme === "dark"
-          ? "bg-gray-900 text-gray-100"
-          : "bg-gray-50 text-gray-900"
-      }`}
-    >
+      <div
+        className={`min-h-screen container mx-auto py-8 pt-36 ${
+          theme === "dark"
+            ? "bg-gray-800 text-gray-100"
+            : "bg-white text-gray-900"
+        }`}
+      >
+      
       {/* Banner Promocional Mejorado */}
       <div
-        className={`relative rounded-2xl overflow-hidden mb-12 h-96 md:h-80 lg:h-96 shadow-xl ${
+        className={`relative rounded-2xl overflow-hidden mb-12 h-96 pt-72 pb-72 md:h-80 lg:h-96 shadow-xl ${
           theme === "dark"
             ? "bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800"
             : "bg-gradient-to-br from-green-700 via-green-600 to-green-700"
@@ -95,7 +96,7 @@ function HomePage() {
         <div className="absolute right-0 bottom-0 w-full md:w-1/2 h-full opacity-20 md:opacity-100 bg-[url('/images/car-parts-banner.png')] bg-contain bg-no-repeat bg-right"></div>
 
         {/* Contenido del banner */}
-        <div className="absolute inset-0 flex flex-col items-start justify-center p-8 md:p-12 lg:p-16 text-left">
+        <div className="absolute inset-0 flex flex-col items-start justify-center p-8 text-left md:p-12 lg:p-16">
           <span
             className={`px-4 py-2 rounded-full text-sm font-bold mb-4 ${
               theme === "dark"
@@ -124,7 +125,7 @@ function HomePage() {
             piezas seleccionadas para tu vehículo
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <button
               className={`px-8 py-3 rounded-full font-bold transition-all duration-300 ${
                 theme === "dark"
@@ -133,16 +134,6 @@ function HomePage() {
               }`}
             >
               Ver Ofertas
-            </button>
-
-            <button
-              className={`px-8 py-3 rounded-full font-bold border-2 transition-all duration-300 ${
-                theme === "dark"
-                  ? "border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:bg-opacity-10"
-                  : "border-white text-white hover:bg-white hover:bg-opacity-10"
-              }`}
-            >
-              Contactar Asesor
             </button>
           </div>
 
@@ -160,7 +151,7 @@ function HomePage() {
               >
                 03
               </div>
-              <span className="text-sm mt-1">Días</span>
+              <span className="mt-1 text-sm">Días</span>
             </div>
             <div className="text-center">
               <div
@@ -170,7 +161,7 @@ function HomePage() {
               >
                 12
               </div>
-              <span className="text-sm mt-1">Horas</span>
+              <span className="mt-1 text-sm">Horas</span>
             </div>
             <div className="text-center">
               <div
@@ -180,16 +171,19 @@ function HomePage() {
               >
                 45
               </div>
-              <span className="text-sm mt-1">Min</span>
+              <span className="mt-1 text-sm">Min</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Categorías Destacadas */}
-      <section className="mb-16 px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">
+      <section className={`px-4 mb-16 rounded-2xl pt-10 pb-14 ${theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-gray-100 text-gray-900"
+        }`}>
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold">
             Explora Nuestras Categorías
           </h2>
           <p
@@ -202,7 +196,7 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
           {[
             { name: "Motor", icon: "⚙️" },
             { name: "Frenos", icon: "🛑" },
@@ -228,7 +222,7 @@ function HomePage() {
               >
                 {categoria.icon}
               </div>
-              <h3 className="font-bold text-lg">{categoria.name}</h3>
+              <h3 className="text-lg font-bold">{categoria.name}</h3>
               <span
                 className={`text-sm ${
                   theme === "dark" ? "text-gray-400" : "text-gray-500"
@@ -242,8 +236,12 @@ function HomePage() {
       </section>
 
       {/* Productos Destacados */}
-      <section className="mb-16 px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8">
+      <section className={`px-4 mb-16 rounded-2xl pt-10 pb-10 ${
+        theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-gray-100 text-gray-900"
+      }`}>
+        <div className="flex flex-col items-center justify-between mb-8 md:flex-row">
           <div>
             <h2 className="text-3xl font-bold">Productos Destacados</h2>
             <p
@@ -255,10 +253,10 @@ function HomePage() {
             </p>
           </div>
           <button
-            className={`mt-4 md:mt-0 px-6 py-3 rounded-full font-medium ${
+            className={`mt-4 md:mt-0 px-6 py-3 rounded-full font-medium transition-colors ${
               theme === "dark"
-                ? "bg-gray-800 hover:bg-gray-700"
-                : "bg-white hover:bg-gray-100 shadow-sm"
+                ? "bg-gray-800 transition-colors hover:bg-yellow-500 hover:font-bold hover:text-gray-800"
+                : "bg-white hover:bg-yellow-500 hover:font-bold shadow-sm"
             }`}
           >
             Ver todos los productos <FiArrowRight className="inline ml-2" />
@@ -266,12 +264,12 @@ function HomePage() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+          <div className="flex items-center justify-center h-64">
+            <div className="w-12 h-12 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
           </div>
         ) : (
           <div className="relative">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {productosAleatorios.slice(0, 4).map((producto) => (
                 <div
                   key={producto.id}
@@ -319,7 +317,7 @@ function HomePage() {
                     </div>
                   </div>
                   <div className="p-6">
-                    <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-start justify-between mb-2">
                       <h3 className="text-lg font-bold line-clamp-2">
                         {producto.name}
                       </h3>
@@ -340,7 +338,7 @@ function HomePage() {
                     >
                       {producto.description}
                     </p>
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <div>
                         <p className="text-2xl font-bold">${producto.price}</p>
                         {producto.originalPrice && (
@@ -381,9 +379,9 @@ function HomePage() {
             : "bg-gradient-to-r from-green-800 to-green-700"
         }`}
       >
-        <div className="relative h-full flex items-center">
+        <div className="relative flex items-center h-full">
           <div className="absolute right-0 bottom-0 w-full md:w-1/2 h-full bg-[url('/images/car-parts-bg.png')] bg-contain bg-no-repeat bg-right opacity-30 md:opacity-100"></div>
-          <div className="relative z-10 p-8 md:p-12 max-w-2xl">
+          <div className="relative z-10 max-w-2xl p-8 md:p-12">
             <h2
               className={`text-3xl md:text-4xl font-bold mb-4 ${
                 theme === "dark" ? "text-white" : "text-white"
@@ -400,10 +398,10 @@ function HomePage() {
               tu vehículo
             </p>
             <button
-              className={`px-8 py-3 rounded-full font-bold flex items-center ${
+              className={`px-8 py-3 rounded-full font-bold flex items-center transition-colors ${
                 theme === "dark"
-                  ? "bg-yellow-500 text-gray-900 hover:bg-yellow-400"
-                  : "bg-yellow-400 text-gray-900 hover:bg-yellow-300"
+                  ? "bg-yellow-500 text-gray-900 transition-colors hover:bg-yellow-400"
+                  : "bg-yellow-400 text-gray-900 transition-colors hover:bg-yellow-500"
               }`}
             >
               <FiPhone className="mr-2" /> Contactar a un asesor
@@ -413,9 +411,13 @@ function HomePage() {
       </div>
 
       {/* Testimonios */}
-      <section className="mb-16 px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">
+      <section className={`px-4 mb-16 pt-10 pb-16 rounded-2xl ${
+        theme === "dark"
+          ? "bg-gradient-to-tr from-gray-800 to-gray-700 "
+          : "bg-gradient-to-tr from-gray-200 text-gray-900"
+        }`} >
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-3xl font-bold">
             Lo que dicen nuestros clientes
           </h2>
           <p
@@ -428,7 +430,7 @@ function HomePage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {[
             {
               name: "Juan Pérez",

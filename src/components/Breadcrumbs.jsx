@@ -2,12 +2,12 @@ import Link from "next/link";
 
 const Breadcrumbs = ({ pages }) => {
   return (
-    <nav className="text-sm mb-4">
+    <nav className="mb-4 text-sm">
       <ol className="flex space-x-2">
         {pages.map((page, index) => (
           <li key={index} className="flex items-center">
             {index < pages.length - 1 ? (
-              <Link href={page.path} className="text-blue-600 hover:underline">
+              <Link href={page.path} className="text-yellow-600 hover:underline">
                 {page.name}
               </Link>
             ) : (

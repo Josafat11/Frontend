@@ -76,11 +76,11 @@ function Navbar() {
   const mainNavItems = [
     { name: "Inicio", path: "/", icon: FaHome },
     { name: "Catálogo", path: "/ventaProducto", icon: FaBoxes },
-    { name: "Marcas", path: "/", icon: FaTags },
+    { name: "Marcas", path: "/marcas", icon: FaTags },
     { name: "Ofertas", path: "/", icon: FaTags },
     { name: "Sobre Nosotros", path: "/nosotros", icon: FaInfoCircle },
     { name: "Contacto", path: "/contacto", icon: FaPhone },
-    { name: "Seguimiento", path: "/", icon: FaTruck },
+    { name: "Seguimiento", path: "/seguimiento", icon: FaTruck },
   ];
 
   return (
@@ -104,9 +104,27 @@ function Navbar() {
         </div>
 
         <div className="relative flex items-center justify-center overflow-hidden">
-          <div className="whitespace-nowrap animate-marquee flex items-center space-x-16">
+          <div className="flex items-center space-x-16 whitespace-nowrap animate-marquee min-w-max w-fit">
             {/* Mensajes promocionales con íconos */}
             {[
+              { icon: "check", text: "ENVÍO GRATIS EN COMPRAS MAYORES A $500" },
+              {
+                icon: "fire",
+                text: "PROMOCIONES ESPECIALES EN REFACCIONES ORIGINALES",
+              },
+              {
+                icon: "shield",
+                text: "GARANTÍA EN TODAS NUESTRAS PIEZAS AUTOMOTRICES",
+              },
+              { icon: "check", text: "ENVÍO GRATIS EN COMPRAS MAYORES A $500" },
+              {
+                icon: "fire",
+                text: "PROMOCIONES ESPECIALES EN REFACCIONES ORIGINALES",
+              },
+              {
+                icon: "shield",
+                text: "GARANTÍA EN TODAS NUESTRAS PIEZAS AUTOMOTRICES",
+              },
               { icon: "check", text: "ENVÍO GRATIS EN COMPRAS MAYORES A $500" },
               {
                 icon: "fire",
@@ -168,12 +186,34 @@ function Navbar() {
       </div>
 
       <style jsx>{`
+        .marquee-container {
+          overflow: hidden;
+          white-space: nowrap;
+          width: 100%;
+          background: #f5f5f5;
+          padding: 10px 0;
+        }
+
+        .marquee-track {
+          display: inline-flex;
+          animation: marquee 20s linear infinite;
+        }
+
+        .marquee-track:hover {
+          animation-play-state: paused;
+        }
+
+        .marquee-text {
+          padding-right: 2rem;
+          font-size: 1.2rem;
+          white-space: nowrap;
+        }
         @keyframes marquee {
           0% {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-50%);
+            transform: translateX(-55%);
           }
         }
         .animate-marquee {
@@ -188,10 +228,10 @@ function Navbar() {
       {/* Navbar principal */}
       <nav
         className={`sticky top-0 w-full z-50 ${
-          theme === "dark" ? "bg-gray-900" : "bg-white"
+          theme === "dark" ? "bg-gray-800" : "bg-white"
         } shadow-md`}
       >
-        <div className="container mx-auto px-4">
+        <div className="container px-4 mx-auto">
           {/* Primera fila - Logo, búsqueda y acciones */}
           <div className="flex items-center justify-between py-3">
             {/* Logo y menú hamburguesa móvil */}
@@ -224,7 +264,7 @@ function Navbar() {
             </div>
 
             {/* Búsqueda - Solo en desktop */}
-            <div className="hidden md:flex items-center flex-1 max-w-2xl mx-6">
+            <div className="items-center flex-1 hidden max-w-2xl mx-6 md:flex">
               <form onSubmit={handleSearch} className="flex w-full">
                 <input
                   type="text"
@@ -248,7 +288,7 @@ function Navbar() {
                 >
                   {isSearching ? (
                     <svg
-                      className="animate-spin -ml-1 mr-2 h-5 w-5 text-gray-900"
+                      className="w-5 h-5 mr-2 -ml-1 text-gray-900 animate-spin"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 24 24"
@@ -384,7 +424,7 @@ function Navbar() {
                             </button>
                           </Link>
                           <Link href="/register">
-                            <button className="w-full py-2 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-sm flex items-center justify-center">
+                            <button className="flex items-center justify-center w-full py-2 text-sm text-gray-900 bg-yellow-500 rounded-lg hover:bg-yellow-600">
                               <FaUserPlus className="mr-2" /> Crear Cuenta
                             </button>
                           </Link>
@@ -392,7 +432,7 @@ function Navbar() {
                       </div>
                     ) : (
                       <div className="p-4">
-                        <div className="flex items-center space-x-3 mb-3">
+                        <div className="flex items-center mb-3 space-x-3">
                           <div
                             className={`w-10 h-10 rounded-full flex items-center justify-center ${
                               theme === "dark" ? "bg-gray-700" : "bg-gray-100"
@@ -430,7 +470,7 @@ function Navbar() {
                                 }`}
                                 onClick={() => setAdminMenuOpen(!adminMenuOpen)}
                               >
-                                <div className="flex justify-between items-center">
+                                <div className="flex items-center justify-between">
                                   <span className="flex items-center">
                                     <FaUser className="mr-2 text-sm" />{" "}
                                     Administración
@@ -480,7 +520,7 @@ function Navbar() {
                                   setDocumentsMenuOpen(!documentsMenuOpen)
                                 }
                               >
-                                <div className="flex justify-between items-center">
+                                <div className="flex items-center justify-between">
                                   <span className="flex items-center">
                                     <FaFileInvoice className="mr-2 text-sm" />{" "}
                                     Documentos
@@ -537,7 +577,7 @@ function Navbar() {
                                   setProductsMenuOpen(!productsMenuOpen)
                                 }
                               >
-                                <div className="flex justify-between items-center">
+                                <div className="flex items-center justify-between">
                                   <span className="flex items-center">
                                     <FaBoxes className="mr-2 text-sm" />{" "}
                                     Productos
@@ -677,7 +717,7 @@ function Navbar() {
                       <Link
                         key={item.name}
                         href={item.path}
-                        className={`block py-3 px-4 rounded flex items-center ${
+                        className={`py-3 px-4 rounded flex items-center ${
                           theme === "dark"
                             ? "hover:bg-gray-700 hover:text-yellow-400"
                             : "hover:bg-gray-100 hover:text-yellow-600"
@@ -690,12 +730,12 @@ function Navbar() {
                     ))}
 
                     {/* Opciones de cuenta */}
-                    <div className="border-t mt-4 pt-4">
+                    <div className="pt-4 mt-4 border-t">
                       {!isAuthenticated ? (
                         <>
                           <Link href="/login">
                             <div
-                              className={`block py-3 px-4 rounded flex items-center ${
+                              className={`py-3 px-4 rounded flex items-center ${
                                 theme === "dark"
                                   ? "hover:bg-gray-700 hover:text-yellow-400"
                                   : "hover:bg-gray-100 hover:text-yellow-600"
@@ -707,7 +747,7 @@ function Navbar() {
                           </Link>
                           <Link href="/register">
                             <div
-                              className={`block py-3 px-4 rounded flex items-center ${
+                              className={`py-3 px-4 rounded flex items-center ${
                                 theme === "dark"
                                   ? "hover:bg-gray-700 hover:text-yellow-400"
                                   : "hover:bg-gray-100 hover:text-yellow-600"
@@ -722,7 +762,7 @@ function Navbar() {
                         <>
                           <Link href="/profileuser">
                             <div
-                              className={`block py-3 px-4 rounded flex items-center ${
+                              className={`  py-3 px-4 rounded flex items-center ${
                                 theme === "dark"
                                   ? "hover:bg-gray-700 hover:text-yellow-400"
                                   : "hover:bg-gray-100 hover:text-yellow-600"
@@ -734,13 +774,13 @@ function Navbar() {
                           </Link>
                           {user?.role === "admin" && (
                             <>
-                              <div className="px-4 py-2 font-medium flex items-center">
+                              <div className="flex items-center px-4 py-2 font-medium">
                                 <FaUser className="mr-3" /> Administración
                               </div>
                               <div className="ml-6 space-y-1">
                                 <Link href="/adminDashboard">
                                   <div
-                                    className={`block py-2 px-4 rounded flex items-center ${
+                                    className={`py-2 px-4 rounded flex items-center ${
                                       theme === "dark"
                                         ? "hover:bg-gray-700 hover:text-yellow-400"
                                         : "hover:bg-gray-100 hover:text-yellow-600"
@@ -752,7 +792,7 @@ function Navbar() {
                                 </Link>
                                 <Link href="/adminUsuarios">
                                   <div
-                                    className={`block py-2 px-4 rounded flex items-center ${
+                                    className={`py-2 px-4 rounded flex items-center ${
                                       theme === "dark"
                                         ? "hover:bg-gray-700 hover:text-yellow-400"
                                         : "hover:bg-gray-100 hover:text-yellow-600"
