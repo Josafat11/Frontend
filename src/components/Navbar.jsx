@@ -19,6 +19,7 @@ import {
   FaTruck,
   FaSignInAlt,
   FaUserPlus,
+  FaHeart,
 } from "react-icons/fa";
 import { FiSearch } from "react-icons/fi";
 import { useLogo } from "../context/LogoContext";
@@ -26,6 +27,7 @@ import { useAuth } from "../context/authContext";
 import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../app/config/config";
 import { useCart } from "../context/CartContext";
+import { useFavorites } from '../context/FavoritesContext';
 
 function Navbar() {
   const { isAuthenticated, user, logout, theme, toggleTheme } = useAuth();
@@ -40,6 +42,7 @@ function Navbar() {
   const router = useRouter();
   const { logoUrl } = useLogo();
   const { cartCount } = useCart();
+  const { favoritesCount } = useFavorites();
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
@@ -77,7 +80,7 @@ function Navbar() {
     { name: "Inicio", path: "/", icon: FaHome },
     { name: "Catálogo", path: "/ventaProducto", icon: FaBoxes },
     { name: "Marcas", path: "/marcas", icon: FaTags },
-    { name: "Ofertas", path: "/", icon: FaTags },
+    { name: "Ofertas", path: "/ofertas", icon: FaTags },
     { name: "Sobre Nosotros", path: "/nosotros", icon: FaInfoCircle },
     { name: "Contacto", path: "/contacto", icon: FaPhone },
     { name: "Seguimiento", path: "/seguimiento", icon: FaTruck },
@@ -87,19 +90,17 @@ function Navbar() {
     <>
       {/* Barra superior promocional mejorada */}
       <div
-        className={`w-full py-3 overflow-hidden relative ${
-          theme === "dark"
-            ? "bg-gray-800"
-            : "bg-gradient-to-r from-green-600 to-green-700"
-        }`}
+        className={`w-full py-3 overflow-hidden relative ${theme === "dark"
+          ? "bg-gray-800"
+          : "bg-gradient-to-r from-green-600 to-green-700"
+          }`}
       >
         <div className="absolute inset-0 overflow-hidden">
           <div
-            className={`absolute inset-0 opacity-10 ${
-              theme === "dark"
-                ? "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZD0iTTAgMEwxMDAgMTAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')]"
-                : "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZD0iTTAgMEwxMDAgMTAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')]"
-            }`}
+            className={`absolute inset-0 opacity-10 ${theme === "dark"
+              ? "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZD0iTTAgMEwxMDAgMTAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')]"
+              : "bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgMTAwIDEwMCI+PHBhdGggZD0iTTAgMEwxMDAgMTAwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPjwvc3ZnPg==')]"
+              }`}
           ></div>
         </div>
 
@@ -227,9 +228,8 @@ function Navbar() {
 
       {/* Navbar principal */}
       <nav
-        className={`sticky top-0 w-full z-50 ${
-          theme === "dark" ? "bg-gray-800" : "bg-white"
-        } shadow-md`}
+        className={`sticky top-0 w-full z-50 ${theme === "dark" ? "bg-gray-800" : "bg-white"
+          } shadow-md`}
       >
         <div className="container px-4 mx-auto">
           {/* Primera fila - Logo, búsqueda y acciones */}
@@ -238,11 +238,10 @@ function Navbar() {
             <div className="flex items-center">
               <button
                 onClick={toggleMobileMenu}
-                className={`mr-4 p-2 rounded-full md:hidden ${
-                  theme === "dark"
-                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
-                }`}
+                className={`mr-4 p-2 rounded-full md:hidden ${theme === "dark"
+                  ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                  }`}
               >
                 <FaBars className="w-5 h-5" />
               </button>
@@ -271,20 +270,18 @@ function Navbar() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Buscar producto, marca, categoría..."
-                  className={`w-full px-4 py-2 rounded-l-lg border ${
-                    theme === "dark"
-                      ? "bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-400"
-                      : "border-gray-300 placeholder-gray-500"
-                  } focus:outline-none focus:ring-2 focus:ring-yellow-500`}
+                  className={`w-full px-4 py-2 rounded-l-lg border ${theme === "dark"
+                    ? "bg-gray-800 border-gray-700 text-gray-200 placeholder-gray-400"
+                    : "border-gray-300 placeholder-gray-500"
+                    } focus:outline-none focus:ring-2 focus:ring-yellow-500`}
                 />
                 <button
                   type="submit"
                   disabled={isSearching}
-                  className={`px-4 py-2 rounded-r-lg flex items-center ${
-                    theme === "dark"
-                      ? "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
-                      : "bg-yellow-500 text-white hover:bg-yellow-600"
-                  } ${isSearching ? "opacity-75 cursor-not-allowed" : ""}`}
+                  className={`px-4 py-2 rounded-r-lg flex items-center ${theme === "dark"
+                    ? "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
+                    : "bg-yellow-500 text-white hover:bg-yellow-600"
+                    } ${isSearching ? "opacity-75 cursor-not-allowed" : ""}`}
                 >
                   {isSearching ? (
                     <svg
@@ -319,14 +316,12 @@ function Navbar() {
               {/* Botón de tema */}
               <button
                 onClick={toggleTheme}
-                className={`p-2 rounded-full hidden sm:inline-flex ${
-                  theme === "dark"
-                    ? "text-yellow-400 hover:bg-gray-700"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-                aria-label={`Cambiar a modo ${
-                  theme === "dark" ? "claro" : "oscuro"
-                }`}
+                className={`p-2 rounded-full hidden sm:inline-flex ${theme === "dark"
+                  ? "text-yellow-400 hover:bg-gray-700"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                aria-label={`Cambiar a modo ${theme === "dark" ? "claro" : "oscuro"
+                  }`}
               >
                 {theme === "light" ? (
                   <FaMoon className="w-5 h-5" />
@@ -335,25 +330,53 @@ function Navbar() {
                 )}
               </button>
 
+
+              {/* Favoritos con indicador */}
+              <Link
+                href="/favoritos"
+                className={`p-2 rounded-full relative ${theme === "dark"
+                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                  }`}
+                aria-label={`Favoritos (${favoritesCount} items)`}
+              >
+                <FaHeart
+                  className="w-5 h-5"
+                  style={{
+                    fill: favoritesCount > 0 ? (theme === "dark" ? "#fbbf24" : "#d97706") : 'none',
+                    stroke: 'currentColor',
+                    strokeWidth: '30px'
+                  }}
+                />
+                {favoritesCount > 0 && (
+                  <span
+                    className={`absolute -top-1 -right-1 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold ${theme === "dark"
+                        ? "bg-yellow-500 text-gray-900"
+                        : "bg-yellow-600 text-white"
+                      }`}
+                  >
+                    {favoritesCount}
+                  </span>
+                )}
+              </Link>
+
               {/* Carrito con indicador */}
               <Link
                 href="/carrito"
-                className={`p-2 rounded-full relative ${
-                  theme === "dark"
-                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
-                }`}
+                className={`p-2 rounded-full relative ${theme === "dark"
+                  ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                  }`}
                 aria-label="Carrito de compras"
               >
                 <FaShoppingCart className="w-5 h-5" />
                 {/* Indicador de items en carrito - ahora con el contador real */}
                 {cartCount > 0 && (
                   <span
-                    className={`absolute -top-1 -right-1 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold ${
-                      theme === "dark"
-                        ? "bg-yellow-500 text-gray-900"
-                        : "bg-yellow-600 text-white"
-                    }`}
+                    className={`absolute -top-1 -right-1 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold ${theme === "dark"
+                      ? "bg-yellow-500 text-gray-900"
+                      : "bg-yellow-600 text-white"
+                      }`}
                   >
                     {cartCount}
                   </span>
@@ -364,11 +387,10 @@ function Navbar() {
               {(isAuthenticated || user?.role === "admin") && (
                 <Link
                   href="/cotizador"
-                  className={`p-2 rounded-full ${
-                    theme === "dark"
-                      ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
-                  }`}
+                  className={`p-2 rounded-full ${theme === "dark"
+                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                    }`}
                   aria-label="Facturación"
                 >
                   <FaFileInvoice className="w-5 h-5" />
@@ -379,21 +401,19 @@ function Navbar() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={toggleDropdown}
-                  className={`p-2 rounded-full group relative ${
-                    theme === "dark"
-                      ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
-                  }`}
+                  className={`p-2 rounded-full group relative ${theme === "dark"
+                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                    }`}
                   aria-label="Menú de usuario"
                 >
                   <FaUser className="w-5 h-5" />
                   {/* Tooltip para indicar que es clickeable */}
                   <span
-                    className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap text-xs px-2 py-1 rounded ${
-                      theme === "dark"
-                        ? "bg-gray-700 text-yellow-400"
-                        : "bg-gray-200 text-gray-700"
-                    } opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}
+                    className={`absolute -bottom-8 left-1/2 transform -translate-x-1/2 whitespace-nowrap text-xs px-2 py-1 rounded ${theme === "dark"
+                      ? "bg-gray-700 text-yellow-400"
+                      : "bg-gray-200 text-gray-700"
+                      } opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}
                   >
                     Mi cuenta
                   </span>
@@ -402,11 +422,10 @@ function Navbar() {
                 {/* Dropdown de usuario */}
                 {dropdownOpen && (
                   <div
-                    className={`absolute right-0 mt-2 w-64 shadow-lg rounded-lg py-2 z-50 ${
-                      theme === "dark"
-                        ? "bg-gray-800 text-gray-200 border border-gray-700"
-                        : "bg-white text-gray-700 border border-gray-200"
-                    }`}
+                    className={`absolute right-0 mt-2 w-64 shadow-lg rounded-lg py-2 z-50 ${theme === "dark"
+                      ? "bg-gray-800 text-gray-200 border border-gray-700"
+                      : "bg-white text-gray-700 border border-gray-200"
+                      }`}
                   >
                     {!isAuthenticated ? (
                       <div className="p-4">
@@ -414,11 +433,10 @@ function Navbar() {
                         <div className="flex flex-col space-y-2">
                           <Link href="/login">
                             <button
-                              className={`w-full py-2 rounded-lg text-sm flex items-center justify-center ${
-                                theme === "dark"
-                                  ? "border border-gray-600 hover:bg-gray-700"
-                                  : "border border-gray-300 hover:bg-gray-50"
-                              }`}
+                              className={`w-full py-2 rounded-lg text-sm flex items-center justify-center ${theme === "dark"
+                                ? "border border-gray-600 hover:bg-gray-700"
+                                : "border border-gray-300 hover:bg-gray-50"
+                                }`}
                             >
                               <FaSignInAlt className="mr-2" /> Iniciar Sesión
                             </button>
@@ -434,9 +452,8 @@ function Navbar() {
                       <div className="p-4">
                         <div className="flex items-center mb-3 space-x-3">
                           <div
-                            className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                              theme === "dark" ? "bg-gray-700" : "bg-gray-100"
-                            }`}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center ${theme === "dark" ? "bg-gray-700" : "bg-gray-100"
+                              }`}
                           >
                             <FaUser className="text-lg" />
                           </div>
@@ -449,11 +466,10 @@ function Navbar() {
                         <div className="space-y-2">
                           <Link href="/profileuser">
                             <p
-                              className={`flex items-center py-2 px-3 rounded ${
-                                theme === "dark"
-                                  ? "hover:bg-gray-700 hover:text-yellow-400"
-                                  : "hover:bg-gray-100 hover:text-yellow-600"
-                              }`}
+                              className={`flex items-center py-2 px-3 rounded ${theme === "dark"
+                                ? "hover:bg-gray-700 hover:text-yellow-400"
+                                : "hover:bg-gray-100 hover:text-yellow-600"
+                                }`}
                             >
                               <FaUser className="mr-2 text-sm" /> Mi perfil
                             </p>
@@ -463,11 +479,10 @@ function Navbar() {
                             <>
                               {/* Menú de Administrador */}
                               <div
-                                className={`py-2 px-3 rounded cursor-pointer ${
-                                  theme === "dark"
-                                    ? "hover:bg-gray-700 hover:text-yellow-400"
-                                    : "hover:bg-gray-100 hover:text-yellow-600"
-                                }`}
+                                className={`py-2 px-3 rounded cursor-pointer ${theme === "dark"
+                                  ? "hover:bg-gray-700 hover:text-yellow-400"
+                                  : "hover:bg-gray-100 hover:text-yellow-600"
+                                  }`}
                                 onClick={() => setAdminMenuOpen(!adminMenuOpen)}
                               >
                                 <div className="flex items-center justify-between">
@@ -485,22 +500,20 @@ function Navbar() {
                                   <div className="mt-2 ml-4 space-y-2">
                                     <Link href="/adminDashboard">
                                       <p
-                                        className={`py-1 px-2 rounded flex items-center ${
-                                          theme === "dark"
-                                            ? "hover:bg-gray-700 hover:text-yellow-400"
-                                            : "hover:bg-gray-100 hover:text-yellow-600"
-                                        }`}
+                                        className={`py-1 px-2 rounded flex items-center ${theme === "dark"
+                                          ? "hover:bg-gray-700 hover:text-yellow-400"
+                                          : "hover:bg-gray-100 hover:text-yellow-600"
+                                          }`}
                                       >
                                         <span className="ml-4">Dashboard</span>
                                       </p>
                                     </Link>
                                     <Link href="/adminUsuarios">
                                       <p
-                                        className={`py-1 px-2 rounded flex items-center ${
-                                          theme === "dark"
-                                            ? "hover:bg-gray-700 hover:text-yellow-400"
-                                            : "hover:bg-gray-100 hover:text-yellow-600"
-                                        }`}
+                                        className={`py-1 px-2 rounded flex items-center ${theme === "dark"
+                                          ? "hover:bg-gray-700 hover:text-yellow-400"
+                                          : "hover:bg-gray-100 hover:text-yellow-600"
+                                          }`}
                                       >
                                         <span className="ml-4">Usuarios</span>
                                       </p>
@@ -511,11 +524,10 @@ function Navbar() {
 
                               {/* Menú de Documentos */}
                               <div
-                                className={`py-2 px-3 rounded cursor-pointer ${
-                                  theme === "dark"
-                                    ? "hover:bg-gray-700 hover:text-yellow-400"
-                                    : "hover:bg-gray-100 hover:text-yellow-600"
-                                }`}
+                                className={`py-2 px-3 rounded cursor-pointer ${theme === "dark"
+                                  ? "hover:bg-gray-700 hover:text-yellow-400"
+                                  : "hover:bg-gray-100 hover:text-yellow-600"
+                                  }`}
                                 onClick={() =>
                                   setDocumentsMenuOpen(!documentsMenuOpen)
                                 }
@@ -550,11 +562,10 @@ function Navbar() {
                                     ].map((doc, i) => (
                                       <Link key={i} href={doc.path}>
                                         <p
-                                          className={`py-1 px-2 rounded flex items-center ${
-                                            theme === "dark"
-                                              ? "hover:bg-gray-700 hover:text-yellow-400"
-                                              : "hover:bg-gray-100 hover:text-yellow-600"
-                                          }`}
+                                          className={`py-1 px-2 rounded flex items-center ${theme === "dark"
+                                            ? "hover:bg-gray-700 hover:text-yellow-400"
+                                            : "hover:bg-gray-100 hover:text-yellow-600"
+                                            }`}
                                         >
                                           <span className="ml-4">
                                             {doc.name}
@@ -568,11 +579,10 @@ function Navbar() {
 
                               {/* Menú de Productos */}
                               <div
-                                className={`py-2 px-3 rounded cursor-pointer ${
-                                  theme === "dark"
-                                    ? "hover:bg-gray-700 hover:text-yellow-400"
-                                    : "hover:bg-gray-100 hover:text-yellow-600"
-                                }`}
+                                className={`py-2 px-3 rounded cursor-pointer ${theme === "dark"
+                                  ? "hover:bg-gray-700 hover:text-yellow-400"
+                                  : "hover:bg-gray-100 hover:text-yellow-600"
+                                  }`}
                                 onClick={() =>
                                   setProductsMenuOpen(!productsMenuOpen)
                                 }
@@ -592,11 +602,10 @@ function Navbar() {
                                   <div className="mt-2 ml-4 space-y-2">
                                     <Link href="/adminProductos">
                                       <p
-                                        className={`py-1 px-2 rounded flex items-center ${
-                                          theme === "dark"
-                                            ? "hover:bg-gray-700 hover:text-yellow-400"
-                                            : "hover:bg-gray-100 hover:text-yellow-600"
-                                        }`}
+                                        className={`py-1 px-2 rounded flex items-center ${theme === "dark"
+                                          ? "hover:bg-gray-700 hover:text-yellow-400"
+                                          : "hover:bg-gray-100 hover:text-yellow-600"
+                                          }`}
                                       >
                                         <span className="ml-4">
                                           Todos los Productos
@@ -605,11 +614,10 @@ function Navbar() {
                                     </Link>
                                     <Link href="/adminDashboardProductos">
                                       <p
-                                        className={`py-1 px-2 rounded flex items-center ${
-                                          theme === "dark"
-                                            ? "hover:bg-gray-700 hover:text-yellow-400"
-                                            : "hover:bg-gray-100 hover:text-yellow-600"
-                                        }`}
+                                        className={`py-1 px-2 rounded flex items-center ${theme === "dark"
+                                          ? "hover:bg-gray-700 hover:text-yellow-400"
+                                          : "hover:bg-gray-100 hover:text-yellow-600"
+                                          }`}
                                       >
                                         <span className="ml-4">
                                           Estadísticas
@@ -624,11 +632,10 @@ function Navbar() {
 
                           <button
                             onClick={handleLogout}
-                            className={`w-full text-left py-2 px-3 rounded flex items-center ${
-                              theme === "dark"
-                                ? "hover:bg-gray-700 text-red-400 hover:text-red-300"
-                                : "hover:bg-gray-100 text-red-600 hover:text-red-500"
-                            }`}
+                            className={`w-full text-left py-2 px-3 rounded flex items-center ${theme === "dark"
+                              ? "hover:bg-gray-700 text-red-400 hover:text-red-300"
+                              : "hover:bg-gray-100 text-red-600 hover:text-red-500"
+                              }`}
                           >
                             <FaSignInAlt className="mr-2 transform rotate-180" />{" "}
                             Cerrar sesión
@@ -644,20 +651,18 @@ function Navbar() {
 
           {/* Segunda fila - Navegación principal */}
           <div
-            className={`hidden md:flex items-center justify-center py-2 border-t ${
-              theme === "dark" ? "border-gray-700" : "border-gray-200"
-            }`}
+            className={`hidden md:flex items-center justify-center py-2 border-t ${theme === "dark" ? "border-gray-700" : "border-gray-200"
+              }`}
           >
             <div className="flex space-x-6">
               {mainNavItems.map((item) => (
                 <Link
                   key={item.name}
                   href={item.path}
-                  className={`py-2 px-1 text-sm font-medium flex items-center ${
-                    theme === "dark"
-                      ? "text-gray-300 hover:text-yellow-400"
-                      : "text-gray-700 hover:text-yellow-600"
-                  }`}
+                  className={`py-2 px-1 text-sm font-medium flex items-center ${theme === "dark"
+                    ? "text-gray-300 hover:text-yellow-400"
+                    : "text-gray-700 hover:text-yellow-600"
+                    }`}
                 >
                   <item.icon className="mr-2 text-sm" />
                   {item.name}
@@ -669,15 +674,13 @@ function Navbar() {
           {/* Menú móvil desplegable */}
           {mobileMenuOpen && (
             <div
-              className={`md:hidden py-4 fixed inset-0 bg-black bg-opacity-50 z-40 ${
-                theme === "dark" ? "text-gray-200" : "text-gray-700"
-              }`}
+              className={`md:hidden py-4 fixed inset-0 bg-black bg-opacity-50 z-40 ${theme === "dark" ? "text-gray-200" : "text-gray-700"
+                }`}
               onClick={toggleMobileMenu}
             >
               <div
-                className={`w-4/5 h-full overflow-y-auto ${
-                  theme === "dark" ? "bg-gray-800" : "bg-white"
-                }`}
+                className={`w-4/5 h-full overflow-y-auto ${theme === "dark" ? "bg-gray-800" : "bg-white"
+                  }`}
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className="p-4">
@@ -689,22 +692,19 @@ function Navbar() {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Buscar producto..."
-                        className={`w-full px-4 py-2 rounded-l-lg border ${
-                          theme === "dark"
-                            ? "bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400"
-                            : "border-gray-300 placeholder-gray-500"
-                        } focus:outline-none focus:ring-2 focus:ring-yellow-500`}
+                        className={`w-full px-4 py-2 rounded-l-lg border ${theme === "dark"
+                          ? "bg-gray-700 border-gray-600 text-gray-200 placeholder-gray-400"
+                          : "border-gray-300 placeholder-gray-500"
+                          } focus:outline-none focus:ring-2 focus:ring-yellow-500`}
                       />
                       <button
                         type="submit"
                         disabled={isSearching}
-                        className={`px-4 py-2 rounded-r-lg ${
-                          theme === "dark"
-                            ? "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
-                            : "bg-yellow-500 text-white hover:bg-yellow-600"
-                        } ${
-                          isSearching ? "opacity-75 cursor-not-allowed" : ""
-                        }`}
+                        className={`px-4 py-2 rounded-r-lg ${theme === "dark"
+                          ? "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
+                          : "bg-yellow-500 text-white hover:bg-yellow-600"
+                          } ${isSearching ? "opacity-75 cursor-not-allowed" : ""
+                          }`}
                       >
                         <FiSearch className="w-5 h-5" />
                       </button>
@@ -717,11 +717,10 @@ function Navbar() {
                       <Link
                         key={item.name}
                         href={item.path}
-                        className={`py-3 px-4 rounded flex items-center ${
-                          theme === "dark"
-                            ? "hover:bg-gray-700 hover:text-yellow-400"
-                            : "hover:bg-gray-100 hover:text-yellow-600"
-                        }`}
+                        className={`py-3 px-4 rounded flex items-center ${theme === "dark"
+                          ? "hover:bg-gray-700 hover:text-yellow-400"
+                          : "hover:bg-gray-100 hover:text-yellow-600"
+                          }`}
                         onClick={toggleMobileMenu}
                       >
                         <item.icon className="mr-3" />
@@ -735,11 +734,10 @@ function Navbar() {
                         <>
                           <Link href="/login">
                             <div
-                              className={`py-3 px-4 rounded flex items-center ${
-                                theme === "dark"
-                                  ? "hover:bg-gray-700 hover:text-yellow-400"
-                                  : "hover:bg-gray-100 hover:text-yellow-600"
-                              }`}
+                              className={`py-3 px-4 rounded flex items-center ${theme === "dark"
+                                ? "hover:bg-gray-700 hover:text-yellow-400"
+                                : "hover:bg-gray-100 hover:text-yellow-600"
+                                }`}
                               onClick={toggleMobileMenu}
                             >
                               <FaSignInAlt className="mr-3" /> Iniciar Sesión
@@ -747,11 +745,10 @@ function Navbar() {
                           </Link>
                           <Link href="/register">
                             <div
-                              className={`py-3 px-4 rounded flex items-center ${
-                                theme === "dark"
-                                  ? "hover:bg-gray-700 hover:text-yellow-400"
-                                  : "hover:bg-gray-100 hover:text-yellow-600"
-                              }`}
+                              className={`py-3 px-4 rounded flex items-center ${theme === "dark"
+                                ? "hover:bg-gray-700 hover:text-yellow-400"
+                                : "hover:bg-gray-100 hover:text-yellow-600"
+                                }`}
                               onClick={toggleMobileMenu}
                             >
                               <FaUserPlus className="mr-3" /> Crear Cuenta
@@ -762,11 +759,10 @@ function Navbar() {
                         <>
                           <Link href="/profileuser">
                             <div
-                              className={`  py-3 px-4 rounded flex items-center ${
-                                theme === "dark"
-                                  ? "hover:bg-gray-700 hover:text-yellow-400"
-                                  : "hover:bg-gray-100 hover:text-yellow-600"
-                              }`}
+                              className={`  py-3 px-4 rounded flex items-center ${theme === "dark"
+                                ? "hover:bg-gray-700 hover:text-yellow-400"
+                                : "hover:bg-gray-100 hover:text-yellow-600"
+                                }`}
                               onClick={toggleMobileMenu}
                             >
                               <FaUser className="mr-3" /> Mi Perfil
@@ -780,11 +776,10 @@ function Navbar() {
                               <div className="ml-6 space-y-1">
                                 <Link href="/adminDashboard">
                                   <div
-                                    className={`py-2 px-4 rounded flex items-center ${
-                                      theme === "dark"
-                                        ? "hover:bg-gray-700 hover:text-yellow-400"
-                                        : "hover:bg-gray-100 hover:text-yellow-600"
-                                    }`}
+                                    className={`py-2 px-4 rounded flex items-center ${theme === "dark"
+                                      ? "hover:bg-gray-700 hover:text-yellow-400"
+                                      : "hover:bg-gray-100 hover:text-yellow-600"
+                                      }`}
                                     onClick={toggleMobileMenu}
                                   >
                                     Dashboard
@@ -792,11 +787,10 @@ function Navbar() {
                                 </Link>
                                 <Link href="/adminUsuarios">
                                   <div
-                                    className={`py-2 px-4 rounded flex items-center ${
-                                      theme === "dark"
-                                        ? "hover:bg-gray-700 hover:text-yellow-400"
-                                        : "hover:bg-gray-100 hover:text-yellow-600"
-                                    }`}
+                                    className={`py-2 px-4 rounded flex items-center ${theme === "dark"
+                                      ? "hover:bg-gray-700 hover:text-yellow-400"
+                                      : "hover:bg-gray-100 hover:text-yellow-600"
+                                      }`}
                                     onClick={toggleMobileMenu}
                                   >
                                     Usuarios
@@ -810,11 +804,10 @@ function Navbar() {
                               handleLogout();
                               toggleMobileMenu();
                             }}
-                            className={`w-full text-left py-3 px-4 rounded flex items-center ${
-                              theme === "dark"
-                                ? "hover:bg-gray-700 text-red-400 hover:text-red-300"
-                                : "hover:bg-gray-100 text-red-600 hover:text-red-500"
-                            }`}
+                            className={`w-full text-left py-3 px-4 rounded flex items-center ${theme === "dark"
+                              ? "hover:bg-gray-700 text-red-400 hover:text-red-300"
+                              : "hover:bg-gray-100 text-red-600 hover:text-red-500"
+                              }`}
                           >
                             <FaSignInAlt className="mr-3 transform rotate-180" />{" "}
                             Cerrar Sesión
