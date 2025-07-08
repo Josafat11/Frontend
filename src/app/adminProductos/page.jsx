@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/authContext";
 import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../config/config";
-import { FiPackage,FiPlusCircle,FiList ,FiTag ,FiHash ,FiDollarSign, FiBox , FiAward ,FiPercent ,FiLayers ,FiAlignLeft ,FiTool ,FiPlus ,FiImage , FiLoader,FiEdit, FiTrash2, FiX, FiSave } from "react-icons/fi";
+import { FiPackage, FiPlusCircle, FiList, FiTag, FiHash, FiDollarSign, FiBox, FiAward, FiPercent, FiLayers, FiAlignLeft, FiTool, FiPlus, FiImage, FiLoader, FiEdit, FiTrash2, FiX, FiSave } from "react-icons/fi";
 function AdminProductsPage() {
   const { user, isAuthenticated, theme } = useAuth();
   const router = useRouter();
@@ -111,61 +111,61 @@ function AdminProductsPage() {
     setImages([]);
   };
 
-// Frontend: handleCreateProduct function
-const handleCreateProduct = async (e) => {
-  e.preventDefault();
+  // Frontend: handleCreateProduct function
+  const handleCreateProduct = async (e) => {
+    e.preventDefault();
 
-  // Validar campos obligatorios (sin supplierId)
-  if (!form.name || !form.partNumber) {
-    setMessage("Faltan campos obligatorios: name, partNumber.");
-    return;
-  }
-
-  // Convertir years a números solo si hay compatibilidad
-  const yearsAsNumbers = form.years.map((year) => parseInt(year, 10));
-
-  setIsLoading(true);
-  const formData = new FormData();
-
-  // Agregar campos del formulario al FormData (sin supplierId)
-  for (const key in form) {
-    if (key !== "makes" && key !== "models" && key !== "years") {
-      formData.append(key, form[key]);
+    // Validar campos obligatorios (sin supplierId)
+    if (!form.name || !form.partNumber) {
+      setMessage("Faltan campos obligatorios: name, partNumber.");
+      return;
     }
-  }
 
-  // Siempre agregar compatibilidades, incluso si están vacías
-  formData.append("makes", JSON.stringify(form.makes || []));
-  formData.append("models", JSON.stringify(form.models || []));
-  formData.append("years", JSON.stringify(yearsAsNumbers || []));
+    // Convertir years a números solo si hay compatibilidad
+    const yearsAsNumbers = form.years.map((year) => parseInt(year, 10));
 
-  // Agregar imágenes al FormData
-  images.forEach((file) => formData.append("images", file));
+    setIsLoading(true);
+    const formData = new FormData();
 
-  try {
-    const response = await fetch(`${CONFIGURACIONES.BASEURL2}/productos/crear`, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      setMessage("Producto creado exitosamente.");
-      clearForm();
-      if (activeTab === "list") fetchProducts();
-    } else {
-      const errorData = await response.json();
-      setMessage(errorData.message || "Error al crear el producto.");
+    // Agregar campos del formulario al FormData (sin supplierId)
+    for (const key in form) {
+      if (key !== "makes" && key !== "models" && key !== "years") {
+        formData.append(key, form[key]);
+      }
     }
-  } catch (error) {
-    console.error("Error al crear producto:", error);
-    setMessage("Error al crear el producto.");
-  } finally {
-    setIsLoading(false);
-  }
-};
-    
+
+    // Siempre agregar compatibilidades, incluso si están vacías
+    formData.append("makes", JSON.stringify(form.makes || []));
+    formData.append("models", JSON.stringify(form.models || []));
+    formData.append("years", JSON.stringify(yearsAsNumbers || []));
+
+    // Agregar imágenes al FormData
+    images.forEach((file) => formData.append("images", file));
+
+    try {
+      const response = await fetch(`${CONFIGURACIONES.BASEURL2}/productos/crear`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessage("Producto creado exitosamente.");
+        clearForm();
+        if (activeTab === "list") fetchProducts();
+      } else {
+        const errorData = await response.json();
+        setMessage(errorData.message || "Error al crear el producto.");
+      }
+    } catch (error) {
+      console.error("Error al crear producto:", error);
+      setMessage("Error al crear el producto.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Función para obtener la lista de productos
   const fetchProducts = async () => {
     setIsLoadingProducts(true);
@@ -239,16 +239,16 @@ const handleCreateProduct = async (e) => {
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     if (!editingProductId) return;
-    
+
     // Validación básica
     if (!form.name || !form.partNumber) {
       setMessage("Faltan campos obligatorios: name, partNumber.");
       return;
     }
-  
+
     setIsLoading(true);
     const formData = new FormData();
-  
+
     // Agregar campos simples
     formData.append("name", form.name);
     formData.append("description", form.description);
@@ -258,19 +258,19 @@ const handleCreateProduct = async (e) => {
     formData.append("category", form.category);
     formData.append("brand", form.brand);
     formData.append("discount", form.discount);
-  
+
     // Agregar compatibilidades como JSON
     const compatibilities = form.makes.map((make, index) => ({
       make,
       model: form.models[index],
       year: parseInt(form.years[index]) || 0,
     }));
-    
+
     formData.append("compatibilities", JSON.stringify(compatibilities));
-  
+
     // Agregar imágenes
     images.forEach((file) => formData.append("images", file));
-  
+
     try {
       const response = await fetch(
         `${CONFIGURACIONES.BASEURL2}/productos/${editingProductId}`,
@@ -280,7 +280,7 @@ const handleCreateProduct = async (e) => {
           body: formData,
         }
       );
-      
+
       if (response.ok) {
         const data = await response.json();
         setMessage("Producto actualizado exitosamente.");
@@ -326,7 +326,7 @@ const handleCreateProduct = async (e) => {
             Gestiona el inventario de productos de tu tienda
           </p>
         </div>
-  
+
         {/* Pestañas */}
         <div className="flex justify-center mb-8">
           <div className={`inline-flex rounded-lg p-1 ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>
@@ -336,35 +336,33 @@ const handleCreateProduct = async (e) => {
                 setEditingProductId(null);
                 setActiveTab("create");
               }}
-              className={`flex items-center px-6 py-3 rounded-md transition-all ${
-                activeTab === "create"
+              className={`flex items-center px-6 py-3 rounded-md transition-all ${activeTab === "create"
                   ? theme === "dark"
                     ? "bg-green-600 text-white shadow-lg"
                     : "bg-green-500 text-white shadow-md"
                   : theme === "dark"
-                  ? "text-gray-300 hover:bg-gray-600"
-                  : "text-gray-700 hover:bg-gray-300"
-              }`}
+                    ? "text-gray-300 hover:bg-gray-600"
+                    : "text-gray-700 hover:bg-gray-300"
+                }`}
             >
               <FiPlusCircle className="mr-2" /> Crear Producto
             </button>
             <button
               onClick={() => setActiveTab("list")}
-              className={`flex items-center px-6 py-3 rounded-md transition-all ${
-                activeTab === "list"
+              className={`flex items-center px-6 py-3 rounded-md transition-all ${activeTab === "list"
                   ? theme === "dark"
                     ? "bg-green-600 text-white shadow-lg"
                     : "bg-green-500 text-white shadow-md"
                   : theme === "dark"
-                  ? "text-gray-300 hover:bg-gray-600"
-                  : "text-gray-700 hover:bg-gray-300"
-              }`}
+                    ? "text-gray-300 hover:bg-gray-600"
+                    : "text-gray-700 hover:bg-gray-300"
+                }`}
             >
               <FiList className="mr-2" /> Listar Productos
             </button>
           </div>
         </div>
-  
+
         {/* Formulario para crear/editar producto */}
         {(activeTab === "create" || activeTab === "edit") && (
           <div className={`rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
@@ -382,7 +380,7 @@ const handleCreateProduct = async (e) => {
                 )}
               </h2>
             </div>
-            
+
             <form
               onSubmit={editingProductId ? handleUpdateProduct : handleCreateProduct}
               className="p-6 space-y-6"
@@ -390,12 +388,12 @@ const handleCreateProduct = async (e) => {
               {/* Campos básicos */}
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {[
-                  { name: "name", label: "Nombre", placeholder:"Ingresa Nombre del Producto", type: "text", required: true, icon: FiTag },
-                  { name: "partNumber", label: "Código de la Pieza", placeholder:"Ingresa Código de la Pieza", type: "text", required: true, icon: FiHash },
-                  { name: "price", label: "Precio", placeholder:"Ingresa el Precio", type: "number", step: "0.01", icon: FiDollarSign },
-                  { name: "stock", label: "Stock", placeholder:"Ingresa Cantidad en Stock", type: "number", icon: FiBox },
-                  { name: "brand", label: "Marca", placeholder:"Ingresa la Marca", type: "text", icon: FiAward },
-                  { name: "discount", label: "Descuento (%)", placeholder:"Ingresa la Cantidad a Descontar", type: "number", step: "0.01", icon: FiPercent },
+                  { name: "name", label: "Nombre", placeholder: "Ingresa Nombre del Producto", type: "text", required: true, icon: FiTag },
+                  { name: "partNumber", label: "Código de la Pieza", placeholder: "Ingresa Código de la Pieza", type: "text", required: true, icon: FiHash },
+                  { name: "price", label: "Precio", placeholder: "Ingresa el Precio", type: "number", step: "0.01", icon: FiDollarSign },
+                  { name: "stock", label: "Stock", placeholder: "Ingresa Cantidad en Stock", type: "number", icon: FiBox },
+                  { name: "brand", label: "Marca", placeholder: "Ingresa la Marca", type: "text", icon: FiAward },
+                  { name: "discount", label: "Descuento (%)", placeholder: "Ingresa la Cantidad a Descontar", type: "number", step: "0.01", icon: FiPercent },
                 ].map((field) => (
                   <div key={field.name}>
                     <label className="flex items-center mb-2 font-medium ">
@@ -409,15 +407,14 @@ const handleCreateProduct = async (e) => {
                       onChange={handleInputChange}
                       step={field.step}
                       required={field.required}
-                      className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 transition-all ${
-                        theme === "dark" 
-                          ? "bg-gray-700 border-gray-600 placeholder-gray-400" 
+                      className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 transition-all ${theme === "dark"
+                          ? "bg-gray-700 border-gray-600 placeholder-gray-400"
                           : "border-gray-300 placeholder-gray-500"
-                      }`}
+                        }`}
                     />
                   </div>
                 ))}
-                
+
                 {/* Categoría */}
                 <div>
                   <label className="flex items-center mb-2 font-medium">
@@ -427,11 +424,10 @@ const handleCreateProduct = async (e) => {
                     name="category"
                     value={form.category}
                     onChange={handleInputChange}
-                    className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      theme === "dark" 
-                        ? "bg-gray-700 border-gray-600" 
+                    className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${theme === "dark"
+                        ? "bg-gray-700 border-gray-600"
                         : "border-gray-300"
-                    }`}
+                      }`}
                   >
                     <option value="">Selecciona una categoría</option>
                     <option value="Aceites y Lubricantes">Aceites y Lubricantes</option>
@@ -442,7 +438,7 @@ const handleCreateProduct = async (e) => {
                     <option value="Partes Eléctricas">Partes Eléctricas</option>
                   </select>
                 </div>
-                
+
                 {/* Descripción */}
                 <div className="md:col-span-2">
                   <label className="flex items-center mb-2 font-medium">
@@ -454,15 +450,14 @@ const handleCreateProduct = async (e) => {
                     value={form.description}
                     onChange={handleInputChange}
                     rows={3}
-                    className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                      theme === "dark" 
-                        ? "bg-gray-700 border-gray-600" 
+                    className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${theme === "dark"
+                        ? "bg-gray-700 border-gray-600"
                         : "border-gray-300"
-                    }`}
+                      }`}
                   />
                 </div>
               </div>
-  
+
               {/* Compatibilidades */}
               <div className="pt-6 border-t">
                 <h3 className="flex items-center mb-4 text-xl font-bold">
@@ -478,11 +473,10 @@ const handleCreateProduct = async (e) => {
                         value={form.makes[index]}
                         onChange={(e) => handleCompatibilityChange(e, index)}
                         placeholder="Ej. Toyota"
-                        className={`w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                          theme === "dark" 
-                            ? "bg-gray-700 border-gray-600" 
+                        className={`w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${theme === "dark"
+                            ? "bg-gray-700 border-gray-600"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       />
                     </div>
                     <div>
@@ -493,11 +487,10 @@ const handleCreateProduct = async (e) => {
                         value={form.models[index]}
                         onChange={(e) => handleCompatibilityChange(e, index)}
                         placeholder="Ej. Corolla"
-                        className={`w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                          theme === "dark" 
-                            ? "bg-gray-700 border-gray-600" 
+                        className={`w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${theme === "dark"
+                            ? "bg-gray-700 border-gray-600"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       />
                     </div>
                     <div>
@@ -508,22 +501,20 @@ const handleCreateProduct = async (e) => {
                         value={form.years[index]}
                         onChange={(e) => handleCompatibilityChange(e, index)}
                         placeholder="Ej. 2020"
-                        className={`w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                          theme === "dark" 
-                            ? "bg-gray-700 border-gray-600" 
+                        className={`w-full p-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${theme === "dark"
+                            ? "bg-gray-700 border-gray-600"
                             : "border-gray-300"
-                        }`}
+                          }`}
                       />
                     </div>
                     <div className="flex items-end">
                       <button
                         type="button"
                         onClick={() => removeCompatibilityRow(index)}
-                        className={`w-full py-2 px-4 rounded-lg flex items-center justify-center ${
-                          theme === "dark"
+                        className={`w-full py-2 px-4 rounded-lg flex items-center justify-center ${theme === "dark"
                             ? "bg-red-700 hover:bg-red-600"
                             : "bg-red-600 hover:bg-red-500"
-                        } text-white transition-all`}
+                          } text-white transition-all`}
                       >
                         <FiTrash2 className="mr-2" /> Eliminar
                       </button>
@@ -533,20 +524,19 @@ const handleCreateProduct = async (e) => {
                 <button
                   type="button"
                   onClick={addCompatibilityRow}
-                  className={`py-2 px-4 rounded-lg flex items-center ${
-                    theme === "dark"
+                  className={`py-2 px-4 rounded-lg flex items-center ${theme === "dark"
                       ? "bg-green-700 hover:bg-green-600"
                       : "bg-green-600 hover:bg-green-500"
-                  } text-white transition-all`}
+                    } text-white transition-all`}
                 >
                   <FiPlus className="mr-2" /> Agregar Compatibilidad
                 </button>
               </div>
-  
+
               {/* Imágenes */}
               <div className="pt-6 border-t">
                 <label className="flex items-center mb-2 font-medium">
-                  <FiImage className="mr-2 text-gray-500" /> 
+                  <FiImage className="mr-2 text-gray-500" />
                   {editingProductId ? "Agregar más imágenes" : "Imágenes del producto"}
                 </label>
                 <input
@@ -554,28 +544,26 @@ const handleCreateProduct = async (e) => {
                   accept="image/*"
                   multiple
                   onChange={handleFileChange}
-                  className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                    theme === "dark" 
-                      ? "bg-gray-700 border-gray-600" 
+                  className={`w-full p-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-green-500 ${theme === "dark"
+                      ? "bg-gray-700 border-gray-600"
                       : "border-gray-300"
-                  }`}
+                    }`}
                 />
                 <p className="mt-2 text-sm text-gray-500">
                   Puedes seleccionar múltiples imágenes (máx. 5MB cada una)
                 </p>
               </div>
-  
+
               {/* Botones de acción */}
               <div className="flex flex-col justify-end gap-4 pt-6 sm:flex-row">
                 {editingProductId && (
                   <button
                     type="button"
                     onClick={cancelEdit}
-                    className={`py-3 px-6 rounded-lg flex items-center justify-center ${
-                      theme === "dark"
+                    className={`py-3 px-6 rounded-lg flex items-center justify-center ${theme === "dark"
                         ? "bg-gray-600 hover:bg-gray-500"
                         : "bg-gray-300 hover:bg-gray-400"
-                    } transition-all`}
+                      } transition-all`}
                   >
                     <FiX className="mr-2" /> Cancelar
                   </button>
@@ -583,13 +571,12 @@ const handleCreateProduct = async (e) => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className={`py-3 px-6 rounded-lg flex items-center justify-center ${
-                    isLoading
+                  className={`py-3 px-6 rounded-lg flex items-center justify-center ${isLoading
                       ? "bg-gray-400 cursor-not-allowed"
                       : theme === "dark"
-                      ? "bg-green-600 hover:bg-green-500"
-                      : "bg-green-500 hover:bg-green-400"
-                  } text-white transition-all`}
+                        ? "bg-green-600 hover:bg-green-500"
+                        : "bg-green-500 hover:bg-green-400"
+                    } text-white transition-all`}
                 >
                   {isLoading ? (
                     <>
@@ -607,25 +594,24 @@ const handleCreateProduct = async (e) => {
                   )}
                 </button>
               </div>
-  
+
               {/* Mensajes de estado */}
               {message && (
-                <div className={`mt-4 p-3 rounded-lg text-center ${
-                  message.includes("Error") 
+                <div className={`mt-4 p-3 rounded-lg text-center ${message.includes("Error")
                     ? theme === "dark"
                       ? "bg-red-900/50 text-red-300"
                       : "bg-red-100 text-red-800"
                     : theme === "dark"
-                    ? "bg-green-900/50 text-green-300"
-                    : "bg-green-100 text-green-800"
-                }`}>
+                      ? "bg-green-900/50 text-green-300"
+                      : "bg-green-100 text-green-800"
+                  }`}>
                   {message}
                 </div>
               )}
             </form>
           </div>
         )}
-  
+
         {/* Listado de productos */}
         {activeTab === "list" && (
           <div className={`rounded-xl shadow-lg overflow-hidden ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
@@ -635,7 +621,7 @@ const handleCreateProduct = async (e) => {
                 <FiList className="mr-2" /> Listado de Productos
               </h2>
             </div>
-            
+
             <div className="p-6">
               {isLoadingProducts ? (
                 <div className="flex items-center justify-center py-12">
@@ -646,9 +632,8 @@ const handleCreateProduct = async (e) => {
                   {products.map((prod) => (
                     <div
                       key={prod.id}
-                      className={`rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 ${
-                        theme === "dark" ? "bg-gray-700" : "bg-white"
-                      }`}
+                      className={`rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 ${theme === "dark" ? "bg-gray-700" : "bg-white"
+                        }`}
                     >
                       {/* Imagen del producto */}
                       <div className="relative h-48 bg-gray-100">
@@ -659,73 +644,66 @@ const handleCreateProduct = async (e) => {
                             className="object-cover w-full h-full"
                           />
                         ) : (
-                          <div className={`w-full h-full flex items-center justify-center ${
-                            theme === "dark" ? "bg-gray-600" : "bg-gray-200"
-                          }`}>
+                          <div className={`w-full h-full flex items-center justify-center ${theme === "dark" ? "bg-gray-600" : "bg-gray-200"
+                            }`}>
                             <FiImage className="text-3xl text-gray-500" />
                           </div>
                         )}
                         <div className="absolute top-2 right-2">
-                          <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                            prod.stock > 0
+                          <span className={`px-2 py-1 rounded-full text-xs font-bold ${prod.stock > 0
                               ? theme === "dark"
                                 ? "bg-green-800 text-green-300"
                                 : "bg-green-100 text-green-800"
                               : theme === "dark"
-                              ? "bg-red-800 text-red-300"
-                              : "bg-red-100 text-red-800"
-                          }`}>
+                                ? "bg-red-800 text-red-300"
+                                : "bg-red-100 text-red-800"
+                            }`}>
                             {prod.stock > 0 ? `Stock: ${prod.stock}` : "Agotado"}
                           </span>
                         </div>
                       </div>
-  
+
                       {/* Contenido de la tarjeta */}
                       <div className="p-4">
                         <h3 className="mb-1 text-lg font-bold line-clamp-1">{prod.name}</h3>
-                        <p className={`text-sm mb-3 line-clamp-2 ${
-                          theme === "dark" ? "text-gray-400" : "text-gray-600"
-                        }`}>
+                        <p className={`text-sm mb-3 line-clamp-2 ${theme === "dark" ? "text-gray-400" : "text-gray-600"
+                          }`}>
                           {prod.description}
                         </p>
-                        
+
                         <div className="flex items-center justify-between mb-4">
                           <div>
-                            <p className="text-xl font-bold">${prod.price}</p>
+                            <p className="text-xl font-bold">${(prod.price * (1 - prod.discount / 100)).toFixed(2)}</p>
                             {prod.discount > 0 && (
-                              <p className={`text-xs ${
-                                theme === "dark" ? "text-gray-500" : "text-gray-400"
-                              }`}>
-                                <span className="line-through">${(prod.price / (1 - prod.discount/100)).toFixed(2)}</span> ({prod.discount}% OFF)
+                              <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-400"
+                                }`}>
+                                <span className="line-through">${prod.price.toFixed(2)}</span> ({prod.discount}% OFF)
                               </p>
                             )}
                           </div>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            theme === "dark" ? "bg-gray-600" : "bg-gray-200"
-                          }`}>
+                          <span className={`px-2 py-1 rounded-full text-xs ${theme === "dark" ? "bg-gray-600" : "bg-gray-200"
+                            }`}>
                             {prod.category}
                           </span>
                         </div>
-  
+
                         {/* Acciones */}
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleEditProduct(prod)}
-                            className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center ${
-                              theme === "dark"
+                            className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center ${theme === "dark"
                                 ? "bg-blue-700 hover:bg-blue-600"
                                 : "bg-blue-600 hover:bg-blue-500"
-                            } text-white transition-all`}
+                              } text-white transition-all`}
                           >
                             <FiEdit className="mr-2" /> Editar
                           </button>
                           <button
                             onClick={() => handleDeleteProduct(prod.id)}
-                            className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center ${
-                              theme === "dark"
+                            className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center ${theme === "dark"
                                 ? "bg-red-700 hover:bg-red-600"
                                 : "bg-red-600 hover:bg-red-500"
-                            } text-white transition-all`}
+                              } text-white transition-all`}
                           >
                             <FiTrash2 className="mr-2" /> Eliminar
                           </button>
@@ -738,9 +716,8 @@ const handleCreateProduct = async (e) => {
                 <div className="py-12 text-center">
                   <FiPackage className="mx-auto mb-4 text-4xl text-gray-500" />
                   <h3 className="mb-2 text-xl font-bold">No se encontraron productos</h3>
-                  <p className={`mb-6 ${
-                    theme === "dark" ? "text-gray-400" : "text-gray-600"
-                  }`}>
+                  <p className={`mb-6 ${theme === "dark" ? "text-gray-400" : "text-gray-600"
+                    }`}>
                     No hay productos registrados en el sistema
                   </p>
                   <button
@@ -749,11 +726,10 @@ const handleCreateProduct = async (e) => {
                       setEditingProductId(null);
                       setActiveTab("create");
                     }}
-                    className={`py-2 px-6 rounded-lg flex items-center mx-auto ${
-                      theme === "dark"
+                    className={`py-2 px-6 rounded-lg flex items-center mx-auto ${theme === "dark"
                         ? "bg-green-600 hover:bg-green-500"
                         : "bg-green-500 hover:bg-green-400"
-                    } text-white transition-all`}
+                      } text-white transition-all`}
                   >
                     <FiPlusCircle className="mr-2" /> Crear Primer Producto
                   </button>
