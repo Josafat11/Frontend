@@ -83,7 +83,7 @@ function Navbar() {
     { name: "Ofertas", path: "/ofertas", icon: FaTags },
     { name: "Sobre Nosotros", path: "/nosotros", icon: FaInfoCircle },
     { name: "Contacto", path: "/contacto", icon: FaPhone },
-    { name: "Seguimiento", path: "/seguimiento", icon: FaTruck },
+    ...(isAuthenticated ? [{ name: "Seguimiento", path: "/mispedidos", icon: FaTruck }] : []),
   ];
 
   return (
@@ -335,8 +335,8 @@ function Navbar() {
               <Link
                 href="/favoritos"
                 className={`p-2 rounded-full relative ${theme === "dark"
-                    ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
+                  ? "text-gray-200 hover:bg-gray-700 hover:text-yellow-400"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-yellow-600"
                   }`}
                 aria-label={`Favoritos (${favoritesCount} items)`}
               >
@@ -351,8 +351,8 @@ function Navbar() {
                 {favoritesCount > 0 && (
                   <span
                     className={`absolute -top-1 -right-1 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold ${theme === "dark"
-                        ? "bg-yellow-500 text-gray-900"
-                        : "bg-yellow-600 text-white"
+                      ? "bg-yellow-500 text-gray-900"
+                      : "bg-yellow-600 text-white"
                       }`}
                   >
                     {favoritesCount}
