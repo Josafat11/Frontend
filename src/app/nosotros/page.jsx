@@ -8,18 +8,18 @@ function QuienesSomosPage() {
 
   return (
     <div
-      className={`min-h-screen container mx-auto py-8 pt-36 ${
+      className={`min-h-screen container mx-auto py-8 pt-20 transition-colors ${
         theme === "dark"
           ? "bg-gray-800 text-gray-100"
           : "bg-white text-gray-900"
       }`}
     >
-      <h1 className="text-3xl font-bold text-center mb-8">Quiénes Somos</h1>
+      <h1 className="mb-8 text-3xl font-bold text-center">Quiénes Somos</h1>
 
       {/* Sección de historia */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 gap-8 mb-8 md:grid-cols-2">
         {/* Imagen de la refaccionaria */}
-        <div className="relative h-96 rounded-lg overflow-hidden shadow-lg">
+        <div className="relative overflow-hidden rounded-lg shadow-lg h-96">
           <Image
             src="/assets/historia.jpg" // Ruta de la imagen
             alt="Historia de Refaccionaria Muñoz"
@@ -36,7 +36,7 @@ function QuienesSomosPage() {
               : "bg-gray-100 text-gray-900"
           }`}
         >
-          <h2 className="text-2xl font-bold mb-4">Nuestra Historia</h2>
+          <h2 className="mb-4 text-2xl font-bold">Nuestra Historia</h2>
           <p className="mb-4">
             Refaccionaria Muñoz nació en 2003 con el objetivo de ofrecer
             refacciones y accesorios de alta calidad para vehículos en la región
@@ -53,7 +53,7 @@ function QuienesSomosPage() {
       </div>
 
       {/* Sección de misión y visión */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <div className="grid grid-cols-1 gap-8 mb-8 md:grid-cols-2">
         {/* Misión */}
         <div
           className={`p-6 rounded-lg shadow-lg ${
@@ -62,7 +62,7 @@ function QuienesSomosPage() {
               : "bg-gray-100 text-gray-900"
           }`}
         >
-          <h2 className="text-2xl font-bold mb-4">Misión</h2>
+          <h2 className="mb-4 text-2xl font-bold">Misión</h2>
           <p>
             Nuestra misión es proporcionar a nuestros clientes las mejores
             refacciones y accesorios para sus vehículos, asegurando calidad,
@@ -78,7 +78,7 @@ function QuienesSomosPage() {
               : "bg-gray-100 text-gray-900"
           }`}
         >
-          <h2 className="text-2xl font-bold mb-4">Visión</h2>
+          <h2 className="mb-4 text-2xl font-bold">Visión</h2>
           <p>
             Ser la refaccionaria líder en la región, reconocida por nuestra
             calidad, innovación y compromiso con la satisfacción total de
@@ -95,8 +95,8 @@ function QuienesSomosPage() {
             : "bg-gray-100 text-gray-900"
         }`}
       >
-        <h2 className="text-2xl font-bold mb-4">Nuestros Valores</h2>
-        <ul className="list-disc list-inside space-y-2">
+        <h2 className="mb-4 text-2xl font-bold">Nuestros Valores</h2>
+        <ul className="space-y-2 list-disc list-inside">
           <li>
             <strong>Calidad:</strong> Ofrecemos productos de la más alta calidad.
           </li>
@@ -116,9 +116,9 @@ function QuienesSomosPage() {
       </div>
 
       {/* Sección de imágenes (puedes agregar las imágenes que desees) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {/* Imagen 1 */}
-        <div className="relative h-64 rounded-lg overflow-hidden shadow-lg">
+        <div className="relative h-64 overflow-hidden rounded-lg shadow-lg">
           <Image
             src="/assets/equipo1.jpg" // Ruta de la imagen
             alt="Equipo de Refaccionaria Muñoz"
@@ -128,7 +128,7 @@ function QuienesSomosPage() {
         </div>
 
         {/* Imagen 2 */}
-        <div className="relative h-64 rounded-lg overflow-hidden shadow-lg">
+        <div className="relative h-64 overflow-hidden rounded-lg shadow-lg">
           <Image
             src="/assets/equipo2.jpg" // Ruta de la imagen
             alt="Instalaciones de Refaccionaria Muñoz"
@@ -138,7 +138,7 @@ function QuienesSomosPage() {
         </div>
 
         {/* Imagen 3 */}
-        <div className="relative h-64 rounded-lg overflow-hidden shadow-lg">
+        <div className="relative h-64 overflow-hidden rounded-lg shadow-lg">
           <Image
             src="/assets/equipo3.jpg" // Ruta de la imagen
             alt="Atención al cliente en Refaccionaria Muñoz"

@@ -82,7 +82,7 @@ function UserProfile() {
   if (loading) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+        <div className="w-12 h-12 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -90,7 +90,7 @@ function UserProfile() {
   if (error) {
     return (
       <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}`}>
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded max-w-md">
+        <div className="max-w-md px-4 py-3 text-red-700 bg-red-100 border border-red-400 rounded">
           <p>{error}</p>
         </div>
       </div>
@@ -107,9 +107,9 @@ function UserProfile() {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold flex items-center">
+      <div className="container px-4 py-8 mx-auto">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="flex items-center text-3xl font-bold">
             <FiUser className="mr-2" /> Mi Perfil
           </h1>
         </div>
@@ -138,14 +138,14 @@ function UserProfile() {
                   <>
                     <button
                       onClick={handleSubmit}
-                      className="p-2 rounded-full bg-green-500 hover:bg-green-400"
+                      className="p-2 bg-green-500 rounded-full hover:bg-green-400"
                       title="Guardar cambios"
                     >
                       <FiSave />
                     </button>
                     <button
                       onClick={() => setEditMode(false)}
-                      className="p-2 rounded-full bg-red-500 hover:bg-red-400"
+                      className="p-2 bg-red-500 rounded-full hover:bg-red-400"
                       title="Cancelar edición"
                     >
                       <FiX />
@@ -160,7 +160,7 @@ function UserProfile() {
             {editMode ? (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
+                  <label className="flex items-center mb-1 text-sm font-medium">
                     <FiUser className="mr-2" /> Nombre
                   </label>
                   <input
@@ -173,7 +173,7 @@ function UserProfile() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
+                  <label className="flex items-center mb-1 text-sm font-medium">
                     <FiUser className="mr-2" /> Apellido
                   </label>
                   <input
@@ -186,7 +186,7 @@ function UserProfile() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
+                  <label className="flex items-center mb-1 text-sm font-medium">
                     <FiPhone className="mr-2" /> Teléfono
                   </label>
                   <input
@@ -199,7 +199,7 @@ function UserProfile() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1 flex items-center">
+                  <label className="flex items-center mb-1 text-sm font-medium">
                     <FiCalendar className="mr-2" /> Fecha de Nacimiento
                   </label>
                   <input
@@ -212,10 +212,10 @@ function UserProfile() {
                 </div>
               </form>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <h3 className="flex items-center mb-4 text-lg font-semibold">
                       <FiUser className="mr-2" /> Información Personal
                     </h3>
                     <div className="space-y-3">
@@ -236,7 +236,7 @@ function UserProfile() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <h3 className="flex items-center mb-4 text-lg font-semibold">
                       <FiShield className="mr-2" /> Seguridad
                     </h3>
                     <div className="space-y-3">
@@ -259,7 +259,7 @@ function UserProfile() {
 
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <h3 className="flex items-center mb-4 text-lg font-semibold">
                       <FiClock className="mr-2" /> Actividad
                     </h3>
                     <div className="space-y-3">
@@ -281,7 +281,7 @@ function UserProfile() {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-semibold mb-4 flex items-center">
+                    <h3 className="flex items-center mb-4 text-lg font-semibold">
                       <FiKey className="mr-2" /> Estado de la Cuenta
                     </h3>
                     <div className="space-y-3">

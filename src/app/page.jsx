@@ -74,7 +74,7 @@ function HomePage() {
 
   return (
       <div
-        className={`min-h-screen container mx-auto py-8 pt-36 ${
+        className={`min-h-screen container mx-auto py-8 pt-20 ${
           theme === "dark"
             ? "bg-gray-800 text-gray-100"
             : "bg-white text-gray-900"
@@ -273,11 +273,12 @@ function HomePage() {
               {productosAleatorios.slice(0, 4).map((producto) => (
                 <div
                   key={producto.id}
-                  className={`rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl ${
+                  className={`rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:translate-y-1 ${
                     theme === "dark" ? "bg-gray-800" : "bg-white shadow-md"
                   }`}
                 >
-                  <div className="relative h-60">
+                  {/* Imagen del producto */}
+                  <div className="relative bg-gray-100 h-60">
                     {producto.images.length > 0 ? (
                       <Image
                         src={producto.images[0].url}

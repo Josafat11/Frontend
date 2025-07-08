@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { CONFIGURACIONES } from "../config/config"; // Ajusta la ruta según tu proyecto
+import { useAuth } from "../../context/authContext";
 
 function PoliticasPage() {
+  const { theme } = useAuth();
   const [politica, setPolitica] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -56,35 +58,49 @@ function PoliticasPage() {
   if (!politica) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-gray-700">No se encontró una política de privacidad actual.</p>
+        <p className="text-gray-700">
+          No se encontró una política de privacidad actual.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="bg-white shadow-lg rounded-lg p-8 max-w-3xl w-full">
+    <div
+      className={`flex items-center justify-center min-h-screen px-4 transition-colors ${
+        theme === "dark"
+          ? "bg-gray-800 text-gray-300"
+          : "bg-gray-100 text-gray-900"
+      }`}
+    >
+      <div
+        className={`w-full max-w-7xl p-8 rounded-lg shadow-lg mt-16 mb-16 ${
+          theme === "dark"
+            ? "bg-gray-700 text-gray-100"
+            : "bg-gray-50 text-gray-900"
+        }`}
+      >
         {/* Título de la política */}
-        <h1 className="text-3xl font-extrabold mb-6 text-center text-gray-800">
+        <h1 className="mb-6 text-3xl font-bold text-center">
           {politica.title}
         </h1>
 
         {/* Fecha de entrada en vigor */}
-        <p className="text-sm text-gray-500 text-center mb-4">
+        <p className="mb-4 text-sm text-center">
           <span className="font-semibold">Vigencia:</span>{" "}
           {new Date(politica.effectiveDate).toLocaleDateString()}
         </p>
 
         {/* Separador decorativo */}
-        <hr className="border-gray-300 mb-6" />
+        <hr className="mb-6 border-gray-300" />
 
         {/* Contenido */}
-        <div className="text-gray-700 text-justify whitespace-pre-line leading-relaxed">
+        <div className="leading-relaxed text-justify whitespace-pre-line">
           {politica.content}
         </div>
 
         {/* Fecha de creación */}
-        <p className="text-xs text-gray-400 mt-8 text-center">
+        <p className="mt-8 text-xs text-center">
           <span className="font-semibold">Creado el:</span>{" "}
           {new Date(politica.createdAt).toLocaleDateString()}
         </p>

@@ -316,10 +316,10 @@ const handleCreateProduct = async (e) => {
 
   return (
     <div className={`min-h-screen py-8 pt-36 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
-      <div className="container mx-auto px-4">
+      <div className="container px-4 mx-auto">
         {/* Encabezado */}
         <div className={`p-6 rounded-xl shadow-lg mb-8 ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
-          <h1 className="text-3xl font-bold text-center mb-2 flex items-center justify-center">
+          <h1 className="flex items-center justify-center mb-2 text-3xl font-bold text-center">
             <FiPackage className="mr-3" /> Administración de Productos
           </h1>
           <p className="text-center text-gray-500">
@@ -370,7 +370,7 @@ const handleCreateProduct = async (e) => {
           <div className={`rounded-xl shadow-lg overflow-hidden mb-8 max-w-4xl mx-auto ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
             {/* Encabezado del formulario */}
             <div className={`p-4 ${theme === "dark" ? "bg-gray-700" : "bg-green-600"} text-white`}>
-              <h2 className="text-xl font-bold flex items-center">
+              <h2 className="flex items-center text-xl font-bold">
                 {editingProductId ? (
                   <>
                     <FiEdit className="mr-2" /> Editar Producto
@@ -388,22 +388,23 @@ const handleCreateProduct = async (e) => {
               className="p-6 space-y-6"
             >
               {/* Campos básicos */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {[
-                  { name: "name", label: "Nombre", type: "text", required: true, icon: FiTag },
-                  { name: "partNumber", label: "Part Number", type: "text", required: true, icon: FiHash },
-                  { name: "price", label: "Precio", type: "number", step: "0.01", icon: FiDollarSign },
-                  { name: "stock", label: "Stock", type: "number", icon: FiBox },
-                  { name: "brand", label: "Marca", type: "text", icon: FiAward },
-                  { name: "discount", label: "Descuento (%)", type: "number", step: "0.01", icon: FiPercent },
+                  { name: "name", label: "Nombre", placeholder:"Ingresa Nombre del Producto", type: "text", required: true, icon: FiTag },
+                  { name: "partNumber", label: "Código de la Pieza", placeholder:"Ingresa Código de la Pieza", type: "text", required: true, icon: FiHash },
+                  { name: "price", label: "Precio", placeholder:"Ingresa el Precio", type: "number", step: "0.01", icon: FiDollarSign },
+                  { name: "stock", label: "Stock", placeholder:"Ingresa Cantidad en Stock", type: "number", icon: FiBox },
+                  { name: "brand", label: "Marca", placeholder:"Ingresa la Marca", type: "text", icon: FiAward },
+                  { name: "discount", label: "Descuento (%)", placeholder:"Ingresa la Cantidad a Descontar", type: "number", step: "0.01", icon: FiPercent },
                 ].map((field) => (
                   <div key={field.name}>
-                    <label className="block mb-2 font-medium flex items-center">
+                    <label className="flex items-center mb-2 font-medium ">
                       <field.icon className="mr-2 text-gray-500" /> {field.label}
                     </label>
                     <input
                       type={field.type}
                       name={field.name}
+                      placeholder={field.placeholder}
                       value={form[field.name]}
                       onChange={handleInputChange}
                       step={field.step}
@@ -419,7 +420,7 @@ const handleCreateProduct = async (e) => {
                 
                 {/* Categoría */}
                 <div>
-                  <label className="block mb-2 font-medium flex items-center">
+                  <label className="flex items-center mb-2 font-medium">
                     <FiLayers className="mr-2 text-gray-500" /> Categoría
                   </label>
                   <select
@@ -444,11 +445,12 @@ const handleCreateProduct = async (e) => {
                 
                 {/* Descripción */}
                 <div className="md:col-span-2">
-                  <label className="block mb-2 font-medium flex items-center">
+                  <label className="flex items-center mb-2 font-medium">
                     <FiAlignLeft className="mr-2 text-gray-500" /> Descripción
                   </label>
                   <textarea
                     name="description"
+                    placeholder="Agrega una Descripción del Producto"
                     value={form.description}
                     onChange={handleInputChange}
                     rows={3}
@@ -462,14 +464,14 @@ const handleCreateProduct = async (e) => {
               </div>
   
               {/* Compatibilidades */}
-              <div className="border-t pt-6">
-                <h3 className="text-xl font-bold mb-4 flex items-center">
+              <div className="pt-6 border-t">
+                <h3 className="flex items-center mb-4 text-xl font-bold">
                   <FiTool className="mr-2" /> Compatibilidades
                 </h3>
                 {form.makes.map((_, index) => (
-                  <div key={index} className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                  <div key={index} className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-4">
                     <div>
-                      <label className="block text-sm text-gray-500 mb-1">Marca</label>
+                      <label className="block mb-1 text-sm text-gray-500">Marca</label>
                       <input
                         type="text"
                         name="makes"
@@ -484,7 +486,7 @@ const handleCreateProduct = async (e) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-500 mb-1">Modelo</label>
+                      <label className="block mb-1 text-sm text-gray-500">Modelo</label>
                       <input
                         type="text"
                         name="models"
@@ -499,7 +501,7 @@ const handleCreateProduct = async (e) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm text-gray-500 mb-1">Año</label>
+                      <label className="block mb-1 text-sm text-gray-500">Año</label>
                       <input
                         type="number"
                         name="years"
@@ -533,8 +535,8 @@ const handleCreateProduct = async (e) => {
                   onClick={addCompatibilityRow}
                   className={`py-2 px-4 rounded-lg flex items-center ${
                     theme === "dark"
-                      ? "bg-blue-700 hover:bg-blue-600"
-                      : "bg-blue-600 hover:bg-blue-500"
+                      ? "bg-green-700 hover:bg-green-600"
+                      : "bg-green-600 hover:bg-green-500"
                   } text-white transition-all`}
                 >
                   <FiPlus className="mr-2" /> Agregar Compatibilidad
@@ -542,8 +544,8 @@ const handleCreateProduct = async (e) => {
               </div>
   
               {/* Imágenes */}
-              <div className="border-t pt-6">
-                <label className="block mb-2 font-medium flex items-center">
+              <div className="pt-6 border-t">
+                <label className="flex items-center mb-2 font-medium">
                   <FiImage className="mr-2 text-gray-500" /> 
                   {editingProductId ? "Agregar más imágenes" : "Imágenes del producto"}
                 </label>
@@ -558,13 +560,13 @@ const handleCreateProduct = async (e) => {
                       : "border-gray-300"
                   }`}
                 />
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="mt-2 text-sm text-gray-500">
                   Puedes seleccionar múltiples imágenes (máx. 5MB cada una)
                 </p>
               </div>
   
               {/* Botones de acción */}
-              <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6">
+              <div className="flex flex-col justify-end gap-4 pt-6 sm:flex-row">
                 {editingProductId && (
                   <button
                     type="button"
@@ -591,7 +593,7 @@ const handleCreateProduct = async (e) => {
                 >
                   {isLoading ? (
                     <>
-                      <FiLoader className="animate-spin mr-2" />
+                      <FiLoader className="mr-2 animate-spin" />
                       {editingProductId ? "Actualizando..." : "Creando..."}
                     </>
                   ) : editingProductId ? (
@@ -629,18 +631,18 @@ const handleCreateProduct = async (e) => {
           <div className={`rounded-xl shadow-lg overflow-hidden ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
             {/* Encabezado de la lista */}
             <div className={`p-4 ${theme === "dark" ? "bg-gray-700" : "bg-green-600"} text-white`}>
-              <h2 className="text-xl font-bold flex items-center">
+              <h2 className="flex items-center text-xl font-bold">
                 <FiList className="mr-2" /> Listado de Productos
               </h2>
             </div>
             
             <div className="p-6">
               {isLoadingProducts ? (
-                <div className="flex justify-center items-center py-12">
-                  <FiLoader className="animate-spin text-4xl text-green-500" />
+                <div className="flex items-center justify-center py-12">
+                  <FiLoader className="text-4xl text-green-500 animate-spin" />
                 </div>
               ) : products.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {products.map((prod) => (
                     <div
                       key={prod.id}
@@ -654,7 +656,7 @@ const handleCreateProduct = async (e) => {
                           <img
                             src={prod.images[0].url}
                             alt={prod.name}
-                            className="w-full h-full object-cover"
+                            className="object-cover w-full h-full"
                           />
                         ) : (
                           <div className={`w-full h-full flex items-center justify-center ${
@@ -680,7 +682,7 @@ const handleCreateProduct = async (e) => {
   
                       {/* Contenido de la tarjeta */}
                       <div className="p-4">
-                        <h3 className="font-bold text-lg mb-1 line-clamp-1">{prod.name}</h3>
+                        <h3 className="mb-1 text-lg font-bold line-clamp-1">{prod.name}</h3>
                         <p className={`text-sm mb-3 line-clamp-2 ${
                           theme === "dark" ? "text-gray-400" : "text-gray-600"
                         }`}>
@@ -733,9 +735,9 @@ const handleCreateProduct = async (e) => {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <FiPackage className="mx-auto text-4xl text-gray-500 mb-4" />
-                  <h3 className="text-xl font-bold mb-2">No se encontraron productos</h3>
+                <div className="py-12 text-center">
+                  <FiPackage className="mx-auto mb-4 text-4xl text-gray-500" />
+                  <h3 className="mb-2 text-xl font-bold">No se encontraron productos</h3>
                   <p className={`mb-6 ${
                     theme === "dark" ? "text-gray-400" : "text-gray-600"
                   }`}>

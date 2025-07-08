@@ -111,7 +111,7 @@ const CarBrandsPage = () => {
   const centerIndex = Math.floor(itemsPerPage / 2)
 
   return (
-    <div className={`min-h-screen py-12 font-sans ${theme === "dark"
+    <div className={`min-h-screen py-12 font-sans transition-colors ${theme === "dark"
           ? "bg-gray-800 text-gray-100"
           : "bg-gray-50 text-gray-900"
     }`}>

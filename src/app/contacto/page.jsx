@@ -29,8 +29,8 @@ function ContactoPage() {
 
   return (
     <div
-      className={`min-h-screen container mx-auto py-8 pt-16 ${
-        theme === "dark" ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
+      className={`min-h-screen container mx-auto py-8 pt-20 transition-colors ${
+        theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
       }`}
     >
       <h1 className="mb-8 text-3xl font-bold text-center">Contacto</h1>
@@ -45,8 +45,8 @@ function ContactoPage() {
         >
           <h2 className="mb-4 text-2xl font-bold">Información de Contacto</h2>
           <p className="mb-4">
-            Estamos aquí para ayudarte. Si tienes alguna pregunta o necesitas
-            asistencia, no dudes en contactarnos.
+            Estamos aquí para ayudarte. <br></br> Si tienes alguna pregunta o necesitas
+            asistencia, no dudes en contactarnos por nuestros medios oficiales o visitarnos en nuestra dirección.
           </p>
           <div className="space-y-4">
             <div className="flex items-center">
@@ -70,7 +70,7 @@ function ContactoPage() {
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
-              <p>Calle Principal #123, Col. Centro, Huautla, Hidalgo.</p>
+              <p>43000, La Lomita, Huejutla de Reyes, Hgo.</p>
             </div>
             <div className="flex items-center">
               <svg
@@ -87,7 +87,7 @@ function ContactoPage() {
                   d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
                 />
               </svg>
-              <p>+52 123 456 7890</p>
+              <p>789 896 1084</p>
             </div>
             <div className="flex items-center">
               <svg
@@ -104,7 +104,7 @@ function ContactoPage() {
                   d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                 />
               </svg>
-              <p>contacto@refaccionariamunoz.com</p>
+              <p>munozautopartes@gmail.com</p>
             </div>
           </div>
         </div>
@@ -122,6 +122,7 @@ function ContactoPage() {
               <input
                 type="text"
                 name="nombre"
+                placeholder="Ingresa tu nombre"
                 value={formData.nombre}
                 onChange={handleChange}
                 className={`w-full border p-2 rounded-lg ${
@@ -137,6 +138,7 @@ function ContactoPage() {
               <input
                 type="email"
                 name="correo"
+                placeholder="Ingresa tu correo eléctronico"
                 value={formData.correo}
                 onChange={handleChange}
                 className={`w-full border p-2 rounded-lg ${
@@ -151,6 +153,7 @@ function ContactoPage() {
               <label className="block mb-2">Teléfono</label>
               <input
                 type="tel"
+                placeholder="Ingresa tu número de teléfono"
                 name="telefono"
                 value={formData.telefono}
                 onChange={handleChange}
@@ -166,6 +169,7 @@ function ContactoPage() {
               <label className="block mb-2">Mensaje</label>
               <textarea
                 name="mensaje"
+                placeholder="¿Cuáles son tus dudas?"
                 value={formData.mensaje}
                 onChange={handleChange}
                 className={`w-full border p-2 rounded-lg ${
@@ -181,7 +185,7 @@ function ContactoPage() {
               type="submit"
               className={`w-full py-2 px-4 rounded-lg ${
                 theme === "dark"
-                  ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                  ? "bg-green-700 text-white hover:bg-green-500"
                   : "bg-green-600 text-white hover:bg-green-700"
               } transition duration-300`}
             >

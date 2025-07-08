@@ -383,12 +383,12 @@ function ProductosPage() {
 
   return (
     <div
-      className={`min-h-screen py-8 pt-36 ${theme === "dark"
+      className={`min-h-screen py-8 pt-20 transition-colors ${theme === "dark"
         ? "bg-gray-900 text-gray-100"
         : "bg-gray-50 text-gray-900"
         }`}
     >
-      <div className="container mx-auto px-4">
+      <div className="container px-4 mx-auto">
         {/* Migajas de pan */}
         <Breadcrumbs pages={breadcrumbsPages} />
 
@@ -397,7 +397,7 @@ function ProductosPage() {
           className={`p-6 rounded-xl shadow-lg mb-8 ${theme === "dark" ? "bg-gray-800" : "bg-white"
             }`}
         >
-          <h1 className="text-3xl font-bold text-center mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-center">
             Nuestro Catálogo de Productos
           </h1>
           <p className="text-center text-gray-500">
@@ -406,7 +406,7 @@ function ProductosPage() {
         </div>
 
         {/* Filtros móviles */}
-        <div className="md:hidden mb-6">
+        <div className="mb-6 md:hidden">
           <button
             onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
             className={`w-full py-3 px-4 rounded-lg flex items-center justify-between ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
@@ -423,7 +423,7 @@ function ProductosPage() {
           </button>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col gap-8 md:flex-row">
           {/* Filtros en la izquierda */}
           <div
             className={`w-full md:w-1/4 ${mobileFiltersOpen ? "block" : "hidden md:block"
@@ -435,8 +435,8 @@ function ProductosPage() {
                 : "bg-white text-gray-900"
                 }`}
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold flex items-center">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="flex items-center text-xl font-bold">
                   <FiFilter className="mr-2" /> Filtros
                 </h2>
                 <button
@@ -452,7 +452,7 @@ function ProductosPage() {
 
               {/* Buscador general */}
               <div className="mb-6">
-                <label className="block mb-2 font-medium flex items-center">
+                <label className="flex items-center mb-2 font-medium">
                   <FiSearch className="mr-2" /> Buscar
                 </label>
                 <input
@@ -469,7 +469,7 @@ function ProductosPage() {
 
               {/* Filtro por categoría */}
               <div className="mb-6">
-                <label className="block mb-2 font-medium flex items-center">
+                <label className="flex items-center mb-2 font-medium">
                   <FiTag className="mr-2" /> Categoría
                 </label>
                 <select
@@ -491,12 +491,12 @@ function ProductosPage() {
 
               {/* Filtro por rango de precio */}
               <div className="mb-6">
-                <label className="block mb-2 font-medium flex items-center">
+                <label className="flex items-center mb-2 font-medium">
                   <FiDollarSign className="mr-2" /> Rango de Precio
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm text-gray-500 mb-1">
+                    <label className="block mb-1 text-sm text-gray-500">
                       Mínimo
                     </label>
                     <input
@@ -516,7 +516,7 @@ function ProductosPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-gray-500 mb-1">
+                    <label className="block mb-1 text-sm text-gray-500">
                       Máximo
                     </label>
                     <input
@@ -540,7 +540,7 @@ function ProductosPage() {
 
               {/* Filtro por marca */}
               <div className="mb-6">
-                <label className="block mb-2 font-medium flex items-center">
+                <label className="flex items-center mb-2 font-medium">
                   <FaCar className="mr-2" /> Marca
                 </label>
                 <input
@@ -557,7 +557,7 @@ function ProductosPage() {
 
               {/* Filtro por modelo */}
               <div className="mb-6">
-                <label className="block mb-2 font-medium flex items-center">
+                <label className="flex items-center mb-2 font-medium">
                   <FiTruck className="mr-2" /> Modelo
                 </label>
                 <input
@@ -574,7 +574,7 @@ function ProductosPage() {
 
               {/* Filtro por año */}
               <div className="mb-6">
-                <label className="block mb-2 font-medium flex items-center">
+                <label className="flex items-center mb-2 font-medium">
                   <FaCalendarAlt className="mr-2" /> Año
                 </label>
                 <input
@@ -591,7 +591,7 @@ function ProductosPage() {
 
               {/* Filtro por stock */}
               <div className="mb-6">
-                <label className="block mb-2 font-medium flex items-center">
+                <label className="flex items-center mb-2 font-medium">
                   <FaBoxOpen className="mr-2" /> Stock Mínimo
                 </label>
                 <input
@@ -668,8 +668,8 @@ function ProductosPage() {
             </div>
 
             {isLoading ? (
-              <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+              <div className="flex items-center justify-center py-20">
+                <div className="w-12 h-12 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
               </div>
             ) : error ? (
               <div
@@ -685,8 +685,8 @@ function ProductosPage() {
                 className={`p-8 rounded-lg text-center ${theme === "dark" ? "bg-gray-800" : "bg-white"
                   }`}
               >
-                <div className="text-5xl mb-4">🔍</div>
-                <h3 className="text-xl font-bold mb-2">
+                <div className="mb-4 text-5xl">🔍</div>
+                <h3 className="mb-2 text-xl font-bold">
                   No se encontraron productos
                 </h3>
                 <p
@@ -707,7 +707,7 @@ function ProductosPage() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {productos.map((producto) => (
                     <div
                       key={producto.id}
@@ -715,7 +715,7 @@ function ProductosPage() {
                         }`}
                     >
                       {/* Imagen del producto */}
-                      <div className="relative h-48 bg-gray-100">
+                      <div className="relative bg-gray-100 h-60">
                         {producto.images.length > 0 ? (
                           <Image
                             src={producto.images[0].url}
@@ -760,7 +760,7 @@ function ProductosPage() {
 
                       {/* Contenido de la tarjeta */}
                       <div className="p-4">
-                        <h2 className="text-lg font-bold mb-1 line-clamp-1">
+                        <h2 className="mb-1 text-lg font-bold line-clamp-1">
                           {producto.name}
                         </h2>
                         <p
@@ -798,7 +798,7 @@ function ProductosPage() {
 
                         {/* Compatibilidades */}
                         <div className="mb-4">
-                          <p className="text-sm font-medium mb-1">
+                          <p className="mb-1 text-sm font-medium">
                             Compatibilidad:
                           </p>
                           <div className="flex flex-wrap gap-1">
@@ -843,7 +843,7 @@ function ProductosPage() {
                           >
                             {isAddingToCart ? (
                               <svg
-                                className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                className="w-4 h-4 mr-2 -ml-1 text-white animate-spin"
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -882,7 +882,7 @@ function ProductosPage() {
                           >
                             {isAddingToCart ? (
                               <svg
-                                className="animate-spin h-4 w-4 text-white"
+                                className="w-4 h-4 text-white animate-spin"
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -930,7 +930,7 @@ function ProductosPage() {
                           >
                             {isAddingToFavorites ? (
                               <svg
-                                className="animate-spin h-5 w-5"
+                                className="w-5 h-5 animate-spin"
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"
                                 viewBox="0 0 24 24"
@@ -960,7 +960,7 @@ function ProductosPage() {
                 </div>
 
                 {/* Paginación mejorada */}
-                <div className="flex justify-between items-center mt-8">
+                <div className="flex items-center justify-between mt-8">
                   <button
                     onClick={() =>
                       cambiarPagina(Math.max(1, paginacion.paginaActual - 1))
