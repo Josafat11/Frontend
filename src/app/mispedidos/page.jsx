@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/authContext";
 import { useRouter } from "next/navigation";
-import Swal from "sweetalert2";
 import Breadcrumbs from "../../components/Breadcrumbs";
 import { CONFIGURACIONES } from "../config/config";
+import Image from "next/image";
+import { FiBox, FiTruck, FiCalendar, FiShoppingCart } from "react-icons/fi";
 
 function MisPedidosPage() {
   const { user, isAuthenticated, theme } = useAuth();
@@ -15,7 +16,7 @@ function MisPedidosPage() {
   const router = useRouter();
 
   const breadcrumbsPages = [
-    { name: "Home", path: "/" },
+    { name: "Inicio", path: "/" },
     { name: "Mis Pedidos", path: "/misPedidos" },
   ];
 
@@ -27,23 +28,21 @@ function MisPedidosPage() {
 
     const fetchPedidos = async () => {
       try {
-        const response = await fetch(`${CONFIGURACIONES.BASEURL2}/pedidos/${user.id}`, {
+        const res = await fetch(`${CONFIGURACIONES.BASEURL2}/pedidos/${user.id}`, {
           credentials: "include",
           cache: "no-store",
         });
 
-        if (!response.ok) throw new Error("Error al obtener pedidos");
+        if (!res.ok) throw new Error("Error al obtener pedidos");
 
-        const data = await response.json();
-        console.log("DATA RECIBIDA:", data);
+        const data = await res.json();
 
-        // Ajuste para un solo pedido o lista de pedidos
         if (Array.isArray(data)) {
           setPedidos(data);
         } else if (Array.isArray(data.pedidos)) {
           setPedidos(data.pedidos);
         } else if (data.pedido) {
-          setPedidos([data.pedido]); // convertir único pedido a array
+          setPedidos([data.pedido]);
         } else {
           setPedidos([]);
         }
@@ -60,13 +59,13 @@ function MisPedidosPage() {
   }, [user, isAuthenticated]);
 
   return (
-    <div className={`min-h-screen py-8 pt-36 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
+    <div className={`min-h-screen py-8 pt-32 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
       <div className="container mx-auto px-4">
         <Breadcrumbs pages={breadcrumbsPages} />
 
-        <div className={`p-6 rounded-xl shadow-lg mb-8 ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
-          <h1 className="text-3xl font-bold text-center mb-2">Mis Pedidos</h1>
-          <p className="text-center text-gray-500">Consulta el estado de tus órdenes recientes</p>
+        <div className={`p-6 rounded-xl shadow-lg mb-8 text-center ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
+          <h1 className="text-3xl font-bold mb-2">Mis Pedidos</h1>
+          <p className="text-gray-500">Consulta el estado y detalle de tus órdenes</p>
         </div>
 
         {isLoading ? (
@@ -80,19 +79,51 @@ function MisPedidosPage() {
             {pedidos.map((pedido) => (
               <div
                 key={pedido.id}
-                className={`p-5 rounded-lg shadow ${theme === "dark" ? "bg-gray-700" : "bg-white"}`}
+                className={`p-6 rounded-lg shadow-md border ${theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}`}
               >
-                <h2 className="text-lg font-semibold mb-2">Pedido #{pedido.id}</h2>
-                <p className="text-sm text-gray-500 mb-1">Fecha: {new Date(pedido.createdAt).toLocaleDateString()}</p>
-                <p className="text-sm text-gray-500 mb-1">Estado: <strong>{pedido.estado}</strong></p>
+                <div className="mb-4">
+                  <div className="flex justify-between items-center flex-wrap gap-2">
+                    <div className="flex items-center gap-2">
+                      <FiShoppingCart className="text-green-500" />
+                      <h2 className="font-semibold text-lg">Pedido #{pedido.id}</h2>
+                    </div>
+                    <span className="text-sm text-gray-500 flex items-center gap-1">
+                      <FiCalendar /> {new Date(pedido.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="text-sm mt-1 text-gray-500 flex items-center gap-1">
+                    <FiTruck />
+                    Estado: <strong className="ml-1">{pedido.estado}</strong>
+                  </div>
+                </div>
 
-                <ul className="list-disc list-inside text-sm pl-2">
+                <ul className="divide-y">
                   {pedido.items?.map((item, idx) => (
-                    <li key={idx}>
-                      {item.producto?.name} x {item.cantidad}
+                    <li key={idx} className="py-4 flex items-start gap-4">
+                      {item.producto?.images?.[0]?.url && (
+                        <Image
+                          src={item.producto.images[0].url}
+                          alt={item.producto.name}
+                          width={60}
+                          height={60}
+                          className="rounded-lg object-cover"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="font-medium text-md">{item.producto?.name}</h3>
+                        <p className="text-sm text-gray-500">Cantidad: {item.cantidad}</p>
+                        <p className="text-sm text-gray-500">Precio unitario: ${item.precioUnitario?.toFixed(2)}</p>
+                        <p className="text-sm text-gray-500">Subtotal: ${item.subtotal?.toFixed(2)}</p>
+                      </div>
                     </li>
                   ))}
                 </ul>
+
+                <div className="text-right mt-4">
+                  <span className="text-lg font-semibold">
+                    Total: ${pedido.total?.toFixed(2)}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

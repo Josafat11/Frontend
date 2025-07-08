@@ -54,12 +54,16 @@ function ProductosPage() {
   // Captura los parámetros de búsqueda de la URL
   const searchParams = useSearchParams();
   const searchTerm = searchParams.get("search");
+  const categoriaParam = searchParams.get("categoria");
 
   useEffect(() => {
     if (searchTerm) {
       setBusquedaGeneral(searchTerm);
     }
-  }, [searchTerm]);
+    if (categoriaParam) {
+      setFiltroCategoria(categoriaParam); // Establece la categoría desde la URL
+    }
+  }, [searchTerm, categoriaParam]); // Añade categoriaParam a las dependencias
 
   // Obtener productos al cargar la página o cambiar filtros
   useEffect(() => {
@@ -117,6 +121,25 @@ function ProductosPage() {
     user
   ]);
 
+  useEffect(() => {
+    if (productos.length > 0) {
+      const prefetchProductPages = async () => {
+        try {
+          await Promise.all(
+            productos.map(producto =>
+              router.prefetch(`/producto/${producto.id}`)
+            )
+          );
+        } catch (error) {
+          console.error("Error prefetching product pages:", error);
+        }
+      };
+
+      prefetchProductPages();
+    }
+  }, [productos, router]);
+
+
   // Cambiar de página
   const cambiarPagina = (pagina) => {
     setPaginacion((prev) => ({ ...prev, paginaActual: pagina }));
@@ -150,141 +173,80 @@ function ProductosPage() {
     setFiltroStock("");
   };
 
-  const comprarAhora = async (productId) => {
+  const comprarAhora = async (productId, e) => {
+    e?.stopPropagation(); // Detiene la propagación si el evento existe
+
     if (!isAuthenticated) {
-      Swal.fire({
+      const result = await Swal.fire({
         title: "Inicia sesión",
         text: "Debes iniciar sesión para comprar productos",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Ir a login",
         cancelButtonText: "Cancelar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.push("/login");
-        }
       });
+
+      if (result.isConfirmed) {
+        router.push("/login");
+      }
       return;
     }
 
     setIsAddingToCart(true);
     try {
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/carrito/agregar`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Se envían cookies automáticamente
-          body: JSON.stringify({
-            productId: Number(productId),
-            quantity: 1,
-          }),
-        }
-      );
+      const res = await fetch(`${CONFIGURACIONES.BASEURL2}/carrito/agregar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ productId: Number(productId), quantity: 1 }),
+      });
 
-      const data = await response.json();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Error al comprar");
 
-      if (!response.ok) {
-        throw new Error(data.message || "Error al agregar al carrito");
-      }
-
-      // Redirigir directamente al carrito
+      refreshCart();
       router.push("/carrito");
-    } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-
-      if (error.message.includes("stock")) {
-        const stockMatch = error.message.match(/stockDisponible":(\d+)/);
-        const stockDisponible = stockMatch ? stockMatch[1] : "desconocido";
-
-        Swal.fire({
-          title: "Stock insuficiente",
-          text: `No hay suficiente stock disponible. Stock actual: ${stockDisponible}`,
-          icon: "error",
-        });
-      } else {
-        Swal.fire({
-          title: "Error",
-          text: error.message || "Ocurrió un error al procesar tu compra",
-          icon: "error",
-        });
-      }
+    } catch (err) {
+      console.error("Error al comprar:", err);
+      Swal.fire("Error", err.message, "error");
     } finally {
       setIsAddingToCart(false);
     }
   };
 
-  const agregarAlCarrito = async (productId) => {
+  const agregarAlCarrito = async (productId, e) => {
+    e?.stopPropagation(); // Detiene la propagación si el evento existe
+
     if (!isAuthenticated) {
-      Swal.fire({
+      const result = await Swal.fire({
         title: "Inicia sesión",
-        text: "Debes iniciar sesión para agregar productos al carrito",
+        text: "Debes iniciar sesión para agregar productos",
         icon: "warning",
         showCancelButton: true,
         confirmButtonText: "Ir a login",
         cancelButtonText: "Cancelar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.push("/login");
-        }
       });
+      if (result.isConfirmed) router.push("/login");
       return;
     }
 
     setIsAddingToCart(true);
     try {
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/carrito/agregar`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // Se envían cookies automáticamente
-          body: JSON.stringify({
-            productId: Number(productId),
-            quantity: 1,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Error al agregar al carrito");
-      }
-
-      // Mostrar confirmación sin redirigir
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Producto agregado",
-        text: "El producto se ha añadido a tu carrito",
-        showConfirmButton: false,
-        timer: 1500,
+      const res = await fetch(`${CONFIGURACIONES.BASEURL2}/carrito/agregar`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ productId: Number(productId), quantity: 1 }),
       });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Error al agregar");
+
       refreshCart();
-    } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-
-      if (error.message.includes("stock")) {
-        const stockMatch = error.message.match(/stockDisponible":(\d+)/);
-        const stockDisponible = stockMatch ? stockMatch[1] : "desconocido";
-
-        Swal.fire({
-          title: "Stock insuficiente",
-          text: `No hay suficiente stock disponible. Stock actual: ${stockDisponible}`,
-          icon: "error",
-        });
-      } else {
-        Swal.fire({
-          title: "Error",
-          text: error.message || "Ocurrió un error al agregar el producto",
-          icon: "error",
-        });
-      }
+      Swal.fire("Agregado", "Producto agregado al carrito", "success");
+    } catch (err) {
+      console.error("Error al agregar:", err);
+      Swal.fire("Error", err.message, "error");
     } finally {
       setIsAddingToCart(false);
     }
@@ -293,7 +255,9 @@ function ProductosPage() {
 
 
 
-  const toggleFavorito = async (productId) => {
+  const toggleFavorito = async (productId, e) => {
+    e?.stopPropagation(); // Detiene la propagación si el evento existe
+    e?.preventDefault(); // Previene el comportamiento por defecto si el evento existe
     if (!isAuthenticated) {
       const { isConfirmed } = await Swal.fire({
         title: "Inicia sesión",
@@ -711,128 +675,109 @@ function ProductosPage() {
                   {productos.map((producto) => (
                     <div
                       key={producto.id}
-                      className={`rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 ${theme === "dark" ? "bg-gray-800" : "bg-white"
-                        }`}
+                      className={`relative rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}
                     >
-                      {/* Imagen del producto */}
-                      <div className="relative bg-gray-100 h-60">
-                        {producto.images.length > 0 ? (
-                          <Image
-                            src={producto.images[0].url}
-                            alt={producto.name}
-                            fill
-                            className="object-cover"
-                            unoptimized={true} // Necesario si usas output: 'export'
-                          />
-                        ) : (
-                          <div
-                            className={`w-full h-full flex items-center justify-center ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                              }`}
-                          >
+                      {/* Contenido principal clickeable */}
+                      <div
+                        className="cursor-pointer"
+                        onClick={() => router.push(`/producto/${producto.id}`)}
+                        role="button"
+                        tabIndex="0"
+                        aria-label={`Ver detalles de ${producto.name}`}
+                        onKeyDown={(e) => e.key === 'Enter' && router.push(`/producto/${producto.id}`)}
+                      >
+                        {/* Imagen del producto */}
+                        <div className="relative bg-gray-100 h-60">
+                          {producto.images.length > 0 ? (
+                            <Image
+                              src={producto.images[0].url}
+                              alt={producto.name}
+                              fill
+                              className="object-cover"
+                              unoptimized={true}
+                            />
+                          ) : (
+                            <div className={`w-full h-full flex items-center justify-center ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>
+                              <span className={`text-lg ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}>
+                                Sin imagen
+                              </span>
+                            </div>
+                          )}
+                          {/* Badge de stock */}
+                          <div className="absolute top-2 right-2">
                             <span
-                              className={`text-lg ${theme === "dark"
-                                ? "text-gray-500"
-                                : "text-gray-400"
+                              className={`px-2 py-1 rounded-full text-xs font-bold ${producto.stock > 0
+                                ? theme === "dark"
+                                  ? "bg-green-800 text-green-300"
+                                  : "bg-green-100 text-green-800"
+                                : theme === "dark"
+                                  ? "bg-red-800 text-red-300"
+                                  : "bg-red-100 text-red-800"
                                 }`}
                             >
-                              Sin imagen
+                              {producto.stock > 0 ? `Stock: ${producto.stock}` : "Agotado"}
                             </span>
                           </div>
-                        )}
-                        {/* Badge de stock */}
-                        <div className="absolute top-2 right-2">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-bold ${producto.stock > 0
-                              ? theme === "dark"
-                                ? "bg-green-800 text-green-300"
-                                : "bg-green-100 text-green-800"
-                              : theme === "dark"
-                                ? "bg-red-800 text-red-300"
-                                : "bg-red-100 text-red-800"
-                              }`}
-                          >
-                            {producto.stock > 0
-                              ? `Stock: ${producto.stock}`
-                              : "Agotado"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Contenido de la tarjeta */}
-                      <div className="p-4">
-                        <h2 className="mb-1 text-lg font-bold line-clamp-1">
-                          {producto.name}
-                        </h2>
-                        <p
-                          className={`text-sm mb-3 line-clamp-2 ${theme === "dark" ? "text-gray-400" : "text-gray-600"
-                            }`}
-                        >
-                          {producto.description}
-                        </p>
-
-                        <div className="flex items-center justify-between mb-3">
-                          <div>
-                            <p className="text-xl font-bold">
-                              ${(producto.price * (1 - producto.discount / 100)).toFixed(2)}
-                            </p>
-
-                            {producto.discount > 0 && (
-                              <p
-                                className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-400"
-                                  }`}
-                              >
-                                <span className="line-through">
-                                  ${producto.price.toFixed(2)}
-                                </span>{" "}
-                                ({producto.discount}% OFF)
-                              </p>
-                            )}
-                          </div>
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                              }`}
-                          >
-                            {producto.category}
-                          </span>
                         </div>
 
-                        {/* Compatibilidades */}
-                        <div className="mb-4">
-                          <p className="mb-1 text-sm font-medium">
-                            Compatibilidad:
+                        {/* Contenido de la tarjeta */}
+                        <div className="p-4">
+                          <h2 className="mb-1 text-lg font-bold line-clamp-1">
+                            {producto.name}
+                          </h2>
+                          <p className={`text-sm mb-3 line-clamp-2 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                            {producto.description}
                           </p>
-                          <div className="flex flex-wrap gap-1">
-                            {producto.compatibilities
-                              .slice(0, 3)
-                              .map((comp, index) => (
+
+                          <div className="flex items-center justify-between mb-3">
+                            <div>
+                              <p className="text-xl font-bold">
+                                ${(producto.price * (1 - producto.discount / 100)).toFixed(2)}
+                              </p>
+                              {producto.discount > 0 && (
+                                <p className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}>
+                                  <span className="line-through">
+                                    ${producto.price.toFixed(2)}
+                                  </span>{" "}
+                                  ({producto.discount}% OFF)
+                                </p>
+                              )}
+                            </div>
+                            <span className={`px-2 py-1 rounded-full text-xs ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>
+                              {producto.category}
+                            </span>
+                          </div>
+
+                          {/* Compatibilidades */}
+                          <div className="mb-4">
+                            <p className="mb-1 text-sm font-medium">Compatibilidad:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {producto.compatibilities.slice(0, 3).map((comp, index) => (
                                 <span
                                   key={index}
-                                  className={`px-2 py-1 rounded-full text-xs ${theme === "dark"
-                                    ? "bg-gray-700"
-                                    : "bg-gray-200"
-                                    }`}
+                                  className={`px-2 py-1 rounded-full text-xs ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}
                                 >
                                   {comp.make} {comp.model}
                                 </span>
                               ))}
-                            {producto.compatibilities.length > 3 && (
-                              <span
-                                className={`px-2 py-1 rounded-full text-xs ${theme === "dark"
-                                  ? "bg-gray-700"
-                                  : "bg-gray-200"
-                                  }`}
-                              >
-                                +{producto.compatibilities.length - 3} más
-                              </span>
-                            )}
+                              {producto.compatibilities.length > 3 && (
+                                <span className={`px-2 py-1 rounded-full text-xs ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>
+                                  +{producto.compatibilities.length - 3} más
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
+                      </div>
 
-                        {/* Botones de acción */}
+                      {/* Botones de acción - DEBEN estar FUERA del div clickeable */}
+                      <div className="px-4 pb-4">
                         <div className="flex gap-2">
-                          {/* Botón Comprar ahora (redirige) */}
                           <button
-                            onClick={() => comprarAhora(producto.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              comprarAhora(producto.id, e);
+                            }}
                             disabled={isAddingToCart || producto.stock <= 0}
                             className={`flex-1 py-2 px-4 rounded-lg flex items-center justify-center ${producto.stock <= 0
                               ? "bg-gray-400 cursor-not-allowed"
@@ -868,9 +813,11 @@ function ProductosPage() {
                             Comprar ahora
                           </button>
 
-                          {/* Botón Añadir al carrito (solo muestra confirmación) */}
                           <button
-                            onClick={() => agregarAlCarrito(producto.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              agregarAlCarrito(producto.id, e);
+                            }}
                             disabled={isAddingToCart || producto.stock <= 0}
                             className={`p-2 rounded-lg flex items-center justify-center ${producto.stock <= 0
                               ? "bg-gray-400 cursor-not-allowed"
@@ -906,25 +853,24 @@ function ProductosPage() {
                             )}
                           </button>
 
-                          {/* Botón Favoritos */}
                           <button
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              toggleFavorito(producto.id);
+                              toggleFavorito(producto.id, e);
                             }}
                             disabled={isAddingToFavorites}
                             className={`
-    p-2 rounded-lg flex items-center justify-center
-    transition-colors duration-200
-    ${producto.esFavorito
+            p-2 rounded-lg flex items-center justify-center
+            transition-colors duration-200
+            ${producto.esFavorito
                                 ? "text-red-500 hover:text-red-600"
                                 : theme === "dark"
                                   ? "text-gray-300 hover:text-red-400"
                                   : "text-gray-500 hover:text-red-500"
                               }
-    ${isAddingToFavorites ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-  `}
+            ${isAddingToFavorites ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+          `}
                             title={producto.esFavorito ? "Quitar de favoritos" : "Añadir a favoritos"}
                             aria-label={producto.esFavorito ? "Quitar de favoritos" : "Añadir a favoritos"}
                           >
@@ -941,14 +887,14 @@ function ProductosPage() {
                             ) : (
                               <FaHeart
                                 className={`
-        ${producto.esFavorito ? "fill-red-500" : "fill-transparent"}
-        stroke-current
-        stroke-[3px]
-        ${theme === "dark" ? "text-gray-300" : "text-gray-500"}
-        transition-all duration-200
-        group-hover:text-red-500
-        ${producto.esFavorito ? "scale-110" : "scale-100"}
-      `}
+                ${producto.esFavorito ? "fill-red-500" : "fill-transparent"}
+                stroke-current
+                stroke-[3px]
+                ${theme === "dark" ? "text-gray-300" : "text-gray-500"}
+                transition-all duration-200
+                group-hover:text-red-500
+                ${producto.esFavorito ? "scale-110" : "scale-100"}
+              `}
                                 size={20}
                               />
                             )}
