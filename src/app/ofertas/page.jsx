@@ -163,10 +163,10 @@ function OfertasPage() {
 
                             <div className="mb-2">
                                 <span className="text-xl font-bold text-green-600">
-                                    ${producto.discount || producto.price}
+                                    ${producto.discount ? (producto.price * (1 - producto.discount / 100)).toFixed(2) : producto.price.toFixed(2)}
                                 </span>
-                                {producto.price && producto.discount && (
-                                    <span className="line-through text-sm text-gray-400 ml-2">${producto.price}</span>
+                                {producto.discount > 0 && (
+                                    <span className="line-through text-sm text-gray-400 ml-2">${producto.price.toFixed(2)}</span>
                                 )}
                             </div>
 
