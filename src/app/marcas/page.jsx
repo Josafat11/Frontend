@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useAuth } from "../../context/authContext";
+import Breadcrumbs from "../../components/Breadcrumbs";
 import Image from "next/image";
 
 const CarBrandsPage = () => {
@@ -110,10 +111,15 @@ const CarBrandsPage = () => {
   const visibleBrands = getVisibleBrands()
   const centerIndex = Math.floor(itemsPerPage / 2)
 
+    const breadcrumbsPages = [
+    { name: "Home", path: "/" },
+    { name: "Marcas", path: "/marcas" },
+  ];
+
   return (
     <div className={`min-h-screen py-12 font-sans transition-colors ${theme === "dark"
-          ? "bg-gray-800 text-gray-100"
-          : "bg-gray-50 text-gray-900"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-gray-100 text-gray-900"
     }`}>
       <style>
         {`
@@ -142,13 +148,14 @@ const CarBrandsPage = () => {
       </style>
 
       <div className="px-4 mx-auto max-w-7xl">
+        <Breadcrumbs pages={breadcrumbsPages} />
         {/* Header */}
         <div className="mb-12 text-center">
           <div className="relative inline-block">
             <h1 className={`relative mb-4 text-4xl font-bold md:text-5xl ${
                 theme === "dark"
-                ? "bg-gray-800 text-gray-100"
-                : "bg-gray-50 text-slate-800"
+                ? "text-gray-100"
+                : "text-slate-800"
             }`}>
               Nuestras Marcas
               <div className="absolute w-24 h-1 transform -translate-x-1/2 rounded-full -bottom-2 left-1/2 bg-gradient-to-r from-yellow-400 to-amber-500"></div>
@@ -156,8 +163,8 @@ const CarBrandsPage = () => {
           </div>
           <p className={`max-w-2xl mx-auto text-lg leading-relaxed ${
                 theme === "dark"
-                ? "bg-gray-800 text-gray-100"
-                : "bg-gray-50 text-slate-600"
+                ? "text-gray-100"
+                : "text-slate-600"
             }`}>
             Descubre la amplia gama de marcas en refacciones para automóviles que manejamos. Calidad, confianza y excelencia en cada vehículo.
           </p>

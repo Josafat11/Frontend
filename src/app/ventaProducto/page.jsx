@@ -861,16 +861,16 @@ function ProductosPage() {
                             }}
                             disabled={isAddingToFavorites}
                             className={`
-            p-2 rounded-lg flex items-center justify-center
-            transition-colors duration-200
-            ${producto.esFavorito
-                                ? "text-red-500 hover:text-red-600"
-                                : theme === "dark"
+                                p-2 rounded-lg flex items-center justify-center
+                                transition-colors duration-200
+                                ${producto.esFavorito
+                                  ? "text-red-500 hover:text-red-600"
+                                  : theme === "dark"
                                   ? "text-gray-300 hover:text-red-400"
                                   : "text-gray-500 hover:text-red-500"
                               }
-            ${isAddingToFavorites ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-          `}
+                              ${isAddingToFavorites ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                            `}
                             title={producto.esFavorito ? "Quitar de favoritos" : "Añadir a favoritos"}
                             aria-label={producto.esFavorito ? "Quitar de favoritos" : "Añadir a favoritos"}
                           >
@@ -887,14 +887,14 @@ function ProductosPage() {
                             ) : (
                               <FaHeart
                                 className={`
-                ${producto.esFavorito ? "fill-red-500" : "fill-transparent"}
-                stroke-current
-                stroke-[3px]
-                ${theme === "dark" ? "text-gray-300" : "text-gray-500"}
-                transition-all duration-200
-                group-hover:text-red-500
-                ${producto.esFavorito ? "scale-110" : "scale-100"}
-              `}
+                                  ${producto.esFavorito ? "fill-red-500" : "fill-transparent"}
+                                  stroke-current
+                                  stroke-[3px]
+                                  ${theme === "dark" ? "text-gray-300" : "text-gray-500"}
+                                  transition-all duration-200
+                                group-hover:text-red-500
+                                  ${producto.esFavorito ? "scale-110" : "scale-100"}
+                                  `}
                                 size={20}
                               />
                             )}

@@ -7,7 +7,7 @@ const Breadcrumbs = ({ pages }) => {
         {pages.map((page, index) => (
           <li key={index} className="flex items-center">
             {index < pages.length - 1 ? (
-              <Link href={page.path} className="text-yellow-600 hover:underline">
+              <Link href={page.path} className="font-semibold text-yellow-600 hover:underline ">
                 {page.name}
               </Link>
             ) : (
