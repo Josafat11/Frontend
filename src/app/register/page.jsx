@@ -7,7 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../config/config";
-import { useAuth } from '../../context/authContext';
+import { useAuth } from "../../context/authContext";
 
 function RegisterPage() {
   const [password, setPassword] = useState("");
@@ -116,7 +116,6 @@ function RegisterPage() {
       setBirthDateValid(false);
     }
   };
-
 
   // Color de la barra según la fortaleza
   const getStrengthBarColor = () => {
@@ -283,315 +282,462 @@ function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="flex min-h-screen">
       {/* Sección izquierda: Formulario */}
-      <div className="w-full md:w-1/2 flex flex-col justify-center items-center ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'}">
-        <div className="w-full max-w-md">
+      <div
+        className={`w-full md:w-1/2 flex flex-col justify-center items-center transition-colors py-20 ${
+          theme === "dark"
+            ? "bg-gray-900 text-gray-100"
+            : "bg-white text-gray-900"
+        }`}
+      >
+        <div className="w-full max-w-lg px-6">
           <Link href="/">
-            <p className="text-green-700 font-bold mb-6 block">&larr; Atrás</p>
+            <p className="block mb-6 font-bold text-green-700">&larr; Atrás</p>
           </Link>
-
           {/* Logo */}
-          <div className="text-center mb-8"></div>
-
-          <h2 className="text-2xl font-bold mb-4">Crea tu cuenta</h2>
-
+          <div className="mb-6 text-center"></div>
+          <h2
+            className={`mb-6 text-2xl font-bold text-center ${
+              theme === "dark" ? "text-gray-100" : "text-gray-900"
+            }`}
+          >
+            Crea tu cuenta
+          </h2>
           {/* El formulario ahora ejecuta la función onSubmit */}
           <form onSubmit={onSubmit}>
             {/* Nombre */}
             <div className="mb-4">
-              <label className="block text-gray-700">Nombre</label>
-              <input
-                type="text"
-                placeholder="Nombre"
-                value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-              />
-              {nombre && !validarNombreApellido(nombre) && (
-                <p className="text-red-500 text-sm">
-                  El nombre debe tener más de 3 caracteres y solo contener
-                  letras.
-                </p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-gray-700">Apellido</label>
-              <input
-                type="text"
-                placeholder="Apellido"
-                value={apellido}
-                onChange={(e) => setApellido(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-              />
-              {apellido && !validarNombreApellido(apellido) && (
-                <p className="text-red-500 text-sm">
-                  El apellido debe tener más de 3 caracteres y solo contener
-                  letras.
-                </p>
-              )}
-            </div>
-
-            {/* Correo Electrónico */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Correo Electrónico</label>
-              <input
-                type="email"
-                placeholder="Correo Electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-              />
-            </div>
-
-            {/* Teléfono */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Teléfono</label>
-              <input
-                type="tel"
-                placeholder="Teléfono"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-                pattern="[0-9]{10}" // Solo números y exactamente 10 dígitos
-                maxLength="10" // Máximo 10 caracteres
-                onInput={(e) => {
-                  e.target.value = e.target.value.replace(/[^0-9]/g, ""); // Reemplaza cualquier caracter que no sea un número
-                }}
-                required // Campo obligatorio
-              />
-              <p className="text-sm text-gray-500 mt-2">
-                *Ingresa un número de teléfono válido (10 dígitos).
-              </p>
-            </div>
-
-            {/* Fecha de Nacimiento */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Fecha de Nacimiento</label>
-              <input
-                type="date"
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-                value={birthDate}
-                onChange={handleBirthDateChange}
-                min="1960-01-01"
-                max="2006-12-31"
-              />
-              {!birthDateValid && (
-                <p className="text-red-500 text-sm mt-1">
-                  Su edad está fuera del rango permitido.
-                </p>
-              )}
-            </div>
-
-            {/* Pregunta Secreta */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Pregunta Secreta</label>
-              <select
-                value={preguntaSecreta}
-                onChange={(e) => setPreguntaSecreta(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-              >
-                <option value="default" disabled>
-                  Selecciona una pregunta secreta
-                </option>
-                <option value="¿Cuál es el nombre de tu primera mascota?">
-                  ¿Cuál es el nombre de tu primera mascota?
-                </option>
-                <option value="¿Cuál es tu película favorita?">
-                  ¿Cuál es tu película favorita?
-                </option>
-                <option value="¿En qué ciudad naciste?">
-                  ¿En qué ciudad naciste?
-                </option>
-              </select>
-            </div>
-            {/* Respuesta Secreta */}
-            <div className="mb-4">
-              <label className="block text-gray-700">Respuesta Secreta</label>
-              <input
-                type="text"
-                placeholder="Respuesta Secreta"
-                value={respuestaSecreta}
-                onChange={(e) => setRespuestaSecreta(e.target.value)}
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-              />
-            </div>
-
-            {/* Contraseña */}
-            <div className="mb-4 relative">
-              <label className="block text-gray-700">Contraseña</label>
-              <input
-                type={passwordVisible ? "text" : "password"} // Cambia entre "text" y "password"
-                placeholder="Contraseña"
-                value={password}
-                onChange={handlePasswordChange}
-                className="w-full border border-gray-300 p-2 rounded-lg bg-slate-300 font-semibold"
-              />
-              <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-9 top-8 text-gray-800"
-              >
-                {passwordVisible ? "Ocultar" : "Mostrar"}
-              </button>
-              {passwordWarning && (
-                <p className="text-red-500 text-sm mt-1">{passwordWarning}</p>
-              )}
-            </div>
-
-            {/* Barra de fortaleza */}
-            <div className="mb-4">
+              {/* Nombre y Apellido en una fila */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    className={`block mb-1 text-sm font-medium ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Nombre
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Nombre"
+                    value={nombre}
+                    required
+                    onChange={(e) => setNombre(e.target.value)}
+                    className={`w-full p-2 text-sm font-semibold border rounded-lg ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                        : "bg-slate-300 border-gray-300 text-gray-900"
+                    }`}
+                  />
+                  {nombre && !validarNombreApellido(nombre) && (
+                    <p className="mt-1 text-xs text-red-500">
+                      El nombre debe tener más de 3 caracteres y solo contener
+                      letras.
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label
+                    className={`block mb-1 text-sm font-medium ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Apellido
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Apellido"
+                    value={apellido}
+                    required
+                    onChange={(e) => setApellido(e.target.value)}
+                    className={`w-full p-2 text-sm font-semibold border rounded-lg ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                        : "bg-slate-300 border-gray-300 text-gray-900"
+                    }`}
+                  />
+                  {apellido && !validarNombreApellido(apellido) && (
+                    <p className="mt-1 text-xs text-red-500">
+                      El apellido debe tener más de 3 caracteres y solo contener
+                      letras.
+                    </p>
+                  )}
+                </div>
+              </div>
+              {/* Email y Teléfono en una fila */}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    className={`block mb-1 text-sm font-medium my-4 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Correo Electrónico
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="Correo Electrónico"
+                    value={email}
+                    required
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full p-2 text-sm font-semibold border rounded-lg ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                        : "bg-slate-300 border-gray-300 text-gray-900"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label
+                    className={`block mb-1 text-sm font-medium my-4 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Teléfono
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="Teléfono"
+                    value={telefono}
+                    onChange={(e) => setTelefono(e.target.value)}
+                    className={`w-full p-2 text-sm font-semibold border rounded-lg ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                        : "bg-slate-300 border-gray-300 text-gray-900"
+                    }`}
+                    pattern="[0-9]{10}"
+                    maxLength={10}
+                    onInput={(e) => {
+                      e.target.value = e.target.value.replace(/[^0-9]/g, ""); // Reemplaza cualquier caracter que no sea un número
+                    }}
+                    required
+                  />
+                  <p
+                    className={`mt-1 text-xs ${
+                      theme === "dark" ? "text-gray-400" : "text-gray-500"
+                    }`}
+                  >
+                    *Ingresa un número válido (10 dígitos).
+                  </p>
+                </div>
+              </div>
+              {/* Fecha de Nacimiento */}
+              <div>
+                <label
+                  className={`block mb-1 text-sm font-medium my-4 ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  Fecha de Nacimiento
+                </label>
+                <input
+                  type="date"
+                  required
+                  className={`w-full p-2 text-sm font-semibold border rounded-lg ${
+                    theme === "dark"
+                      ? "bg-gray-700 border-gray-600 text-gray-100"
+                      : "bg-slate-300 border-gray-300 text-gray-900"
+                  }`}
+                  value={birthDate}
+                  onChange={handleBirthDateChange}
+                  min="1960-01-01"
+                  max="2006-12-31"
+                />
+                {!birthDateValid && (
+                  <p className="mt-1 text-xs text-red-500">
+                    Su edad está fuera del rango permitido.
+                  </p>
+                )}
+              </div>
+              {/* Pregunta y Respuesta Secreta */}
+              <div className="space-y-3">
+                <div>
+                  <label
+                    className={`block mb-1 text-sm font-medium my-4 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Pregunta Secreta
+                  </label>
+                  <select
+                    value={preguntaSecreta}
+                    onChange={(e) => setPreguntaSecreta(e.target.value)}
+                    className={`w-full p-2 text-sm font-semibold border rounded-lg ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100"
+                        : "bg-slate-300 border-gray-300 text-gray-900"
+                    }`}
+                  >
+                    <option value="default" disabled>
+                      Selecciona una pregunta secreta
+                    </option>
+                    <option value="¿Cuál es el nombre de tu primera mascota?">
+                      ¿Cuál es el nombre de tu primera mascota?
+                    </option>
+                    <option value="¿Cuál es tu película favorita?">
+                      ¿Cuál es tu película favorita?
+                    </option>
+                    <option value="¿En qué ciudad naciste?">
+                      ¿En qué ciudad naciste?
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    className={`block mb-1 text-sm font-medium my-4 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Respuesta Secreta
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Respuesta Secreta"
+                    value={respuestaSecreta}
+                    required
+                    onChange={(e) => setRespuestaSecreta(e.target.value)}
+                    className={`w-full p-2 text-sm font-semibold border rounded-lg ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                        : "bg-slate-300 border-gray-300 text-gray-900"
+                    }`}
+                  />
+                </div>
+              </div>
+              {/* Contraseñas */}
+              <div className="my-4 space-y-3">
+                <div className="relative">
+                  <label
+                    className={`block mb-1 text-sm font-medium ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Contraseña
+                  </label>
+                  <input
+                    type={passwordVisible ? "text" : "password"}
+                    placeholder="Contraseña"
+                    value={password}
+                    required
+                    onChange={handlePasswordChange}
+                    className={`w-full p-2 pr-20 text-sm font-semibold border rounded-lg ${
+                      theme === "dark"
+                        ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                        : "bg-slate-300 border-gray-300 text-gray-900"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className={`absolute text-xs right-3 top-8 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-800"
+                    }`}
+                  >
+                    {passwordVisible ? "Ocultar" : "Mostrar"}
+                  </button>
+                  {passwordWarning && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {passwordWarning}
+                    </p>
+                  )}
+                </div>
+                {/* Barra de fortaleza */}
+                <div className="my-4">
+                  <div
+                    className={`h-2 rounded-lg ${getStrengthBarColor()}`}
+                    style={{ width: `${(passwordStrength / 4) * 100}%` }}
+                  ></div>
+                  <p className={`mt-1 text-xs ${getStrengthTextColor()}`}>
+                    {getStrengthText()}
+                  </p>
+                </div>
+                <div className="relative">
+                  <label
+                    className={`block mb-1 text-sm font-medium my-4 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-700"
+                    }`}
+                  >
+                    Confirmar Contraseña
+                  </label>
+                  <input
+                    type={confirmPasswordVisible ? "text" : "password"}
+                    placeholder="Confirmar Contraseña"
+                    value={confirmPassword}
+                    required
+                    onChange={handleConfirmPasswordChange}
+                    className={`w-full border p-2 rounded-lg font-semibold text-sm pr-20 ${
+                      passwordMatch
+                        ? theme === "dark"
+                          ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                          : "bg-slate-300 border-gray-300 text-gray-900"
+                        : "border-red-900 bg-red-300 text-gray-900"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleConfirmPasswordVisibility}
+                    className={`absolute text-xs right-3 top-8 ${
+                      theme === "dark" ? "text-gray-300" : "text-gray-800"
+                    }`}
+                  >
+                    {confirmPasswordVisible ? "Ocultar" : "Mostrar"}
+                  </button>
+                  {!passwordMatch && (
+                    <p className="mt-1 text-xs text-red-500">
+                      Las contraseñas no coinciden
+                    </p>
+                  )}
+                </div>
+              </div>
+              {/* Requisitos de contraseña en formato compacto */}
               <div
-                className={`h-2 rounded-lg ${getStrengthBarColor()}`}
-                style={{ width: `${(passwordStrength / 4) * 100}%` }}
-              ></div>
-              <p className={`mt-1 ${getStrengthTextColor()}`}>
-                {getStrengthText()}
-              </p>
-            </div>
-
-            {/* Confirmar Contraseña */}
-            <div className="mb-4 relative">
-              <label className="block text-gray-700">
-                Confirmar Contraseña
-              </label>
-              <input
-                type={confirmPasswordVisible ? "text" : "password"}
-                placeholder="Confirmar Contraseña"
-                value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
-                className={`w-full border p-2 rounded-lg bg-slate-300 font-semibold ${
-                  passwordMatch ? "border-gray-300" : "border-red-900 bg-red-300"
+                className={`p-3 rounded-lg my-4 ${
+                  theme === "dark" ? "bg-gray-800" : "bg-gray-50"
                 }`}
-              />
-              <button
-                type="button"
-                onClick={toggleConfirmPasswordVisibility}
-                className="absolute right-9 top-8 text-gray-800"
               >
-                {confirmPasswordVisible ? "Ocultar" : "Mostrar"}
-              </button>
-              {!passwordMatch && (
-                <p className="text-red-500 text-sm mt-1">
-                  Las contraseñas no coinciden
+                <p
+                  className={`mb-2 text-xs font-medium ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-900"
+                  }`}
+                >
+                  Tu contraseña debe tener:
                 </p>
-              )}
-            </div>
-
-            {/* Requisitos de contraseña */}
-            <div className="mb-4 text-sm">
-              <p>Tu contraseña debe tener:</p>
-              <ul className="list-disc pl-5">
-                <li
-                  className={
-                    password.length >= 8 && password.length <= 30
-                      ? "text-green-600"
-                      : "text-gray-600"
-                  }
-                >
-                  De 8 a 30 caracteres
-                </li>
-                <li
-                  className={
-                    /\d/.test(password) ? "text-green-600" : "text-gray-600"
-                  }
-                >
-                  Al menos 1 número
-                </li>
-                <li
-                  className={
-                    /[a-zA-Z]/.test(password)
-                      ? "text-green-600"
-                      : "text-gray-600"
-                  }
-                >
-                  Al menos 1 letra
-                </li>
-                <li
-                  className={
-                    /[^A-Za-z0-9]/.test(password)
-                      ? "text-green-600"
-                      : "text-gray-600"
-                  }
-                >
-                  Un símbolo especial
-                </li>
-              </ul>
-            </div>
-
-            <div className="mb-4">
+                <div className="grid grid-cols-2 gap-1 text-xs">
+                  <div
+                    className={
+                      password.length >= 8 && password.length <= 30
+                        ? "text-green-600"
+                        : theme === "dark"
+                        ? "text-gray-400"
+                        : "text-gray-600"
+                    }
+                  >
+                    • De 8 a 30 caracteres
+                  </div>
+                  <div
+                    className={
+                      /\d/.test(password)
+                        ? "text-green-600"
+                        : theme === "dark"
+                        ? "text-gray-400"
+                        : "text-gray-600"
+                    }
+                  >
+                    • Al menos 1 número
+                  </div>
+                  <div
+                    className={
+                      /[a-zA-Z]/.test(password)
+                        ? "text-green-600"
+                        : theme === "dark"
+                        ? "text-gray-400"
+                        : "text-gray-600"
+                    }
+                  >
+                    • Al menos 1 letra
+                  </div>
+                  <div
+                    className={
+                      /[^A-Za-z0-9]/.test(password)
+                        ? "text-green-600"
+                        : theme === "dark"
+                        ? "text-gray-400"
+                        : "text-gray-600"
+                    }
+                  >
+                    • Un símbolo especial
+                  </div>
+                </div>
+              </div>
+              {/* ReCAPTCHA Placeholder */}
+              <div className="flex justify-center my-6">
+                <div className="mb-4">
               <ReCAPTCHA
                 sitekey="6LdpXWgqAAAAAOWwGI-kkrTyOLqKggmeO4D4RxY8"
                 onChange={handleRecaptchaChange}
               />
             </div>
-
-            {/* Botón de Crear Cuenta */}
-            <button
-              type="submit"
-              className={`w-full py-2 px-4 rounded-lg ${
-                passwordMatch && recaptchaToken && !onSubmitLoading
-                  ? "bg-green-700"
-                  : "bg-gray-400"
-              } text-white hover:bg-green-600`}
-              disabled={!passwordMatch || !recaptchaToken || onSubmitLoading} // Deshabilitar cuando está cargando
-            >
-              {onSubmitLoading ? "Cargando..." : "Crear Cuenta"}
-            </button>
-
-            {/* Términos y Condiciones */}
-            <span className="text-xs text-gray-500 mt-4">
-              Al dar clic en Crear Cuenta aceptas nuestros{" "}
-              <Link href="/terminos">
-                <p className="text-green-700">Términos y Condiciones</p>
-              </Link>{" "}
-              y nuestra{" "}
-              <Link href="/privacidad">
-                <p className="text-green-700">Política de Privacidad</p>
-              </Link>
-              .
-            </span>
+              </div>
+              {/* Botón de Crear Cuenta */}
+              <button
+                type="submit"
+                className={`w-full py-3 px-4 rounded-lg font-semibold ${
+                  passwordMatch && recaptchaToken && !onSubmitLoading
+                    ? "bg-green-700 hover:bg-green-600"
+                    : "bg-gray-400"
+                } text-white transition-colors`}
+                disabled={!passwordMatch || !recaptchaToken || onSubmitLoading}
+              >
+                {onSubmitLoading ? "Cargando..." : "Crear Cuenta"}
+              </button>
+              {/* Términos y Condiciones */}
+              <div className="text-center">
+                <span
+                  className={`text-xs ${
+                    theme === "dark" ? "text-gray-400" : "text-gray-500"
+                  }`}
+                >
+                  Al dar clic en Crear Cuenta aceptas nuestros{" "}
+                  <Link href="/terminos">
+                    <span className="text-green-700 hover:underline">
+                      Términos y Condiciones
+                    </span>
+                  </Link>{" "}
+                  y nuestra{" "}
+                  <Link href="/privacidad">
+                    <span className="text-green-700 hover:underline">
+                      Política de Privacidad
+                    </span>
+                  </Link>
+                  .
+                </span>
+              </div>
+            </div>
           </form>
         </div>
       </div>
-
       {/* Sección derecha: Beneficios */}
       <div
-        className="hidden md:block md:w-1/2 bg-cover bg-center"
+        className="hidden bg-center bg-cover md:block md:w-1/2"
         style={{
-          backgroundImage: "url('/public/images/logos/fondo-munoz.png')",
+          backgroundImage: "url('/assets/negocio.png')",
         }}
       >
-        <div className="flex flex-col justify-center h-full text-white p-8 bg-green-700 bg-opacity-80">
-          <h2 className="text-3xl font-bold mb-4">
+        <div className="flex flex-col justify-center h-full p-8 text-white bg-green-700 bg-opacity-80">
+          <h2 className="mb-6 text-3xl font-bold">
             Beneficios de ser Usuario:
           </h2>
-          <ul className="space-y-4">
-            <li className="flex items-center space-x-2">
+          <ul className="space-y-4 text-lg">
+            <li className="flex items-center space-x-3">
+              <span className="w-2 h-2 bg-yellow-300 rounded-full"></span>
               <span>Recibe las mejores promociones</span>
             </li>
-            <li className="flex items-center space-x-2">
+            <li className="flex items-center space-x-3">
+              <span className="w-2 h-2 bg-yellow-300 rounded-full"></span>
               <span>Ubicanos cerca de tu domicilio</span>
             </li>
-            <li className="flex items-center space-x-2">
+            <li className="flex items-center space-x-3">
+              <span className="w-2 h-2 bg-yellow-300 rounded-full"></span>
               <span>
                 Encuentra todos los productos que le quedan a tu vehículo
               </span>
             </li>
-            <li className="flex items-center space-x-2">
+            <li className="flex items-center space-x-3">
+              <span className="w-2 h-2 bg-yellow-300 rounded-full"></span>
               <span>Atención personalizada</span>
             </li>
           </ul>
-
-          <span className="mt-4">
-            ¿Ya tienes una cuenta?{" "}
-            <Link href="/login">
-              <p className="text-yellow-200 text-lg hover:text-amber-300">
-                Ingresa Aquí
-              </p>
-            </Link>
-          </span>
+          <div className="mt-8">
+            <span className="text-lg">
+              ¿Ya tienes una cuenta?{" "}
+              <Link href="/login">
+                <span className="text-xl font-semibold text-yellow-200 underline hover:text-amber-300">
+                  Ingresa Aquí
+                </span>
+              </Link>
+            </span>
+          </div>
         </div>
       </div>
     </div>

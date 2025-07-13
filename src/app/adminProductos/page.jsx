@@ -315,7 +315,7 @@ function AdminProductsPage() {
   }, [activeTab]);
 
   return (
-    <div className={`min-h-screen py-8 pt-36 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
+    <div className={`min-h-screen py-8 pt-20 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
       <div className="container px-4 mx-auto">
         {/* Encabezado */}
         <div className={`p-6 rounded-xl shadow-lg mb-8 ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
@@ -436,6 +436,8 @@ function AdminProductsPage() {
                     <option value="Suspensión y Dirección">Suspensión y Dirección</option>
                     <option value="Accesorios y Partes de Colisión">Accesorios y Partes de Colisión</option>
                     <option value="Partes Eléctricas">Partes Eléctricas</option>
+                    <option value="Sistema Propulsion">Sistema Propulsion</option>
+                    <option value="Sistema Enfriamiento">Sistema Enfriamiento </option>
                   </select>
                 </div>
 

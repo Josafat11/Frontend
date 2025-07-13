@@ -160,6 +160,8 @@ function ProductosPage() {
     "Suspensión y Dirección",
     "Accesorios y Partes de Colisión",
     "Partes Eléctricas",
+    "Sistema Propulsion",
+    "Sistema Enfriamiento"
   ];
 
   // Limpiar todos los filtros

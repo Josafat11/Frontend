@@ -14,7 +14,7 @@ import { FaHeart } from "react-icons/fa";
 
 function OfertasPage() {
   const { refreshCart } = useCart();
-  const {user, isAuthenticated, theme } = useAuth();
+  const { user, isAuthenticated, theme } = useAuth();
   const router = useRouter();
 
   const [productos, setProductos] = useState([]);
@@ -135,99 +135,118 @@ function OfertasPage() {
   };
 
   const toggleFavorito = async (productId, e) => {
-      e?.stopPropagation(); // Detiene la propagación si el evento existe
-      e?.preventDefault(); // Previene el comportamiento por defecto si el evento existe
-      if (!isAuthenticated) {
-        const { isConfirmed } = await Swal.fire({
-          title: "Inicia sesión",
-          text: "Debes iniciar sesión para guardar productos en favoritos",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Ir a login",
-          cancelButtonText: "Cancelar",
-          background: theme === 'dark' ? '#1f2937' : '#fff',
-          color: theme === 'dark' ? '#fff' : '#000',
-        });
-  
-        if (isConfirmed) {
-          router.push('/login');
-        }
-        return;
+    e?.stopPropagation(); // Detiene la propagación si el evento existe
+    e?.preventDefault(); // Previene el comportamiento por defecto si el evento existe
+    if (!isAuthenticated) {
+      const { isConfirmed } = await Swal.fire({
+        title: "Inicia sesión",
+        text: "Debes iniciar sesión para guardar productos en favoritos",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Ir a login",
+        cancelButtonText: "Cancelar",
+        background: theme === "dark" ? "#1f2937" : "#fff",
+        color: theme === "dark" ? "#fff" : "#000",
+      });
+
+      if (isConfirmed) {
+        router.push("/login");
       }
-  
-      setIsAddingToFavorites(true);
-      try {
-        // 1. Actualización optimista del estado local
-        setProductos(prev => prev.map(p =>
+      return;
+    }
+
+    setIsAddingToFavorites(true);
+    try {
+      // 1. Actualización optimista del estado local
+      setProductos((prev) =>
+        prev.map((p) =>
           p.id === productId ? { ...p, esFavorito: !p.esFavorito } : p
-        ));
-  
-        // 2. Enviar petición al servidor
-        const response = await fetch(`${CONFIGURACIONES.BASEURL2}/favoritos/toggle`, {
+        )
+      );
+
+      // 2. Enviar petición al servidor
+      const response = await fetch(
+        `${CONFIGURACIONES.BASEURL2}/favoritos/toggle`,
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem('token')}` // Opcional para mayor seguridad
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Opcional para mayor seguridad
           },
           credentials: "include",
           body: JSON.stringify({
             productId: Number(productId),
-            userId: user.id // Asegurar que el usuario es correcto
+            userId: user.id, // Asegurar que el usuario es correcto
           }),
-        });
-  
-        // 3. Manejar respuesta
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || "Error en la solicitud");
         }
-  
-        const { isFavorite } = await response.json();
-  
-        // 4. Sincronización final con el servidor
-        setProductos(prev => prev.map(p =>
-          p.id === productId ? { ...p, esFavorito: isFavorite } : p
-        ));
-  
-        // 5. Actualizar contador global
-        refreshFavorites();
-  
-        // 6. Feedback visual contextual
-        await Swal.fire({
-          position: 'top-end',
-          icon: isFavorite ? 'success' : 'info',
-          title: isFavorite ? 'Agregado a Favoritos' : 'Eliminado de Favoritos',
-          text: isFavorite ? 'El producto está en tus favoritos' : 'Producto removido',
-          showConfirmButton: false,
-          timer: 2000,
-          background: theme === 'dark' ? '#1f2937' : '#fff',
-          color: theme === 'dark' ? '#fff' : '#000',
-        });
-  
-      } catch (error) {
-        console.error("Error en toggleFavorito:", error);
-  
-        // Revertir cambios en caso de error
-        setProductos(prev => prev.map(p =>
-          p.id === productId ? { ...p, esFavorito: !p.esFavorito } : p
-        ));
-  
-        await Swal.fire({
-          title: 'Error',
-          text: error.message || 'No se pudo actualizar tus favoritos',
-          icon: 'error',
-          background: theme === 'dark' ? '#1f2937' : '#fff',
-          color: theme === 'dark' ? '#fff' : '#000',
-        });
-      } finally {
-        setIsAddingToFavorites(false);
+      );
+
+      // 3. Manejar respuesta
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error en la solicitud");
       }
-    };
+
+      const { isFavorite } = await response.json();
+
+      // 4. Sincronización final con el servidor
+      setProductos((prev) =>
+        prev.map((p) =>
+          p.id === productId ? { ...p, esFavorito: isFavorite } : p
+        )
+      );
+
+      // 5. Actualizar contador global
+      refreshFavorites();
+
+      // 6. Feedback visual contextual
+      await Swal.fire({
+        position: "top-end",
+        icon: isFavorite ? "success" : "info",
+        title: isFavorite ? "Agregado a Favoritos" : "Eliminado de Favoritos",
+        text: isFavorite
+          ? "El producto está en tus favoritos"
+          : "Producto removido",
+        showConfirmButton: false,
+        timer: 2000,
+        background: theme === "dark" ? "#1f2937" : "#fff",
+        color: theme === "dark" ? "#fff" : "#000",
+      });
+    } catch (error) {
+      console.error("Error en toggleFavorito:", error);
+
+      // Revertir cambios en caso de error
+      setProductos((prev) =>
+        prev.map((p) =>
+          p.id === productId ? { ...p, esFavorito: !p.esFavorito } : p
+        )
+      );
+
+      await Swal.fire({
+        title: "Error",
+        text: error.message || "No se pudo actualizar tus favoritos",
+        icon: "error",
+        background: theme === "dark" ? "#1f2937" : "#fff",
+        color: theme === "dark" ? "#fff" : "#000",
+      });
+    } finally {
+      setIsAddingToFavorites(false);
+    }
+  };
 
   const breadcrumbsPages = [
     { name: "Home", path: "/" },
     { name: "Ofertas", path: "/ofertas" },
   ];
+
+  const [paginaActual, setPaginaActual] = useState(1);
+  const productosPorPagina = 9;
+
+  const indexInicio = (paginaActual - 1) * productosPorPagina;
+  const indexFinal = indexInicio + productosPorPagina;
+
+  const productosPaginados = productos.slice(indexInicio, indexFinal);
+  const totalPaginas = Math.ceil(productos.length / productosPorPagina);
 
   return (
     <div
@@ -246,8 +265,8 @@ function OfertasPage() {
         ) : error ? (
           <p className="text-center text-red-500">{error}</p>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {productos.map((producto) => (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {productosPaginados.map((producto) => (
               <div
                 key={producto.id}
                 className={`relative rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 ${
@@ -315,7 +334,7 @@ function OfertasPage() {
                     <h2 className="mb-1 text-lg font-bold line-clamp-1">
                       {producto.name}
                     </h2>
-                    <p className="mb-2 text-sm text-gray-500">
+                    <p className="mb-2 text-sm text-gray-500 line-clamp-2">
                       {producto.description}
                     </p>
 
@@ -339,6 +358,35 @@ function OfertasPage() {
                         </span>{" "}
                         ({producto.discount}% OFF)
                       </p>
+                    </div>
+                    {/* Compatibilidades */}
+                    <div className="mb-4">
+                      <p className="mb-1 text-sm font-medium">
+                        Compatibilidad:
+                      </p>
+                      <div className="flex flex-wrap gap-1">
+                        {producto.compatibilities
+                          .slice(0, 3)
+                          .map((comp, index) => (
+                            <span
+                              key={index}
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                              }`}
+                            >
+                              {comp.make} {comp.model}
+                            </span>
+                          ))}
+                        {producto.compatibilities.length > 3 && (
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs ${
+                              theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                            }`}
+                          >
+                            +{producto.compatibilities.length - 3} más
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
 

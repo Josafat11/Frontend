@@ -204,6 +204,27 @@ function CarritoPage() {
     );
   }
 
+  const abrirVentanaDePago = () => {
+    const width = 600;
+    const height = 700;
+    const left = (window.innerWidth - width) / 2;
+    const top = (window.innerHeight - height) / 2;
+
+    const ventanaPago = window.open(
+      `${CONFIGURACIONES.BASEURL2}/paypal/checkout`, // Ruta a tu backend que inicia el flujo PayPal
+      "PagoPayPal",
+      `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=yes`
+    );
+
+    if (
+      !ventanaPago ||
+      ventanaPago.closed ||
+      typeof ventanaPago.closed === "undefined"
+    ) {
+      alert("Por favor, habilita las ventanas emergentes en tu navegador.");
+    }
+  };
+
   return (
     <div
       className={`min-h-screen py-8 pt-20 transition-colors ${
@@ -349,7 +370,8 @@ function CarritoPage() {
                       {/* Cantidad */}
                       <div className="flex items-center justify-center col-span-4 md:col-span-2">
                         <div className="flex items-center overflow-hidden border rounded-lg">
-                          <button className="pl-2 hover:text-yellow-500"
+                          <button
+                            className="pl-2 hover:text-yellow-500"
                             onClick={() =>
                               actualizarCantidad(
                                 item.product.id,
@@ -362,7 +384,8 @@ function CarritoPage() {
                           </button>
 
                           <span className="px-5 py-2">{item.quantity}</span>
-                          <button className="pr-2 hover:text-yellow-500"
+                          <button
+                            className="pr-2 hover:text-yellow-500"
                             onClick={() =>
                               actualizarCantidad(
                                 item.product.id,
@@ -382,14 +405,13 @@ function CarritoPage() {
                           <p className="pb-2 font-medium">
                             ${(item.product.price * item.quantity).toFixed(2)}
                           </p>
-                          <button className="flex items-center p-2 font-semibold text-red-500 border border-red-500 rounded-lg font hover:text-red-500 hover:font-bold"
+                          <button
+                            className="flex items-center p-2 font-semibold text-red-500 border border-red-500 rounded-lg font hover:text-red-500 hover:font-bold"
                             onClick={() => eliminarProducto(item.product.id)} // Pasar item.product.id
                             disabled={isUpdating}
                           >
-                            <FiTrash2 className="mr-1" /> 
-                            <p> 
-                              Eliminar
-                            </p>
+                            <FiTrash2 className="mr-1" />
+                            <p>Eliminar</p>
                           </button>
                         </div>
                       </div>
@@ -455,7 +477,7 @@ function CarritoPage() {
                     </div>
 
                     <button
-                      onClick={() => router.push("/checkout")}
+                      onClick={abrirVentanaDePago}
                       className={`w-full py-3 mt-6 rounded-lg font-bold flex items-center justify-center ${
                         theme === "dark"
                           ? "bg-green-600 hover:bg-green-500"

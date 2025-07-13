@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { FiPhone, FiUser } from "react-icons/fi";
 import { FiShoppingCart, FiPlus, FiArrowRight } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
+import CountdownTimer from "../components/CountdownTimer";
 
 function HomePage() {
   const router = useRouter();
@@ -339,6 +340,7 @@ function HomePage() {
 
             <div className="flex flex-col gap-4 sm:flex-row">
               <button
+               onClick={() => router.push("/ofertas")}
                 className={`px-8 py-3 rounded-full font-bold transition-all duration-300 ${
                   theme === "dark"
                     ? "bg-yellow-500 text-gray-900 hover:bg-yellow-400 hover:shadow-lg"
@@ -350,42 +352,8 @@ function HomePage() {
             </div>
 
             {/* Contador de tiempo (opcional) */}
-            <div
-              className={`mt-8 flex gap-4 ${
-                theme === "dark" ? "text-gray-300" : "text-gray-200"
-              }`}
-            >
-              <div className="text-center">
-                <div
-                  className={`text-2xl font-bold px-4 py-2 rounded-lg ${
-                    theme === "dark" ? "bg-gray-800" : "bg-green-800"
-                  }`}
-                >
-                  03
-                </div>
-                <span className="mt-1 text-sm">Días</span>
-              </div>
-              <div className="text-center">
-                <div
-                  className={`text-2xl font-bold px-4 py-2 rounded-lg ${
-                    theme === "dark" ? "bg-gray-800" : "bg-green-800"
-                  }`}
-                >
-                  12
-                </div>
-                <span className="mt-1 text-sm">Horas</span>
-              </div>
-              <div className="text-center">
-                <div
-                  className={`text-2xl font-bold px-4 py-2 rounded-lg ${
-                    theme === "dark" ? "bg-gray-800" : "bg-green-800"
-                  }`}
-                >
-                  45
-                </div>
-                <span className="mt-1 text-sm">Min</span>
-              </div>
-            </div>
+            <CountdownTimer theme={theme} />
+
           </div>
         </div>
 
@@ -393,7 +361,7 @@ function HomePage() {
         <section
           className={`px-4 mb-16 rounded-2xl pt-10 pb-14 ${
             theme === "dark"
-              ? "bg-gray-900 text-gray-100"
+              ? "bg-gray-700 text-gray-100"
               : "bg-gray-100 text-gray-900"
           }`}
         >
@@ -418,7 +386,7 @@ function HomePage() {
                 onClick={() => handleCategoriaClick(categoria.categoria)}
                 className={`group p-6 rounded-xl text-center cursor-pointer transition-all duration-300 hover:-translate-y-2 ${
                   theme === "dark"
-                    ? "bg-gray-800 hover:bg-gray-700"
+                    ? "bg-gray-800 hover:bg-gray-900"
                     : "bg-white hover:bg-gray-50 shadow-md"
                 }`}
               >
@@ -447,7 +415,7 @@ function HomePage() {
         {/* Productos Destacados */}
         <section
           className={`px-4 mb-16 rounded-2xl pt-10 pb-10 ${
-            theme === "dark" ? "bg-gray-900" : "bg-gray-100"
+            theme === "dark" ? "bg-gray-700" : "bg-gray-100"
           }`}
         >
           <div className="flex flex-col items-center justify-between mb-8 md:flex-row">
