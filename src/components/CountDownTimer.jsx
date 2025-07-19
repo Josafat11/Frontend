@@ -9,7 +9,7 @@ const CountdownTimer = ({ theme }) => {
 
   useEffect(() => {
     // Fecha objetivo (puedes cambiarla)
-    const targetDate = new Date("2025-07-14T00:00:00Z");
+    const targetDate = new Date("2025-07-26T00:00:00Z");
 
     const interval = setInterval(() => {
       const now = new Date();

@@ -284,14 +284,14 @@ function HomePage() {
       className={`min-h-screen transition-colors ${
         theme === "dark"
           ? "bg-gray-900 text-gray-600"
-          : "bg-gray-50 text-gray-900"
+          : "bg-gray-100 text-gray-900"
       }`}
     >
       <div
         className={`min-h-screen transition-colors container mx-auto py-8 pt-20 ${
           theme === "dark"
             ? "bg-gray-900 text-gray-100"
-            : "bg-white text-gray-900"
+            : "bg-gray-100 text-gray-900"
         }`}
       >
         {/* Banner Promocional Mejorado */}
