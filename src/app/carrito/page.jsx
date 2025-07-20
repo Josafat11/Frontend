@@ -15,6 +15,9 @@ import { FaShippingFast } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import Image from "next/image";
+import Script from "next/script";
+import { useRef } from "react";
+
 
 function CarritoPage() {
   const { refreshCart } = useCart();
@@ -22,7 +25,15 @@ function CarritoPage() {
   const [carrito, setCarrito] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [paypalInitialized, setPaypalInitialized] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const paypalRef = useRef(null); // Declarado dentro del componente
   const router = useRouter();
+
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   // Obtener el carrito del usuario
   useEffect(() => {
@@ -58,6 +69,113 @@ function CarritoPage() {
     refreshCart();
     obtenerCarrito();
   }, [isAuthenticated, router]);
+
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      !carrito ||
+      !carrito.items ||
+      carrito.items.length === 0 ||
+      paypalRef.current === null
+    ) return;
+
+    let isCancelled = false;
+
+    // Limpiar cualquier botón previo antes de renderizar
+    paypalRef.current.innerHTML = "";
+
+    const renderPaypalButton = async () => {
+      try {
+        await window.paypal.Buttons({
+          createOrder: async () => {
+            const res = await fetch(`${CONFIGURACIONES.BASEURL2}/paypal/create-order`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                items: carrito.items.map(item => {
+                  const discount = item.product.discount || 0;
+                  const priceWithDiscount = item.product.price * (1 - discount / 100);
+
+                  return {
+                    id: item.product.id,
+                    name: item.product.name,
+                    price: parseFloat(priceWithDiscount.toFixed(2)),
+                    quantity: item.quantity
+                  };
+                }),
+                total: calcularTotales().total
+              })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Error al crear orden");
+            return data.orderId;
+          },
+          onApprove: async (data) => {
+            console.log('Datos de aprobación PayPal:', data); // Para depuración
+            const res = await fetch(`${CONFIGURACIONES.BASEURL2}/paypal/capture-order`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ orderId: data.orderID  }),
+            });
+            const result = await res.json();
+
+            if (res.ok && !isCancelled) {
+              Swal.fire("¡Pago exitoso!", "Gracias por tu compra", "success");
+              refreshCart();
+              router.push("/gracias");
+            } else if (!isCancelled) {
+              Swal.fire("Error", result.message || "Error al capturar el pago", "error");
+            }
+          },
+          onError: (err) => {
+            if (!isCancelled) {
+              console.error("PayPal error:", err);
+              Swal.fire("Error", "Hubo un error con PayPal", "error");
+            }
+          },
+          style: {
+            layout: "vertical",
+            color: "blue",
+            shape: "rect",
+            label: "paypal",
+            height: 55
+          }
+        }).render(paypalRef.current);
+      } catch (err) {
+        if (!isCancelled) {
+          console.error("Error al renderizar botón PayPal:", err);
+          Swal.fire("Error", "Fallo al renderizar el botón de PayPal", "error");
+        }
+      }
+    };
+
+    if (window.paypal) {
+      renderPaypalButton();
+    } else {
+      const interval = setInterval(() => {
+        if (window.paypal) {
+          clearInterval(interval);
+          renderPaypalButton();
+        }
+      }, 200);
+      return () => clearInterval(interval);
+    }
+
+    return () => {
+      isCancelled = true;
+      if (paypalRef.current) {
+        paypalRef.current.innerHTML = "";
+      }
+    };
+  }, [carrito, refreshCart, router]);
+
+
 
   const actualizarCantidad = async (productId, nuevaCantidad) => {
     // Cambiar parámetro a productId
@@ -169,12 +287,13 @@ function CarritoPage() {
   const calcularTotales = () => {
     if (!carrito || !carrito.items) return { subtotal: 0, envio: 0, total: 0 };
 
-    const subtotal = carrito.items.reduce(
-      (sum, item) => sum + item.product.price * item.quantity,
-      0
-    );
+    const subtotal = carrito.items.reduce((sum, item) => {
+      const priceWithDiscount =
+        item.product.price * (1 - (item.product.discount || 0) / 100);
+      return sum + priceWithDiscount * item.quantity;
+    }, 0);
 
-    const envio = subtotal > 500 ? 0 : 99; // Envío gratis para compras mayores a $500
+    const envio = subtotal > 500 ? 0 : 99;
     const total = subtotal + envio;
 
     return { subtotal, envio, total };
@@ -195,61 +314,45 @@ function CarritoPage() {
   if (isLoading) {
     return (
       <div
-        className={`min-h-screen py-8 pt-36 flex justify-center items-center ${
-          theme === "dark" ? "bg-gray-900" : "bg-gray-50"
-        }`}
+        className={`min-h-screen py-8 pt-36 flex justify-center items-center ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"
+          }`}
       >
         <div className="w-12 h-12 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  const abrirVentanaDePago = () => {
-    const width = 600;
-    const height = 700;
-    const left = (window.innerWidth - width) / 2;
-    const top = (window.innerHeight - height) / 2;
 
-    const ventanaPago = window.open(
-      `${CONFIGURACIONES.BASEURL2}/paypal/checkout`, // Ruta a tu backend que inicia el flujo PayPal
-      "PagoPayPal",
-      `width=${width},height=${height},top=${top},left=${left},resizable=no,scrollbars=yes`
-    );
 
-    if (
-      !ventanaPago ||
-      ventanaPago.closed ||
-      typeof ventanaPago.closed === "undefined"
-    ) {
-      alert("Por favor, habilita las ventanas emergentes en tu navegador.");
-    }
-  };
+
 
   return (
     <div
-      className={`min-h-screen py-8 pt-20 transition-colors ${
-        theme === "dark"
-          ? "bg-gray-900 text-gray-100"
-          : "bg-gray-100 text-gray-900"
-      }`}
+      className={`min-h-screen py-8 pt-20 transition-colors ${theme === "dark"
+        ? "bg-gray-900 text-gray-100"
+        : "bg-gray-100 text-gray-900"
+        }`}
     >
+      {/* Script del SDK de PayPal */}
+      <Script
+        src={`https://www.paypal.com/sdk/js?client-id=${CONFIGURACIONES.PAYPAL_CLIENT_ID}&currency=USD`}
+        strategy="afterInteractive"
+      />
       <div className="container px-4 mx-auto">
         {/* Migajas de pan */}
         <Breadcrumbs pages={breadcrumbsPages} />
 
         {/* Encabezado */}
         <div
-          className={`p-6 rounded-xl shadow-lg mb-8 ${
-            theme === "dark" ? "bg-gray-800" : "bg-white"
-          }`}
+          className={`p-6 rounded-xl shadow-lg mb-8 ${theme === "dark" ? "bg-gray-800" : "bg-white"
+            }`}
         >
           <h1 className="flex items-center mb-2 text-3xl font-bold">
             <FiShoppingCart className="mr-3" /> Mi Carrito de Compras
           </h1>
           <p
-            className={`${
-              theme === "dark" ? "text-gray-400" : "text-gray-600"
-            }`}
+            className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"
+              }`}
           >
             Revisa y gestiona los productos en tu carrito
           </p>
@@ -257,26 +360,23 @@ function CarritoPage() {
 
         {!carrito || carrito.items.length === 0 ? (
           <div
-            className={`p-8 rounded-xl shadow-lg text-center ${
-              theme === "dark" ? "bg-gray-800" : "bg-white"
-            }`}
+            className={`p-8 rounded-xl shadow-lg text-center ${theme === "dark" ? "bg-gray-800" : "bg-white"
+              }`}
           >
             <FiShoppingCart className="mx-auto mb-4 text-5xl text-gray-500" />
             <h2 className="mb-2 text-2xl font-bold">Tu carrito está vacío</h2>
             <p
-              className={`mb-6 ${
-                theme === "dark" ? "text-gray-400" : "text-gray-600"
-              }`}
+              className={`mb-6 ${theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
             >
               Aún no has agregado productos a tu carrito
             </p>
             <button
               onClick={() => router.push("/ventaProducto")}
-              className={`px-6 py-3 rounded-lg font-medium ${
-                theme === "dark"
-                  ? "bg-green-600 hover:bg-green-500"
-                  : "bg-green-500 hover:bg-green-400"
-              } text-white`}
+              className={`px-6 py-3 rounded-lg font-medium ${theme === "dark"
+                ? "bg-green-600 hover:bg-green-500"
+                : "bg-green-500 hover:bg-green-400"
+                } text-white`}
             >
               Ir al catálogo de productos
             </button>
@@ -286,15 +386,13 @@ function CarritoPage() {
             {/* Lista de productos */}
             <div className="w-full lg:w-2/3">
               <div
-                className={`rounded-xl shadow-lg overflow-hidden ${
-                  theme === "dark" ? "bg-gray-800" : "bg-white"
-                }`}
+                className={`rounded-xl shadow-lg overflow-hidden ${theme === "dark" ? "bg-gray-800" : "bg-white"
+                  }`}
               >
                 {/* Encabezado de la tabla */}
                 <div
-                  className={`hidden md:grid grid-cols-12 p-4 border-b ${
-                    theme === "dark" ? "border-gray-700" : "border-gray-200"
-                  }`}
+                  className={`hidden md:grid grid-cols-12 p-4 border-b ${theme === "dark" ? "border-gray-700" : "border-gray-200"
+                    }`}
                 >
                   <div className="col-span-6 font-medium">Producto</div>
                   <div className="col-span-2 font-medium text-center">
@@ -310,11 +408,11 @@ function CarritoPage() {
 
                 {/* Productos */}
                 {carrito.items.map((item) => (
+
                   <div
                     key={item.id}
-                    className={`p-4 border-b ${
-                      theme === "dark" ? "border-gray-700" : "border-gray-200"
-                    }`}
+                    className={`p-4 border-b ${theme === "dark" ? "border-gray-700" : "border-gray-200"
+                      }`}
                   >
                     <div className="grid items-center grid-cols-12 gap-4">
                       {/* Imagen y nombre */}
@@ -329,16 +427,14 @@ function CarritoPage() {
                             />
                           ) : (
                             <div
-                              className={`w-full h-full flex items-center justify-center rounded-lg ${
-                                theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                              }`}
+                              className={`w-full h-full flex items-center justify-center rounded-lg ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                                }`}
                             >
                               <span
-                                className={`text-xs ${
-                                  theme === "dark"
-                                    ? "text-gray-500"
-                                    : "text-gray-400"
-                                }`}
+                                className={`text-xs ${theme === "dark"
+                                  ? "text-gray-500"
+                                  : "text-gray-400"
+                                  }`}
                               >
                                 Sin imagen
                               </span>
@@ -348,11 +444,10 @@ function CarritoPage() {
                         <div>
                           <h3 className="font-medium">{item.product.name}</h3>
                           <p
-                            className={`text-sm ${
-                              theme === "dark"
-                                ? "text-gray-400"
-                                : "text-gray-600"
-                            }`}
+                            className={`text-sm ${theme === "dark"
+                              ? "text-gray-400"
+                              : "text-gray-600"
+                              }`}
                           >
                             {item.product.brand} - {item.product.category}
                           </p>
@@ -364,7 +459,20 @@ function CarritoPage() {
                         <span className="mr-2 font-medium md:hidden">
                           Precio:
                         </span>
-                        ${item.product.price}
+                        {(() => {
+                          const discount = item.product.discount || 0;
+                          const priceWithDiscount = item.product.price * (1 - discount / 100);
+                          return (
+                            <>
+                              ${priceWithDiscount.toFixed(2)}
+                              {discount > 0 && (
+                                <span className="text-xs text-gray-400 line-through ml-1">
+                                  ${item.product.price.toFixed(2)}
+                                </span>
+                              )}
+                            </>
+                          );
+                        })()}
                       </div>
 
                       {/* Cantidad */}
@@ -424,14 +532,12 @@ function CarritoPage() {
             {/* Resumen del pedido */}
             <div className="w-full lg:w-1/3">
               <div
-                className={`rounded-xl shadow-lg overflow-hidden sticky top-4 ${
-                  theme === "dark" ? "bg-gray-800" : "bg-white"
-                }`}
+                className={`rounded-xl shadow-lg overflow-hidden sticky top-4 ${theme === "dark" ? "bg-gray-800" : "bg-white"
+                  }`}
               >
                 <div
-                  className={`p-6 ${
-                    theme === "dark" ? "bg-gray-700" : "bg-gray-100"
-                  }`}
+                  className={`p-6 ${theme === "dark" ? "bg-gray-700" : "bg-gray-100"
+                    }`}
                 >
                   <h2 className="mb-4 text-xl font-bold">Resumen del Pedido</h2>
                 </div>
@@ -476,24 +582,17 @@ function CarritoPage() {
                       />
                     </div>
 
-                    <button
-                      onClick={abrirVentanaDePago}
-                      className={`w-full py-3 mt-6 rounded-lg font-bold flex items-center justify-center ${
-                        theme === "dark"
-                          ? "bg-green-600 hover:bg-green-500"
-                          : "bg-green-500 hover:bg-green-400"
-                      } text-white`}
-                    >
-                      Proceder al pago <FiArrowRight className="ml-2" />
-                    </button>
+                    {/* Contenedor del botón de PayPal */}
+                    <div ref={paypalRef} id="paypal-button-container" className="mt-6"></div>
+
+
 
                     {subtotal < 500 && (
                       <div
-                        className={`mt-4 p-3 rounded-lg text-center text-sm ${
-                          theme === "dark"
-                            ? "bg-gray-700 text-yellow-400"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
+                        className={`mt-4 p-3 rounded-lg text-center text-sm ${theme === "dark"
+                          ? "bg-gray-700 text-yellow-400"
+                          : "bg-yellow-100 text-yellow-800"
+                          }`}
                       >
                         <FaShippingFast className="inline mr-2" />
                         ¡Faltan ${(500 - subtotal).toFixed(2)} para envío
