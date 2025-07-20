@@ -21,7 +21,7 @@ import { useRef } from "react";
 
 function CarritoPage() {
   const { refreshCart } = useCart();
-  const { user, isAuthenticated, theme } = useAuth();
+  const { user, isAuthenticated, theme, isAuthLoading } = useAuth();
   const [carrito, setCarrito] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -48,11 +48,10 @@ function CarritoPage() {
   }, []);
 
   // Obtener el carrito del usuario
-  useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
-      return;
-    }
+useEffect(() => {
+  if (!isAuthLoading && !isAuthenticated) {
+    router.push("/login");
+  }
 
     const obtenerCarrito = async () => {
       try {
@@ -110,7 +109,7 @@ const obtenerDirecciones = async () => {
     refreshCart();
     obtenerCarrito();
     obtenerDirecciones();
-  }, [isAuthenticated, router]);
+  }, [isAuthLoading,isAuthenticated, router]);
 
   // PayPal Effect
   useEffect(() => {

@@ -243,6 +243,7 @@ function ProductosPage() {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Error al agregar");
+      console.log(data.recomendados)
 
       refreshCart();
       Swal.fire("Agregado", "Producto agregado al carrito", "success");

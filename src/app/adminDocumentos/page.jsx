@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/authContext";
 import { CONFIGURACIONES } from "../config/config";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function PrivacyPolicyPage() {
-  const { user, isAuthenticated, theme } = useAuth();
+const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
+  const router = useRouter();
   const [policies, setPolicies] = useState([]);
   const [currentPolicy, setCurrentPolicy] = useState(null);
   const [newPolicy, setNewPolicy] = useState({
@@ -99,11 +101,11 @@ function PrivacyPolicyPage() {
   );
 
   // Verificar si el usuario es admin
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login";
-    }
-  }, [isAuthenticated, user]);
+useEffect(() => {
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
+  }
+}, [isAuthenticated, isAuthLoading, user, router]);
 
   // Obtener todas las políticas
   const fetchPolicies = async () => {
@@ -266,6 +268,16 @@ function PrivacyPolicyPage() {
       console.error("Error al establecer la política como actual:", error);
     }
   };
+
+
+
+    if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
 
   return (
     <div

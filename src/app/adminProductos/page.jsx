@@ -6,15 +6,15 @@ import { useRouter } from "next/navigation";
 import { CONFIGURACIONES } from "../config/config";
 import { FiPackage, FiPlusCircle, FiList, FiTag, FiHash, FiDollarSign, FiBox, FiAward, FiPercent, FiLayers, FiAlignLeft, FiTool, FiPlus, FiImage, FiLoader, FiEdit, FiTrash2, FiX, FiSave } from "react-icons/fi";
 function AdminProductsPage() {
-  const { user, isAuthenticated, theme } = useAuth();
+const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
   const router = useRouter();
 
   // Verificar autenticación y rol de administrador
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      router.push("/login");
-    }
-  }, [isAuthenticated, user]);
+useEffect(() => {
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
+  }
+}, [isAuthenticated, isAuthLoading, user, router]);
 
   // Estado para la pestaña activa: "create" para crear o editar, "list" para listar
   const [activeTab, setActiveTab] = useState("create");
@@ -313,6 +313,15 @@ function AdminProductsPage() {
       fetchProducts();
     }
   }, [activeTab]);
+
+
+  if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
 
   return (
     <div className={`min-h-screen py-8 pt-20 ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"}`}>

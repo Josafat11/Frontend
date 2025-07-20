@@ -10,6 +10,8 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
 
   // Función para obtener el tema inicial
   const getInitialTheme = () => {
@@ -78,7 +80,7 @@ useEffect(() => {
   };
 
   // Función para verificar la sesión cuando la página se recarga
-  const checkSession = async () => {
+const checkSession = async () => {
   try {
     const response = await fetch(`${CONFIGURACIONES.BASEURL2}/auth/check-session`, {
       method: 'GET',
@@ -86,20 +88,19 @@ useEffect(() => {
     });
     const data = await response.json();
 
-    // Revisamos si la respuesta fue 2xx y data.isAuthenticated === true
     if (response.ok && data.isAuthenticated) {
       setIsAuthenticated(true);
       setUser(data.user);
-      // Opcional: localStorage.setItem('user', JSON.stringify(data.user));
     } else {
-      // Cualquier otra cosa se considera sin sesión
       setIsAuthenticated(false);
       setUser(null);
-      // Opcional: localStorage.removeItem('user');
     }
   } catch (error) {
     console.error('Error verificando la sesión:', error);
-    logout(); // O solo setIsAuthenticated(false); setUser(null);
+    setIsAuthenticated(false);
+    setUser(null);
+  } finally {
+    setIsAuthLoading(false); 
   }
 };
 
@@ -122,11 +123,19 @@ useEffect(() => {
   };
   
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, theme, toggleTheme }}>
-      {children}
-    </AuthContext.Provider>
-  );
+return (
+  <AuthContext.Provider value={{
+    isAuthenticated,
+    user,
+    login,
+    logout,
+    theme,
+    toggleTheme,
+    isAuthLoading // 👈 esto es lo nuevo
+  }}>
+    {children}
+  </AuthContext.Provider>
+);
 };
 
 // Hook personalizado para usar el contexto de autenticación

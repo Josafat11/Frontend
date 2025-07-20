@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/authContext";
 import { CONFIGURACIONES } from "../config/config";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function TermsPage() {
-  const { user, isAuthenticated, theme } = useAuth();
+const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
+  const router = useRouter();
   const [terms, setTerms] = useState([]);
   const [currentTerms, setCurrentTerms] = useState(null);
   const [newTerms, setNewTerms] = useState({
@@ -97,12 +99,13 @@ function TermsPage() {
     </svg>
   );
 
-  // Verificar si el usuario es admin; si no, redirigir
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login";
-    }
-  }, [isAuthenticated, user]);
+
+  // Verificar si el usuario es admin
+useEffect(() => {
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
+  }
+}, [isAuthenticated, isAuthLoading, user, router]);
 
   // Obtener todos los términos
   const fetchTerms = async () => {
@@ -261,6 +264,17 @@ function TermsPage() {
       console.error("Error al establecer los términos como actuales:", error);
     }
   };
+
+
+  
+    if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
+
 
   return (
     <div

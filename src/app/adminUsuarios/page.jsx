@@ -10,7 +10,7 @@ import {
 import Swal from 'sweetalert2';
 
 function AdminPage() {
-  const { user, isAuthenticated, theme } = useAuth();
+const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,11 +20,11 @@ function AdminPage() {
   const router = useRouter();
 
   // Verificar permisos de admin
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      router.push("/login");
-    }
-  }, [isAuthenticated, user, router]);
+useEffect(() => {
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
+  }
+}, [isAuthenticated, isAuthLoading, user, router]);
 
   // Cargar usuarios
   useEffect(() => {
@@ -190,13 +190,13 @@ function AdminPage() {
       <FiChevronUp className="inline ml-1" />;
   };
 
-  if (!isAuthenticated || user?.role !== "admin") {
-    return (
-      <div className={`flex justify-center items-center min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
+    if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
 
   return (
     <div className={`min-h-screen pt-36 pb-12 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>

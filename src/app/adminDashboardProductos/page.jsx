@@ -3,15 +3,16 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../context/authContext";
 import { CONFIGURACIONES } from "../config/config";
 import { Chart } from 'chart.js/auto';
-import { 
-  FiSun, FiMoon, FiEye, FiBarChart2, FiTrendingUp, 
+import {
+  FiSun, FiMoon, FiEye, FiBarChart2, FiTrendingUp,
   FiPieChart, FiDollarSign, FiCalendar, FiShoppingBag,
-  FiPackage, FiAlertTriangle , FiLayers,
+  FiPackage, FiAlertTriangle, FiLayers,
   FiTruck, FiTag, FiGrid, FiClock, FiInfo
 } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 export default function VentasHoyPage() {
-  const { user, isAuthenticated, theme, toggleTheme } = useAuth();
+  const { user, isAuthenticated, theme, toggleTheme, isAuthLoading } = useAuth();
   const [ventas, setVentas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,42 +25,50 @@ export default function VentasHoyPage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [productDetails, setProductDetails] = useState(null);
-  
+
   // Datos para gráficos
   const [salesDistribution, setSalesDistribution] = useState(null);
   const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [monthlyTrend, setMonthlyTrend] = useState([]);
   const [stockComparison, setStockComparison] = useState([]);
   const [categoryMonthlySales, setCategoryMonthlySales] = useState([]);
-  
+
   // Referencias para los gráficos
   const distributionChartRef = useRef(null);
   const topProductsChartRef = useRef(null);
   const monthlyTrendChartRef = useRef(null);
   const stockChartRef = useRef(null);
   const categoryMonthlyChartRef = useRef(null);
+  const router = useRouter();
 
-  // Verificar autenticación
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login";
-    }
-  }, [isAuthenticated, user]);
 
+useEffect(() => {
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
+  }
+}, [isAuthenticated, isAuthLoading, user, router]);
+
+if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
   // Cargar todos los datos
   useEffect(() => {
     if (isAuthenticated && user?.role === "admin") {
       const fetchAllData = async () => {
         try {
           setLoading(true);
-          
+
           // URLs para las peticiones
           const baseUrl = `${CONFIGURACIONES.BASEURL2}/predicciones`;
-          
+
           const [
-            ventasRes, 
-            topRes, 
-            leastRes, 
+            ventasRes,
+            topRes,
+            leastRes,
             stockRes,
             distributionRes,
             topSellingRes,
@@ -80,17 +89,17 @@ export default function VentasHoyPage() {
           ]);
 
           // Verificar respuestas
-          const responses = [ventasRes, topRes, leastRes, stockRes, distributionRes, 
-                           topSellingRes, monthlyTrendRes, stockComparisonRes, categoryMonthlyRes];
-          
+          const responses = [ventasRes, topRes, leastRes, stockRes, distributionRes,
+            topSellingRes, monthlyTrendRes, stockComparisonRes, categoryMonthlyRes];
+
           const hasError = responses.some(res => !res.ok);
           if (hasError) throw new Error("Error al obtener datos");
 
           // Procesar todas las respuestas
           const [
-            ventasData, 
-            topData, 
-            leastData, 
+            ventasData,
+            topData,
+            leastData,
             stockData,
             distributionData,
             topSellingData,
@@ -125,7 +134,7 @@ export default function VentasHoyPage() {
           setLoading(false);
         }
       };
-      
+
       fetchAllData();
     }
   }, [isAuthenticated, user]);
@@ -133,7 +142,7 @@ export default function VentasHoyPage() {
   // Inicializar gráfico de distribución de ventas
   useEffect(() => {
     if (!salesDistribution || !distributionChartRef.current) return;
-    
+
     const ctx = distributionChartRef.current.getContext('2d');
     if (!ctx) return;
 
@@ -179,7 +188,7 @@ export default function VentasHoyPage() {
           },
           tooltip: {
             callbacks: {
-              label: function(context) {
+              label: function (context) {
                 const label = context.label || '';
                 const value = context.raw || 0;
                 const item = salesDistribution[context.dataIndex];
@@ -201,7 +210,7 @@ export default function VentasHoyPage() {
   // Inicializar gráfico de productos más vendidos
   useEffect(() => {
     if (!topSellingProducts || !topProductsChartRef.current) return;
-    
+
     const ctx = topProductsChartRef.current.getContext('2d');
     if (!ctx) return;
 
@@ -272,7 +281,7 @@ export default function VentasHoyPage() {
   // Inicializar gráfico de tendencia mensual
   useEffect(() => {
     if (!monthlyTrend || !monthlyTrendChartRef.current) return;
-    
+
     const ctx = monthlyTrendChartRef.current.getContext('2d');
     if (!ctx) return;
 
@@ -346,7 +355,7 @@ export default function VentasHoyPage() {
   // Inicializar gráfico de comparación de stock
   useEffect(() => {
     if (!stockComparison || !stockChartRef.current) return;
-    
+
     const ctx = stockChartRef.current.getContext('2d');
     if (!ctx) return;
 
@@ -744,7 +753,7 @@ export default function VentasHoyPage() {
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       <div className="flex items-center justify-end">
-                        <FiDollarSign  className="mr-1" /> Precio
+                        <FiDollarSign className="mr-1" /> Precio
                       </div>
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -915,9 +924,9 @@ export default function VentasHoyPage() {
                     {productDetails.product.images?.length > 0 ? (
                       <div className="grid grid-cols-2 gap-2">
                         {productDetails.product.images.map((img) => (
-                          <img 
-                            key={img.id} 
-                            src={img.url} 
+                          <img
+                            key={img.id}
+                            src={img.url}
                             alt={`Producto ${productDetails.product.name}`}
                             className="w-full h-auto rounded border border-gray-200 dark:border-gray-600 object-cover"
                           />
@@ -934,5 +943,5 @@ export default function VentasHoyPage() {
         </div>
       )}
     </div>
-  );  
+  );
 };

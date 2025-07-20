@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/authContext";
 import { CONFIGURACIONES } from "../config/config";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function DeslindePage() {
-  const { user, isAuthenticated, theme } = useAuth();
+const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
+  const router = useRouter();
   const [deslindes, setDeslindes] = useState([]);
   const [currentDeslinde, setCurrentDeslinde] = useState(null);
   const [newDeslinde, setNewDeslinde] = useState({
@@ -97,11 +99,12 @@ function DeslindePage() {
     </svg>
   );
 
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login";
-    }
-  }, [isAuthenticated, user]);
+  // Verificar si el usuario es admin
+useEffect(() => {
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
+  }
+}, [isAuthenticated, isAuthLoading, user, router]);
 
   // Obtener todos los deslindes
   const fetchDeslindes = async () => {
@@ -265,6 +268,16 @@ function DeslindePage() {
       console.error("Error al establecer el deslinde como actual:", error);
     }
   };
+
+    
+    if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
+
 
   return (
     <div

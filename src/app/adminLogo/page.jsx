@@ -9,7 +9,7 @@ import { FiUpload, FiImage, FiUser, FiCheckCircle, FiXCircle } from "react-icons
 import Swal from 'sweetalert2';
 
 function AdminLogoPage() {
-  const { user, isAuthenticated, theme } = useAuth();
+const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
   const { fetchLogo } = useLogo();
   const [logo, setLogo] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -18,11 +18,11 @@ function AdminLogoPage() {
   const router = useRouter();
 
   // Verificar permisos de admin
-  useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      router.push("/login");
-    }
-  }, [isAuthenticated, user, router]);
+useEffect(() => {
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
+  }
+}, [isAuthenticated, isAuthLoading, user, router]);
 
   // Generar vista previa cuando se selecciona un archivo
   useEffect(() => {
@@ -119,14 +119,13 @@ function AdminLogoPage() {
     });
   };
 
-  if (!isAuthenticated || user?.role !== "admin") {
-    return (
-      <div className={`flex justify-center items-center min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
-
+    if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
   return (
     <div className={`min-h-screen pt-36 pb-12 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
       <div className="container mx-auto px-4">

@@ -4,9 +4,11 @@ import { useAuth } from "../../context/authContext";
 import { CONFIGURACIONES } from "../config/config";
 import { FiUser, FiLock, FiUnlock, FiAlertCircle, FiClock, FiLogIn, FiX, FiCheck } from "react-icons/fi";
 import Swal from 'sweetalert2';
+import { useRouter } from "next/navigation";
+
 
 function AdminDashboard() {
-  const { user, isAuthenticated, theme } = useAuth();
+  const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
   const [recentUsers, setRecentUsers] = useState([]);
   const [blockedUsers, setBlockedUsers] = useState([]);
   const [failedAttempts, setFailedAttempts] = useState([]);
@@ -14,14 +16,19 @@ function AdminDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({ email: "", duration: "" });
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+
+
+
 
   // Estilos basados en el tema
-  const cardStyle = theme === 'dark' 
-    ? 'bg-gray-800 text-gray-100 border-gray-700' 
+  const cardStyle = theme === 'dark'
+    ? 'bg-gray-800 text-gray-100 border-gray-700'
     : 'bg-white text-gray-900 border-gray-200';
-  
-  const headerStyle = theme === 'dark' 
-    ? 'bg-gray-700 text-white' 
+
+  const headerStyle = theme === 'dark'
+    ? 'bg-gray-700 text-white'
     : 'bg-green-600 text-white';
 
   const openModal = (email) => {
@@ -36,8 +43,8 @@ function AdminDashboard() {
 
   // Cargar datos si el usuario es admin
   useEffect(() => {
-    if (!isAuthenticated || user?.role !== "admin") {
-      window.location.href = "/login";
+  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+    router.push("/login");
     } else {
       setLoading(false);
     }
@@ -73,7 +80,7 @@ function AdminDashboard() {
       const intervalId = setInterval(fetchData, 30_000);
       return () => clearInterval(intervalId);
     }
-  }, [isAuthenticated, user]);
+}, [isAuthenticated, isAuthLoading, user, router]);
 
   // Funciones de manejo de usuarios
   const blockUserTemporarily = async ({ email, duration }) => {
@@ -199,13 +206,13 @@ function AdminDashboard() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className={`flex justify-center items-center min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      </div>
-    );
-  }
+    if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+  return (
+    <div className="container mx-auto py-8 pt-36 text-center">
+      <p>Verificando acceso...</p>
+    </div>
+  );
+}
 
   return (
     <div className={`min-h-screen pt-36 pb-12 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
