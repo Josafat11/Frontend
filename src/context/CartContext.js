@@ -1,13 +1,15 @@
 // context/CartContext.js
-import { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './authContext';
-import { CONFIGURACIONES } from '../app/config/config'; // Importar las configuraciones
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./authContext";
+import { CONFIGURACIONES } from "../app/config/config"; // Importar las configuraciones
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const { isAuthenticated, user } = useAuth();
   const [cartCount, setCartCount] = useState(0);
+  const [carrito, setCarrito] = useState([]);
+  const [recomendaciones, setRecomendaciones] = useState([]);
 
   const fetchCartCount = async () => {
     if (!isAuthenticated) {
@@ -17,18 +19,28 @@ export function CartProvider({ children }) {
 
     try {
       const response = await fetch(`${CONFIGURACIONES.BASEURL2}/carrito`, {
-        credentials: 'include'
+        credentials: "include",
       });
       const data = await response.json();
-      
+
       if (data.carrito?.items) {
-        setCartCount(data.carrito.items.reduce((sum, item) => sum + item.quantity, 0));
+        setCartCount(
+          data.carrito.items.reduce((sum, item) => sum + item.quantity, 0)
+        );
+        setCarrito(data.carrito.items);
       } else {
         setCartCount(0);
+        setCarrito([]);
+      }
+
+      if (data.recomendados) {
+        setRecomendaciones(data.recomendados);
       }
     } catch (error) {
       console.error("Error fetching cart:", error);
       setCartCount(0);
+      setCarrito([]);
+      setRecomendaciones([]);
     }
   };
 
@@ -38,7 +50,16 @@ export function CartProvider({ children }) {
   }, [isAuthenticated]);
 
   return (
-    <CartContext.Provider value={{ cartCount, refreshCart: fetchCartCount }}>
+    <CartContext.Provider
+      value={{
+        cartCount,
+        carrito,
+        recomendaciones,
+        setRecomendaciones,
+        setCarrito,
+        refreshCart: fetchCartCount,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -10,7 +10,7 @@ import {
   FiPlus,
   FiMinus,
   FiArrowRight,
-  FiMapPin
+  FiMapPin,
 } from "react-icons/fi";
 import { FaShippingFast } from "react-icons/fa";
 import { useRouter } from "next/navigation";
@@ -30,6 +30,7 @@ function CarritoPage() {
   const [direcciones, setDirecciones] = useState([]);
   const [selectedDireccionId, setSelectedDireccionId] = useState(null);
   const [showDireccionForm, setShowDireccionForm] = useState(false);
+  const [recomendaciones, setRecomendaciones] = useState([]);
   const [nuevaDireccion, setNuevaDireccion] = useState({
     calle: "",
     numero: "",
@@ -37,7 +38,7 @@ function CarritoPage() {
     estado: "",
     cp: "",
     pais: "México",
-    referencias: ""
+    referencias: "",
   });
   const paypalRef = useRef(null);
   const router = useRouter();
@@ -48,10 +49,10 @@ function CarritoPage() {
   }, []);
 
   // Obtener el carrito del usuario
-useEffect(() => {
-  if (!isAuthLoading && !isAuthenticated) {
-    router.push("/login");
-  }
+  useEffect(() => {
+    if (!isAuthLoading && !isAuthenticated) {
+      router.push("/login");
+    }
 
     const obtenerCarrito = async () => {
       try {
@@ -78,38 +79,43 @@ useEffect(() => {
       }
     };
 
-const obtenerDirecciones = async () => {
-  try {
-    const res = await fetch(`${CONFIGURACIONES.BASEURL2}/direccion/direcciones`, {
-      credentials: "include",
-    });
+    const obtenerDirecciones = async () => {
+      try {
+        const res = await fetch(
+          `${CONFIGURACIONES.BASEURL2}/direccion/direcciones`,
+          {
+            credentials: "include",
+          }
+        );
 
-    if (!res.ok) {
-      throw new Error('Error al obtener direcciones');
-    }
+        if (!res.ok) {
+          throw new Error("Error al obtener direcciones");
+        }
 
-    const response = await res.json();
-    
-    // Ahora la respuesta viene en response.data
-    const direccionesArray = Array.isArray(response.data) ? response.data : [];
+        const response = await res.json();
 
-    if (direccionesArray.length === 0) {
-      setShowDireccionForm(true);
-    } else {
-      setDirecciones(direccionesArray);
-      setSelectedDireccionId(direccionesArray[0]?.id || null);
-    }
-  } catch (error) {
-    console.error("Error al obtener direcciones:", error);
-    setDirecciones([]);
-    setShowDireccionForm(true);
-  }
-};
+        // Ahora la respuesta viene en response.data
+        const direccionesArray = Array.isArray(response.data)
+          ? response.data
+          : [];
+
+        if (direccionesArray.length === 0) {
+          setShowDireccionForm(true);
+        } else {
+          setDirecciones(direccionesArray);
+          setSelectedDireccionId(direccionesArray[0]?.id || null);
+        }
+      } catch (error) {
+        console.error("Error al obtener direcciones:", error);
+        setDirecciones([]);
+        setShowDireccionForm(true);
+      }
+    };
 
     refreshCart();
     obtenerCarrito();
     obtenerDirecciones();
-  }, [isAuthLoading,isAuthenticated, router]);
+  }, [isAuthLoading, isAuthenticated, router]);
 
   // PayPal Effect
   useEffect(() => {
@@ -119,7 +125,8 @@ const obtenerDirecciones = async () => {
       !carrito.items ||
       carrito.items.length === 0 ||
       paypalRef.current === null
-    ) return;
+    )
+      return;
 
     let isCancelled = false;
 
@@ -127,79 +134,93 @@ const obtenerDirecciones = async () => {
 
     const renderPaypalButton = async () => {
       try {
-        await window.paypal.Buttons({
-          createOrder: async () => {
-            if (!selectedDireccionId) {
-              Swal.fire({
-                title: "Dirección requerida",
-                text: "Debes seleccionar o registrar una dirección de envío",
-                icon: "warning"
-              });
-              throw new Error("No address selected");
-            }
+        await window.paypal
+          .Buttons({
+            createOrder: async () => {
+              if (!selectedDireccionId) {
+                Swal.fire({
+                  title: "Dirección requerida",
+                  text: "Debes seleccionar o registrar una dirección de envío",
+                  icon: "warning",
+                });
+                throw new Error("No address selected");
+              }
 
-            const res = await fetch(`${CONFIGURACIONES.BASEURL2}/paypal/create-order`, {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                items: carrito.items.map(item => {
-                  const discount = item.product.discount || 0;
-                  const priceWithDiscount = item.product.price * (1 - discount / 100);
+              const res = await fetch(
+                `${CONFIGURACIONES.BASEURL2}/paypal/create-order`,
+                {
+                  method: "POST",
+                  credentials: "include",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    items: carrito.items.map((item) => {
+                      const discount = item.product.discount || 0;
+                      const priceWithDiscount =
+                        item.product.price * (1 - discount / 100);
 
-                  return {
-                    id: item.product.id,
-                    name: item.product.name,
-                    price: parseFloat(priceWithDiscount.toFixed(2)),
-                    quantity: item.quantity
-                  };
-                }),
-                total: calcularTotales().total,
-                direccionId: selectedDireccionId
-              })
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.message || "Error al crear orden");
-            return data.orderId;
-          },
-          onApprove: async (data) => {
-            const res = await fetch(`${CONFIGURACIONES.BASEURL2}/paypal/capture-order`, {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                orderId: data.orderID,
-                direccionId: selectedDireccionId
-              }),
-            });
-            const result = await res.json();
+                      return {
+                        id: item.product.id,
+                        name: item.product.name,
+                        price: parseFloat(priceWithDiscount.toFixed(2)),
+                        quantity: item.quantity,
+                      };
+                    }),
+                    total: calcularTotales().total,
+                    direccionId: selectedDireccionId,
+                  }),
+                }
+              );
+              const data = await res.json();
+              if (!res.ok)
+                throw new Error(data.message || "Error al crear orden");
+              return data.orderId;
+            },
+            onApprove: async (data) => {
+              const res = await fetch(
+                `${CONFIGURACIONES.BASEURL2}/paypal/capture-order`,
+                {
+                  method: "POST",
+                  credentials: "include",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    orderId: data.orderID,
+                    direccionId: selectedDireccionId,
+                  }),
+                }
+              );
+              const result = await res.json();
 
-            if (res.ok && !isCancelled) {
-              Swal.fire("¡Pago exitoso!", "Gracias por tu compra", "success");
-              refreshCart();
-              router.push("/gracias");
-            } else if (!isCancelled) {
-              Swal.fire("Error", result.message || "Error al capturar el pago", "error");
-            }
-          },
-          onError: (err) => {
-            if (!isCancelled) {
-              console.error("PayPal error:", err);
-              Swal.fire("Error", "Hubo un error con PayPal", "error");
-            }
-          },
-          style: {
-            layout: "vertical",
-            color: "blue",
-            shape: "rect",
-            label: "paypal",
-            height: 55
-          }
-        }).render(paypalRef.current);
+              if (res.ok && !isCancelled) {
+                Swal.fire("¡Pago exitoso!", "Gracias por tu compra", "success");
+                refreshCart();
+                router.push("/gracias");
+              } else if (!isCancelled) {
+                Swal.fire(
+                  "Error",
+                  result.message || "Error al capturar el pago",
+                  "error"
+                );
+              }
+            },
+            onError: (err) => {
+              if (!isCancelled) {
+                console.error("PayPal error:", err);
+                Swal.fire("Error", "Hubo un error con PayPal", "error");
+              }
+            },
+            style: {
+              layout: "vertical",
+              color: "blue",
+              shape: "rect",
+              label: "paypal",
+              height: 55,
+            },
+          })
+          .render(paypalRef.current);
       } catch (err) {
         if (!isCancelled) {
           console.error("Error al renderizar botón PayPal:", err);
@@ -233,9 +254,9 @@ const obtenerDirecciones = async () => {
 
   const handleNuevaDireccionChange = (e) => {
     const { name, value } = e.target;
-    setNuevaDireccion(prev => ({
+    setNuevaDireccion((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -248,12 +269,13 @@ const obtenerDirecciones = async () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(nuevaDireccion)
+        body: JSON.stringify(nuevaDireccion),
       });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Error al agregar dirección");
+      if (!res.ok)
+        throw new Error(data.message || "Error al agregar dirección");
 
       setDirecciones([...direcciones, data]);
       setSelectedDireccionId(data.id);
@@ -265,17 +287,22 @@ const obtenerDirecciones = async () => {
         estado: "",
         cp: "",
         pais: "México",
-        referencias: ""
+        referencias: "",
       });
 
       Swal.fire("¡Éxito!", "Dirección agregada correctamente", "success");
     } catch (error) {
       console.error("Error:", error);
-      Swal.fire("Error", error.message || "Error al guardar la dirección", "error");
+      Swal.fire(
+        "Error",
+        error.message || "Error al guardar la dirección",
+        "error"
+      );
     }
   };
 
-  const selectedDireccion = direcciones?.find(d => d.id === selectedDireccionId) || null;
+  const selectedDireccion =
+    direcciones?.find((d) => d.id === selectedDireccionId) || null;
 
   const actualizarCantidad = async (productId, nuevaCantidad) => {
     // Cambiar parámetro a productId
@@ -383,7 +410,6 @@ const obtenerDirecciones = async () => {
     }
   };
 
-
   const calcularTotales = () => {
     if (!carrito || !carrito.items) return { subtotal: 0, envio: 0, total: 0 };
 
@@ -412,14 +438,24 @@ const obtenerDirecciones = async () => {
 
   if (isLoading) {
     return (
-      <div className={`min-h-screen py-8 pt-36 flex justify-center items-center ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"}`}>
+      <div
+        className={`min-h-screen py-8 pt-36 flex justify-center items-center ${
+          theme === "dark" ? "bg-gray-900" : "bg-gray-50"
+        }`}
+      >
         <div className="w-12 h-12 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen py-8 pt-20 transition-colors ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900"}`}>
+    <div
+      className={`min-h-screen py-8 pt-20 transition-colors ${
+        theme === "dark"
+          ? "bg-gray-900 text-gray-100"
+          : "bg-gray-100 text-gray-900"
+      }`}
+    >
       <Script
         src={`https://www.paypal.com/sdk/js?client-id=${CONFIGURACIONES.PAYPAL_CLIENT_ID}&currency=USD`}
         strategy="afterInteractive"
@@ -428,25 +464,45 @@ const obtenerDirecciones = async () => {
       <div className="container px-4 mx-auto">
         <Breadcrumbs pages={breadcrumbsPages} />
 
-        <div className={`p-6 rounded-xl shadow-lg mb-8 ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
+        <div
+          className={`p-6 rounded-xl shadow-lg mb-8 ${
+            theme === "dark" ? "bg-gray-800" : "bg-white"
+          }`}
+        >
           <h1 className="flex items-center mb-2 text-3xl font-bold">
             <FiShoppingCart className="mr-3" /> Mi Carrito de Compras
           </h1>
-          <p className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+          <p
+            className={`${
+              theme === "dark" ? "text-gray-400" : "text-gray-600"
+            }`}
+          >
             Revisa y gestiona los productos en tu carrito
           </p>
         </div>
 
         {!carrito || carrito.items.length === 0 ? (
-          <div className={`p-8 rounded-xl shadow-lg text-center ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
+          <div
+            className={`p-8 rounded-xl shadow-lg text-center ${
+              theme === "dark" ? "bg-gray-800" : "bg-white"
+            }`}
+          >
             <FiShoppingCart className="mx-auto mb-4 text-5xl text-gray-500" />
             <h2 className="mb-2 text-2xl font-bold">Tu carrito está vacío</h2>
-            <p className={`mb-6 ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+            <p
+              className={`mb-6 ${
+                theme === "dark" ? "text-gray-400" : "text-gray-600"
+              }`}
+            >
               Aún no has agregado productos a tu carrito
             </p>
             <button
               onClick={() => router.push("/ventaProducto")}
-              className={`px-6 py-3 rounded-lg font-medium ${theme === "dark" ? "bg-green-600 hover:bg-green-500" : "bg-green-500 hover:bg-green-400"} text-white`}
+              className={`px-6 py-3 rounded-lg font-medium ${
+                theme === "dark"
+                  ? "bg-green-600 hover:bg-green-500"
+                  : "bg-green-500 hover:bg-green-400"
+              } text-white`}
             >
               Ir al catálogo de productos
             </button>
@@ -454,16 +510,35 @@ const obtenerDirecciones = async () => {
         ) : (
           <div className="flex flex-col gap-8 lg:flex-row">
             <div className="w-full lg:w-2/3">
-              <div className={`rounded-xl shadow-lg overflow-hidden ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
-                <div className={`hidden md:grid grid-cols-12 p-4 border-b ${theme === "dark" ? "border-gray-700" : "border-gray-200"}`}>
+              <div
+                className={`rounded-xl shadow-lg overflow-hidden ${
+                  theme === "dark" ? "bg-gray-800" : "bg-white"
+                }`}
+              >
+                <div
+                  className={`hidden md:grid grid-cols-12 p-4 border-b ${
+                    theme === "dark" ? "border-gray-700" : "border-gray-200"
+                  }`}
+                >
                   <div className="col-span-6 font-medium">Producto</div>
-                  <div className="col-span-2 font-medium text-center">Precio</div>
-                  <div className="col-span-2 font-medium text-center">Cantidad</div>
-                  <div className="col-span-2 font-medium text-center">Total</div>
+                  <div className="col-span-2 font-medium text-center">
+                    Precio
+                  </div>
+                  <div className="col-span-2 font-medium text-center">
+                    Cantidad
+                  </div>
+                  <div className="col-span-2 font-medium text-center">
+                    Total
+                  </div>
                 </div>
 
                 {carrito.items.map((item) => (
-                  <div key={item.id} className={`p-4 border-b ${theme === "dark" ? "border-gray-700" : "border-gray-200"}`}>
+                  <div
+                    key={item.id}
+                    className={`p-4 border-b ${
+                      theme === "dark" ? "border-gray-700" : "border-gray-200"
+                    }`}
+                  >
                     <div className="grid items-center grid-cols-12 gap-4">
                       <div className="flex items-center col-span-12 md:col-span-6">
                         <div className="relative flex-shrink-0 w-16 h-16 mr-4">
@@ -475,29 +550,50 @@ const obtenerDirecciones = async () => {
                               className="object-cover rounded-lg"
                             />
                           ) : (
-                            <div className={`w-full h-full flex items-center justify-center rounded-lg ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>
-                              <span className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-400"}`}>Sin imagen</span>
+                            <div
+                              className={`w-full h-full flex items-center justify-center rounded-lg ${
+                                theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                              }`}
+                            >
+                              <span
+                                className={`text-xs ${
+                                  theme === "dark"
+                                    ? "text-gray-500"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                Sin imagen
+                              </span>
                             </div>
                           )}
                         </div>
                         <div>
                           <h3 className="font-medium">{item.product.name}</h3>
-                          <p className={`text-sm ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>
+                          <p
+                            className={`text-sm ${
+                              theme === "dark"
+                                ? "text-gray-400"
+                                : "text-gray-600"
+                            }`}
+                          >
                             {item.product.brand} - {item.product.category}
                           </p>
                         </div>
                       </div>
 
                       <div className="col-span-4 text-center md:col-span-2">
-                        <span className="mr-2 font-medium md:hidden">Precio:</span>
+                        <span className="mr-2 font-medium md:hidden">
+                          Precio:
+                        </span>
                         {(() => {
                           const discount = item.product.discount || 0;
-                          const priceWithDiscount = item.product.price * (1 - discount / 100);
+                          const priceWithDiscount =
+                            item.product.price * (1 - discount / 100);
                           return (
                             <>
                               ${priceWithDiscount.toFixed(2)}
                               {discount > 0 && (
-                                <span className="text-xs text-gray-400 line-through ml-1">
+                                <span className="ml-1 text-xs text-gray-400 line-through">
                                   ${item.product.price.toFixed(2)}
                                 </span>
                               )}
@@ -510,7 +606,12 @@ const obtenerDirecciones = async () => {
                         <div className="flex items-center overflow-hidden border rounded-lg">
                           <button
                             className="pl-2 hover:text-yellow-500"
-                            onClick={() => actualizarCantidad(item.product.id, item.quantity - 1)}
+                            onClick={() =>
+                              actualizarCantidad(
+                                item.product.id,
+                                item.quantity - 1
+                              )
+                            }
                             disabled={isUpdating || item.quantity <= 1}
                           >
                             <FiMinus />
@@ -518,7 +619,12 @@ const obtenerDirecciones = async () => {
                           <span className="px-5 py-2">{item.quantity}</span>
                           <button
                             className="pr-2 hover:text-yellow-500"
-                            onClick={() => actualizarCantidad(item.product.id, item.quantity + 1)}
+                            onClick={() =>
+                              actualizarCantidad(
+                                item.product.id,
+                                item.quantity + 1
+                              )
+                            }
                             disabled={isUpdating}
                           >
                             <FiPlus />
@@ -548,8 +654,16 @@ const obtenerDirecciones = async () => {
             </div>
 
             <div className="w-full lg:w-1/3">
-              <div className={`rounded-xl shadow-lg overflow-hidden sticky top-4 ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}>
-                <div className={`p-6 ${theme === "dark" ? "bg-gray-700" : "bg-gray-100"}`}>
+              <div
+                className={`rounded-xl shadow-lg overflow-hidden sticky top-4 ${
+                  theme === "dark" ? "bg-gray-800" : "bg-white"
+                }`}
+              >
+                <div
+                  className={`p-6 ${
+                    theme === "dark" ? "bg-gray-700" : "bg-gray-100"
+                  }`}
+                >
                   <h2 className="mb-4 text-xl font-bold">Resumen del Pedido</h2>
                 </div>
 
@@ -569,7 +683,11 @@ const obtenerDirecciones = async () => {
                             name="calle"
                             value={nuevaDireccion.calle}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${theme === "dark" ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"}`}
+                            className={`w-full p-2 border rounded ${
+                              theme === "dark"
+                                ? "bg-gray-700 border-gray-600"
+                                : "bg-white border-gray-300"
+                            }`}
                             required
                           />
                         </div>
@@ -580,7 +698,11 @@ const obtenerDirecciones = async () => {
                             name="numero"
                             value={nuevaDireccion.numero}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${theme === "dark" ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"}`}
+                            className={`w-full p-2 border rounded ${
+                              theme === "dark"
+                                ? "bg-gray-700 border-gray-600"
+                                : "bg-white border-gray-300"
+                            }`}
                             required
                           />
                         </div>
@@ -592,7 +714,11 @@ const obtenerDirecciones = async () => {
                               name="ciudad"
                               value={nuevaDireccion.ciudad}
                               onChange={handleNuevaDireccionChange}
-                              className={`w-full p-2 border rounded ${theme === "dark" ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"}`}
+                              className={`w-full p-2 border rounded ${
+                                theme === "dark"
+                                  ? "bg-gray-700 border-gray-600"
+                                  : "bg-white border-gray-300"
+                              }`}
                               required
                             />
                           </div>
@@ -603,35 +729,55 @@ const obtenerDirecciones = async () => {
                               name="estado"
                               value={nuevaDireccion.estado}
                               onChange={handleNuevaDireccionChange}
-                              className={`w-full p-2 border rounded ${theme === "dark" ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"}`}
+                              className={`w-full p-2 border rounded ${
+                                theme === "dark"
+                                  ? "bg-gray-700 border-gray-600"
+                                  : "bg-white border-gray-300"
+                              }`}
                               required
                             />
                           </div>
                         </div>
                         <div>
-                          <label className="block mb-1 text-sm">Código Postal</label>
+                          <label className="block mb-1 text-sm">
+                            Código Postal
+                          </label>
                           <input
                             type="text"
                             name="cp"
                             value={nuevaDireccion.cp}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${theme === "dark" ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"}`}
+                            className={`w-full p-2 border rounded ${
+                              theme === "dark"
+                                ? "bg-gray-700 border-gray-600"
+                                : "bg-white border-gray-300"
+                            }`}
                             required
                           />
                         </div>
                         <div>
-                          <label className="block mb-1 text-sm">Referencias</label>
+                          <label className="block mb-1 text-sm">
+                            Referencias
+                          </label>
                           <textarea
                             name="referencias"
                             value={nuevaDireccion.referencias}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${theme === "dark" ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"}`}
+                            className={`w-full p-2 border rounded ${
+                              theme === "dark"
+                                ? "bg-gray-700 border-gray-600"
+                                : "bg-white border-gray-300"
+                            }`}
                             rows="2"
                           />
                         </div>
                         <button
                           type="submit"
-                          className={`w-full py-2 px-4 rounded font-medium ${theme === "dark" ? "bg-green-600 hover:bg-green-500" : "bg-green-500 hover:bg-green-400"} text-white`}
+                          className={`w-full py-2 px-4 rounded font-medium ${
+                            theme === "dark"
+                              ? "bg-green-600 hover:bg-green-500"
+                              : "bg-green-500 hover:bg-green-400"
+                          } text-white`}
                         >
                           Guardar Dirección
                         </button>
@@ -642,30 +788,51 @@ const obtenerDirecciones = async () => {
                           <select
                             value={selectedDireccionId || ""}
                             onChange={handleDireccionChange}
-                            className={`w-full p-2 mb-3 border rounded ${theme === "dark" ? "bg-gray-700 border-gray-600" : "bg-white border-gray-300"}`}
+                            className={`w-full p-2 mb-3 border rounded ${
+                              theme === "dark"
+                                ? "bg-gray-700 border-gray-600"
+                                : "bg-white border-gray-300"
+                            }`}
                           >
-                            {direcciones.map(direccion => (
+                            {direcciones.map((direccion) => (
                               <option key={direccion.id} value={direccion.id}>
-                                {direccion.calle} {direccion.numero}, {direccion.ciudad}
+                                {direccion.calle} {direccion.numero},{" "}
+                                {direccion.ciudad}
                               </option>
                             ))}
                           </select>
                         )}
 
                         {selectedDireccion && (
-                          <div className={`p-3 rounded-lg ${theme === "dark" ? "bg-gray-700" : "bg-gray-100"}`}>
-                            <p className="font-medium">{selectedDireccion.calle} {selectedDireccion.numero}</p>
-                            <p>{selectedDireccion.ciudad}, {selectedDireccion.estado}</p>
+                          <div
+                            className={`p-3 rounded-lg ${
+                              theme === "dark" ? "bg-gray-700" : "bg-gray-100"
+                            }`}
+                          >
+                            <p className="font-medium">
+                              {selectedDireccion.calle}{" "}
+                              {selectedDireccion.numero}
+                            </p>
+                            <p>
+                              {selectedDireccion.ciudad},{" "}
+                              {selectedDireccion.estado}
+                            </p>
                             <p>CP: {selectedDireccion.cp}</p>
                             {selectedDireccion.referencias && (
-                              <p className="mt-1 text-sm">Referencias: {selectedDireccion.referencias}</p>
+                              <p className="mt-1 text-sm">
+                                Referencias: {selectedDireccion.referencias}
+                              </p>
                             )}
                           </div>
                         )}
 
                         <button
                           onClick={() => setShowDireccionForm(true)}
-                          className={`w-full mt-3 py-2 px-4 rounded font-medium ${theme === "dark" ? "bg-blue-600 hover:bg-blue-500" : "bg-blue-500 hover:bg-blue-400"} text-white`}
+                          className={`w-full mt-3 py-2 px-4 rounded font-medium ${
+                            theme === "dark"
+                              ? "bg-blue-600 hover:bg-blue-500"
+                              : "bg-blue-500 hover:bg-blue-400"
+                          } text-white`}
                         >
                           Agregar Nueva Dirección
                         </button>
@@ -712,12 +879,23 @@ const obtenerDirecciones = async () => {
                       />
                     </div>
 
-                    <div ref={paypalRef} id="paypal-button-container" className="mt-6"></div>
+                    <div
+                      ref={paypalRef}
+                      id="paypal-button-container"
+                      className="mt-6"
+                    ></div>
 
                     {subtotal < 500 && (
-                      <div className={`mt-4 p-3 rounded-lg text-center text-sm ${theme === "dark" ? "bg-gray-700 text-yellow-400" : "bg-yellow-100 text-yellow-800"}`}>
+                      <div
+                        className={`mt-4 p-3 rounded-lg text-center text-sm ${
+                          theme === "dark"
+                            ? "bg-gray-700 text-yellow-400"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
                         <FaShippingFast className="inline mr-2" />
-                        ¡Faltan ${(500 - subtotal).toFixed(2)} para envío gratis!
+                        ¡Faltan ${(500 - subtotal).toFixed(2)} para envío
+                        gratis!
                       </div>
                     )}
                   </div>
@@ -726,6 +904,38 @@ const obtenerDirecciones = async () => {
             </div>
           </div>
         )}
+
+        {/* Seccion para Recomendaciones */}
+        <section>
+          {recomendaciones.length > 0 && (
+            <div className="mt-8">
+              <h2 className="mb-4 text-xl font-bold">
+                Recomendaciones para ti
+              </h2>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+                {recomendaciones.map((producto) => (
+                  <div
+                    key={producto.id}
+                    className="p-4 bg-white shadow-md dark:bg-gray-900 rounded-xl"
+                  >
+                    <Image
+                      width={300}
+                      src={producto.images[0]?.url || "/sin-imagen.jpg"}
+                      alt={producto.name}
+                      className="object-cover w-full h-32 rounded"
+                    />
+                    <h3 className="mt-2 text-lg font-semibold">
+                      {producto.name}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      ${producto.price}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );
