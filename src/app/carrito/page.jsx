@@ -20,7 +20,11 @@ import Script from "next/script";
 import { useRef } from "react";
 
 function CarritoPage() {
-  const { refreshCart } = useCart();
+  const { 
+    carrito: cartItems, 
+    recomendaciones,  // 🟢 Valor del contexto
+    refreshCart 
+  } = useCart();
   const { user, isAuthenticated, theme, isAuthLoading } = useAuth();
   const [carrito, setCarrito] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +34,7 @@ function CarritoPage() {
   const [direcciones, setDirecciones] = useState([]);
   const [selectedDireccionId, setSelectedDireccionId] = useState(null);
   const [showDireccionForm, setShowDireccionForm] = useState(false);
-  const [recomendaciones, setRecomendaciones] = useState([]);
+  const [setRecomendaciones] = useState([]);
   const [nuevaDireccion, setNuevaDireccion] = useState({
     calle: "",
     numero: "",
@@ -439,9 +443,8 @@ function CarritoPage() {
   if (isLoading) {
     return (
       <div
-        className={`min-h-screen py-8 pt-36 flex justify-center items-center ${
-          theme === "dark" ? "bg-gray-900" : "bg-gray-50"
-        }`}
+        className={`min-h-screen py-8 pt-36 flex justify-center items-center ${theme === "dark" ? "bg-gray-900" : "bg-gray-50"
+          }`}
       >
         <div className="w-12 h-12 border-t-2 border-b-2 border-green-500 rounded-full animate-spin"></div>
       </div>
@@ -450,11 +453,10 @@ function CarritoPage() {
 
   return (
     <div
-      className={`min-h-screen py-8 pt-20 transition-colors ${
-        theme === "dark"
+      className={`min-h-screen py-8 pt-20 transition-colors ${theme === "dark"
           ? "bg-gray-900 text-gray-100"
           : "bg-gray-100 text-gray-900"
-      }`}
+        }`}
     >
       <Script
         src={`https://www.paypal.com/sdk/js?client-id=${CONFIGURACIONES.PAYPAL_CLIENT_ID}&currency=USD`}
@@ -465,17 +467,15 @@ function CarritoPage() {
         <Breadcrumbs pages={breadcrumbsPages} />
 
         <div
-          className={`p-6 rounded-xl shadow-lg mb-8 ${
-            theme === "dark" ? "bg-gray-800" : "bg-white"
-          }`}
+          className={`p-6 rounded-xl shadow-lg mb-8 ${theme === "dark" ? "bg-gray-800" : "bg-white"
+            }`}
         >
           <h1 className="flex items-center mb-2 text-3xl font-bold">
             <FiShoppingCart className="mr-3" /> Mi Carrito de Compras
           </h1>
           <p
-            className={`${
-              theme === "dark" ? "text-gray-400" : "text-gray-600"
-            }`}
+            className={`${theme === "dark" ? "text-gray-400" : "text-gray-600"
+              }`}
           >
             Revisa y gestiona los productos en tu carrito
           </p>
@@ -483,26 +483,23 @@ function CarritoPage() {
 
         {!carrito || carrito.items.length === 0 ? (
           <div
-            className={`p-8 rounded-xl shadow-lg text-center ${
-              theme === "dark" ? "bg-gray-800" : "bg-white"
-            }`}
+            className={`p-8 rounded-xl shadow-lg text-center ${theme === "dark" ? "bg-gray-800" : "bg-white"
+              }`}
           >
             <FiShoppingCart className="mx-auto mb-4 text-5xl text-gray-500" />
             <h2 className="mb-2 text-2xl font-bold">Tu carrito está vacío</h2>
             <p
-              className={`mb-6 ${
-                theme === "dark" ? "text-gray-400" : "text-gray-600"
-              }`}
+              className={`mb-6 ${theme === "dark" ? "text-gray-400" : "text-gray-600"
+                }`}
             >
               Aún no has agregado productos a tu carrito
             </p>
             <button
               onClick={() => router.push("/ventaProducto")}
-              className={`px-6 py-3 rounded-lg font-medium ${
-                theme === "dark"
+              className={`px-6 py-3 rounded-lg font-medium ${theme === "dark"
                   ? "bg-green-600 hover:bg-green-500"
                   : "bg-green-500 hover:bg-green-400"
-              } text-white`}
+                } text-white`}
             >
               Ir al catálogo de productos
             </button>
@@ -511,14 +508,12 @@ function CarritoPage() {
           <div className="flex flex-col gap-8 lg:flex-row">
             <div className="w-full lg:w-2/3">
               <div
-                className={`rounded-xl shadow-lg overflow-hidden ${
-                  theme === "dark" ? "bg-gray-800" : "bg-white"
-                }`}
+                className={`rounded-xl shadow-lg overflow-hidden ${theme === "dark" ? "bg-gray-800" : "bg-white"
+                  }`}
               >
                 <div
-                  className={`hidden md:grid grid-cols-12 p-4 border-b ${
-                    theme === "dark" ? "border-gray-700" : "border-gray-200"
-                  }`}
+                  className={`hidden md:grid grid-cols-12 p-4 border-b ${theme === "dark" ? "border-gray-700" : "border-gray-200"
+                    }`}
                 >
                   <div className="col-span-6 font-medium">Producto</div>
                   <div className="col-span-2 font-medium text-center">
@@ -535,9 +530,8 @@ function CarritoPage() {
                 {carrito.items.map((item) => (
                   <div
                     key={item.id}
-                    className={`p-4 border-b ${
-                      theme === "dark" ? "border-gray-700" : "border-gray-200"
-                    }`}
+                    className={`p-4 border-b ${theme === "dark" ? "border-gray-700" : "border-gray-200"
+                      }`}
                   >
                     <div className="grid items-center grid-cols-12 gap-4">
                       <div className="flex items-center col-span-12 md:col-span-6">
@@ -551,16 +545,14 @@ function CarritoPage() {
                             />
                           ) : (
                             <div
-                              className={`w-full h-full flex items-center justify-center rounded-lg ${
-                                theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                              }`}
+                              className={`w-full h-full flex items-center justify-center rounded-lg ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                                }`}
                             >
                               <span
-                                className={`text-xs ${
-                                  theme === "dark"
+                                className={`text-xs ${theme === "dark"
                                     ? "text-gray-500"
                                     : "text-gray-400"
-                                }`}
+                                  }`}
                               >
                                 Sin imagen
                               </span>
@@ -570,11 +562,10 @@ function CarritoPage() {
                         <div>
                           <h3 className="font-medium">{item.product.name}</h3>
                           <p
-                            className={`text-sm ${
-                              theme === "dark"
+                            className={`text-sm ${theme === "dark"
                                 ? "text-gray-400"
                                 : "text-gray-600"
-                            }`}
+                              }`}
                           >
                             {item.product.brand} - {item.product.category}
                           </p>
@@ -655,14 +646,12 @@ function CarritoPage() {
 
             <div className="w-full lg:w-1/3">
               <div
-                className={`rounded-xl shadow-lg overflow-hidden sticky top-4 ${
-                  theme === "dark" ? "bg-gray-800" : "bg-white"
-                }`}
+                className={`rounded-xl shadow-lg overflow-hidden sticky top-4 ${theme === "dark" ? "bg-gray-800" : "bg-white"
+                  }`}
               >
                 <div
-                  className={`p-6 ${
-                    theme === "dark" ? "bg-gray-700" : "bg-gray-100"
-                  }`}
+                  className={`p-6 ${theme === "dark" ? "bg-gray-700" : "bg-gray-100"
+                    }`}
                 >
                   <h2 className="mb-4 text-xl font-bold">Resumen del Pedido</h2>
                 </div>
@@ -683,11 +672,10 @@ function CarritoPage() {
                             name="calle"
                             value={nuevaDireccion.calle}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${
-                              theme === "dark"
+                            className={`w-full p-2 border rounded ${theme === "dark"
                                 ? "bg-gray-700 border-gray-600"
                                 : "bg-white border-gray-300"
-                            }`}
+                              }`}
                             required
                           />
                         </div>
@@ -698,11 +686,10 @@ function CarritoPage() {
                             name="numero"
                             value={nuevaDireccion.numero}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${
-                              theme === "dark"
+                            className={`w-full p-2 border rounded ${theme === "dark"
                                 ? "bg-gray-700 border-gray-600"
                                 : "bg-white border-gray-300"
-                            }`}
+                              }`}
                             required
                           />
                         </div>
@@ -714,11 +701,10 @@ function CarritoPage() {
                               name="ciudad"
                               value={nuevaDireccion.ciudad}
                               onChange={handleNuevaDireccionChange}
-                              className={`w-full p-2 border rounded ${
-                                theme === "dark"
+                              className={`w-full p-2 border rounded ${theme === "dark"
                                   ? "bg-gray-700 border-gray-600"
                                   : "bg-white border-gray-300"
-                              }`}
+                                }`}
                               required
                             />
                           </div>
@@ -729,11 +715,10 @@ function CarritoPage() {
                               name="estado"
                               value={nuevaDireccion.estado}
                               onChange={handleNuevaDireccionChange}
-                              className={`w-full p-2 border rounded ${
-                                theme === "dark"
+                              className={`w-full p-2 border rounded ${theme === "dark"
                                   ? "bg-gray-700 border-gray-600"
                                   : "bg-white border-gray-300"
-                              }`}
+                                }`}
                               required
                             />
                           </div>
@@ -747,11 +732,10 @@ function CarritoPage() {
                             name="cp"
                             value={nuevaDireccion.cp}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${
-                              theme === "dark"
+                            className={`w-full p-2 border rounded ${theme === "dark"
                                 ? "bg-gray-700 border-gray-600"
                                 : "bg-white border-gray-300"
-                            }`}
+                              }`}
                             required
                           />
                         </div>
@@ -763,21 +747,19 @@ function CarritoPage() {
                             name="referencias"
                             value={nuevaDireccion.referencias}
                             onChange={handleNuevaDireccionChange}
-                            className={`w-full p-2 border rounded ${
-                              theme === "dark"
+                            className={`w-full p-2 border rounded ${theme === "dark"
                                 ? "bg-gray-700 border-gray-600"
                                 : "bg-white border-gray-300"
-                            }`}
+                              }`}
                             rows="2"
                           />
                         </div>
                         <button
                           type="submit"
-                          className={`w-full py-2 px-4 rounded font-medium ${
-                            theme === "dark"
+                          className={`w-full py-2 px-4 rounded font-medium ${theme === "dark"
                               ? "bg-green-600 hover:bg-green-500"
                               : "bg-green-500 hover:bg-green-400"
-                          } text-white`}
+                            } text-white`}
                         >
                           Guardar Dirección
                         </button>
@@ -788,11 +770,10 @@ function CarritoPage() {
                           <select
                             value={selectedDireccionId || ""}
                             onChange={handleDireccionChange}
-                            className={`w-full p-2 mb-3 border rounded ${
-                              theme === "dark"
+                            className={`w-full p-2 mb-3 border rounded ${theme === "dark"
                                 ? "bg-gray-700 border-gray-600"
                                 : "bg-white border-gray-300"
-                            }`}
+                              }`}
                           >
                             {direcciones.map((direccion) => (
                               <option key={direccion.id} value={direccion.id}>
@@ -805,9 +786,8 @@ function CarritoPage() {
 
                         {selectedDireccion && (
                           <div
-                            className={`p-3 rounded-lg ${
-                              theme === "dark" ? "bg-gray-700" : "bg-gray-100"
-                            }`}
+                            className={`p-3 rounded-lg ${theme === "dark" ? "bg-gray-700" : "bg-gray-100"
+                              }`}
                           >
                             <p className="font-medium">
                               {selectedDireccion.calle}{" "}
@@ -828,11 +808,10 @@ function CarritoPage() {
 
                         <button
                           onClick={() => setShowDireccionForm(true)}
-                          className={`w-full mt-3 py-2 px-4 rounded font-medium ${
-                            theme === "dark"
+                          className={`w-full mt-3 py-2 px-4 rounded font-medium ${theme === "dark"
                               ? "bg-blue-600 hover:bg-blue-500"
                               : "bg-blue-500 hover:bg-blue-400"
-                          } text-white`}
+                            } text-white`}
                         >
                           Agregar Nueva Dirección
                         </button>
@@ -887,11 +866,10 @@ function CarritoPage() {
 
                     {subtotal < 500 && (
                       <div
-                        className={`mt-4 p-3 rounded-lg text-center text-sm ${
-                          theme === "dark"
+                        className={`mt-4 p-3 rounded-lg text-center text-sm ${theme === "dark"
                             ? "bg-gray-700 text-yellow-400"
                             : "bg-yellow-100 text-yellow-800"
-                        }`}
+                          }`}
                       >
                         <FaShippingFast className="inline mr-2" />
                         ¡Faltan ${(500 - subtotal).toFixed(2)} para envío
@@ -905,37 +883,38 @@ function CarritoPage() {
           </div>
         )}
 
-        {/* Seccion para Recomendaciones */}
-        <section>
-          {recomendaciones.length > 0 && (
-            <div className="mt-8">
-              <h2 className="mb-4 text-xl font-bold">
-                Recomendaciones para ti
-              </h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-                {recomendaciones.map((producto) => (
-                  <div
-                    key={producto.id}
-                    className="p-4 bg-white shadow-md dark:bg-gray-900 rounded-xl"
-                  >
+        {recomendaciones && recomendaciones.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold mb-6">Te podría interesar</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {recomendaciones.map((producto) => (
+                <div
+                  key={producto.id}
+                  className={`bg-white rounded-xl shadow-md p-4 transition hover:shadow-lg ${theme === "dark" ? "bg-gray-800 text-white" : "bg-white text-black"
+                    }`}
+                >
+                  <div className="w-full h-40 relative mb-4">
                     <Image
-                      width={300}
-                      src={producto.images[0]?.url || "/sin-imagen.jpg"}
+                      src={producto.images[0]?.url || "/placeholder.jpg"}
                       alt={producto.name}
-                      className="object-cover w-full h-32 rounded"
+                      layout="fill"
+                      objectFit="contain"
+                      className="rounded"
                     />
-                    <h3 className="mt-2 text-lg font-semibold">
-                      {producto.name}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-300">
-                      ${producto.price}
-                    </p>
                   </div>
-                ))}
-              </div>
+                  <h3 className="text-lg font-medium truncate">{producto.name}</h3>
+                  <p className="text-green-600 font-semibold">${producto.price}</p>
+                  <button
+                    className="mt-2 bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
+                    onClick={() => router.push(`/producto/${producto.partNumber}`)}
+                  >
+                    Ver producto
+                  </button>
+                </div>
+              ))}
             </div>
-          )}
-        </section>
+          </div>
+        )}
       </div>
     </div>
   );

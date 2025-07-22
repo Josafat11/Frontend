@@ -28,7 +28,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 
 
 function ProductosPage() {
-  const { refreshCart } = useCart();
+const { refreshCart, setRecomendaciones } = useCart();
   const router = useRouter(); // <-- Inicialización esencial
   const { user, isAuthenticated, theme } = useAuth();
   const [productos, setProductos] = useState([]);
@@ -204,6 +204,13 @@ function ProductosPage() {
       });
 
       const data = await res.json();
+          // 👇 Aquí agregas el log para ver si llegan los recomendados
+    console.log("Respuesta completa (comprarAhora):", data);
+    console.log("Recomendados:", data.recomendados || data.recommendations || []);
+
+    if (data.recomendados) {
+  setRecomendaciones(data.recomendados); // 👈 Guardar en contexto
+}
       if (!res.ok) throw new Error(data.message || "Error al comprar");
 
       refreshCart();
@@ -242,8 +249,15 @@ function ProductosPage() {
       });
 
       const data = await res.json();
+      console.log("Respuesta completa:", data);
+      if (data.recomendados) {
+  setRecomendaciones(data.recomendados); // 👈 Guardar en contexto
+}
+
       if (!res.ok) throw new Error(data.message || "Error al agregar");
-      console.log(data.recomendados)
+      
+      console.log("Respuesta completa:", data);
+      console.log(data.recomendations);
 
       refreshCart();
       Swal.fire("Agregado", "Producto agregado al carrito", "success");
