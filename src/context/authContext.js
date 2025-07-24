@@ -45,7 +45,7 @@ useEffect(() => {
 
 useEffect(() => {
   document.documentElement.setAttribute('data-theme', theme);
-  document.body.style.backgroundColor = theme === 'dark' ? '#1f2937' : '#ffffff';
+  document.body.style.backgroundColor = theme === 'dark' ? '#111827' : '#ffffff';
 }, [theme]);
 
   // Función para manejar el login en AuthProvider
