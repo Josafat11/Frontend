@@ -58,9 +58,9 @@ function UbicacionPage() {
 
   return (
     <div
-      className={`min-h-screen container mx-auto py-8 pt-16 pb-28 ${
+      className={`min-h-screen container transition-colors mx-auto py-8 pt-16 pb-28 ${
         theme === "dark"
-          ? "bg-gray-800 text-gray-100"
+          ? "bg-gray-900 text-gray-100"
           : "bg-white text-gray-900"
       }`}
     >

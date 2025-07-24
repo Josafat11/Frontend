@@ -8,16 +8,16 @@ function FacturaPage() {
 
   return (
     <div
-      className={`min-h-screen container mx-auto py-8 pt-36 ${
-        theme === "dark" ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
+      className={`min-h-screen transition-colors container mx-auto py-8 pt-36 ${
+        theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
       }`}
     >
-      <h1 className="text-3xl font-bold text-center mb-8">Factura Electrónica</h1>
+      <h1 className="mb-8 text-3xl font-bold text-center">Factura Electrónica</h1>
 
       {/* Sección de información */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Imagen ilustrativa */}
-        <div className="relative h-96 rounded-lg overflow-hidden shadow-lg">
+        <div className="relative overflow-hidden rounded-lg shadow-lg h-96">
           <Image
             src="/assets/facturacion.jpg" // Ruta de la imagen
             alt="Factura Electrónica"
@@ -32,22 +32,22 @@ function FacturaPage() {
             theme === "dark" ? "bg-gray-700 text-gray-200" : "bg-gray-100 text-gray-900"
           }`}
         >
-          <h2 className="text-2xl font-bold mb-4">¿Cómo funciona la factura electrónica?</h2>
+          <h2 className="mb-4 text-2xl font-bold">¿Cómo funciona la factura electrónica?</h2>
           <p className="mb-4">
             En Refaccionaria Muñoz, nos adaptamos a las necesidades modernas de nuestros
             clientes. Por eso, ofrecemos el servicio de facturación electrónica, que te
             permite obtener tus comprobantes fiscales de manera rápida, segura y amigable
             con el medio ambiente.
           </p>
-          <h3 className="text-xl font-bold mb-2">Beneficios de la factura electrónica:</h3>
-          <ul className="list-disc list-inside mb-4">
+          <h3 className="mb-2 text-xl font-bold">Beneficios de la factura electrónica:</h3>
+          <ul className="mb-4 list-disc list-inside">
             <li>Recibe tus facturas directamente en tu correo electrónico.</li>
             <li>Acceso inmediato a tus comprobantes fiscales.</li>
             <li>Reduce el uso de papel y contribuye al cuidado del medio ambiente.</li>
             <li>Almacena tus facturas de manera segura en la nube.</li>
           </ul>
-          <h3 className="text-xl font-bold mb-2">¿Cómo solicitar tu factura electrónica?</h3>
-          <ol className="list-decimal list-inside mb-4">
+          <h3 className="mb-2 text-xl font-bold">¿Cómo solicitar tu factura electrónica?</h3>
+          <ol className="mb-4 list-decimal list-inside">
             <li>Realiza tu compra en cualquiera de nuestras sucursales o en línea.</li>
             <li>
               Proporciona tus datos fiscales (RFC, dirección, correo electrónico) al
@@ -75,7 +75,7 @@ function FacturaPage() {
 
       {/* Sección de preguntas frecuentes */}
       <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Preguntas Frecuentes</h2>
+        <h2 className="mb-4 text-2xl font-bold">Preguntas Frecuentes</h2>
         <div
           className={`p-6 rounded-lg shadow-lg ${
             theme === "dark" ? "bg-gray-700 text-gray-200" : "bg-gray-100 text-gray-900"
