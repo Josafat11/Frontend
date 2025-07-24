@@ -73,15 +73,11 @@ function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/marca" className="flex items-center gap-2 transition-colors hover:text-green-300">
+                  <Link href="/marcas" className="flex items-center gap-2 transition-colors hover:text-green-300">
                     <FaBriefcase /> Busca por Marca
                   </Link>
                 </li>
-                <li>
-                  <Link href="/modelo" className="flex items-center gap-2 transition-colors hover:text-green-300">
-                    <FaBoxOpen /> Busca por Modelo
-                  </Link>
-                </li>
+
               </ul>
             </div>
 
@@ -120,9 +116,6 @@ function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/faq" className="transition-colors hover:text-green-300">
-                    Preguntas frecuentes
-                  </Link>
                 </li>
               </ul>
             </div>
