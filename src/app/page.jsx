@@ -10,7 +10,7 @@ import Swal from "sweetalert2";
 import { FiPhone, FiUser } from "react-icons/fi";
 import { FiShoppingCart, FiPlus, FiArrowRight } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
-import CountdownTimer from "../components/CountdownTimer";
+import CountdownTimer from "../components/CountDownTimer.jsx";
 
 function HomePage() {
   const router = useRouter();
