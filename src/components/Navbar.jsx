@@ -249,13 +249,13 @@ function Navbar() {
               <Link href="/" className="flex items-center">
                 {logoUrl ? (
                   <Image
-                    src={logoUrl}
-                    alt="Logo de la tienda"
+                    src="/logo.png"
+                    alt="Logo"
                     width={120}
                     height={50}
-                    className="object-contain"
                     priority
                   />
+
                 ) : (
                   <div className="w-[120px] h-[50px] bg-gray-300 animate-pulse" />
                 )}

@@ -1,7 +1,7 @@
-"use client"; // Aseguramos que este es un Client Component
+"use client"; // Mantenemos como Client Component
 
 import { useEffect, useState } from "react";
-import { CONFIGURACIONES } from "../config/config"; // Ajusta la ruta según tu proyecto
+import { CONFIGURACIONES } from "../config/config";
 import { useAuth } from "../../context/authContext";
 
 function PoliticasPage() {
@@ -18,15 +18,18 @@ function PoliticasPage() {
           `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/current`,
           {
             method: "GET",
-            credentials: "include", // Enviar cookies si tu backend las requiere
+            credentials: "include",
           }
         );
+        
         if (!response.ok) {
           const errData = await response.json();
           throw new Error(errData.message || "Error al obtener la política");
         }
+        
         const data = await response.json();
         setPolitica(data);
+        setError(""); // Limpiar error si hay éxito
       } catch (error) {
         console.error("Error al cargar la política:", error);
         setError(error.message);
@@ -38,18 +41,22 @@ function PoliticasPage() {
     fetchPolitica();
   }, []);
 
+  // SI HAY ERROR, mostrar página alternativa sin crash
+  if (error) {
+    return (
+      <main className="flex items-center justify-center min-h-screen px-4 bg-gray-100">
+        <div className="w-full max-w-3xl p-8 text-center bg-white rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-2">Políticas de Privacidad</h1>
+          <p className="opacity-70">No se pudo cargar el contenido, pero la página sigue funcionando.</p>
+        </div>
+      </main>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-gray-700">Cargando política de privacidad...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-red-500">{error}</p>
       </div>
     );
   }

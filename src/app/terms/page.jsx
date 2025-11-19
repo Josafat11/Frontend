@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CONFIGURACIONES } from "../config/config"; // Ajusta la ruta según tu estructura
+import { CONFIGURACIONES } from "../config/config";
 import { useAuth } from "../../context/authContext";
 
 function TermsAndDeslindePage() {
-  // Estados para manejar datos, carga y errores
   const { theme } = useAuth();
   const [terms, setTerms] = useState(null);
   const [deslinde, setDeslinde] = useState(null);
@@ -19,7 +18,7 @@ function TermsAndDeslindePage() {
         `${CONFIGURACIONES.BASEURL2}/docs/terms/current`,
         {
           method: "GET",
-          credentials: "include", // Enviar cookies si tu backend lo requiere
+          credentials: "include",
         }
       );
       if (!response.ok) {
@@ -29,7 +28,7 @@ function TermsAndDeslindePage() {
       const data = await response.json();
       setTerms(data);
     } catch (err) {
-      throw err; // Propagar el error para manejarlo en la función principal
+      throw err;
     }
   };
 
@@ -58,8 +57,8 @@ function TermsAndDeslindePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        // Podemos cargar ambos en paralelo
         await Promise.all([fetchCurrentTerms(), fetchCurrentDeslinde()]);
+        setError(""); // Limpiar error si tiene éxito
       } catch (err) {
         console.error("Error al cargar Términos/Deslinde:", err);
         setError(err.message);
@@ -71,18 +70,24 @@ function TermsAndDeslindePage() {
     loadData();
   }, []);
 
+  // SI HAY ERROR, mostrar página alternativa sin crash
+  if (error) {
+    return (
+      <main className="flex items-center justify-center min-h-screen px-4 bg-gray-100">
+        <div className="w-full max-w-3xl p-8 text-center bg-white rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-2">Términos y Condiciones</h1>
+          <p className="opacity-70 mb-4">No se pudo cargar el contenido, pero la página sigue funcionando.</p>
+          <h2 className="text-xl font-bold mb-2">Deslinde de Responsabilidad</h2>
+          <p className="opacity-70">No se pudo cargar el contenido, pero la página sigue funcionando.</p>
+        </div>
+      </main>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <p className="text-gray-700">Cargando datos...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-red-500">{error}</p>
       </div>
     );
   }
