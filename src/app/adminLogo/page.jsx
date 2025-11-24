@@ -9,7 +9,7 @@ import { FiUpload, FiImage, FiUser, FiCheckCircle, FiXCircle } from "react-icons
 import Swal from 'sweetalert2';
 
 function AdminLogoPage() {
-const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
+  const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
   const { fetchLogo } = useLogo();
   const [logo, setLogo] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -18,11 +18,11 @@ const { user, isAuthenticated, isAuthLoading, theme } = useAuth();
   const router = useRouter();
 
   // Verificar permisos de admin
-useEffect(() => {
-  if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
-    router.push("/login");
-  }
-}, [isAuthenticated, isAuthLoading, user, router]);
+  useEffect(() => {
+    if (!isAuthLoading && (!isAuthenticated || user?.role !== "admin")) {
+      router.push("/login");
+    }
+  }, [isAuthenticated, isAuthLoading, user, router]);
 
   // Generar vista previa cuando se selecciona un archivo
   useEffect(() => {
@@ -49,14 +49,14 @@ useEffect(() => {
         showError("Formato no soportado. Usa JPG, PNG, SVG o WebP.");
         return;
       }
-      
+
       if (file.size > 2 * 1024 * 1024) { // 2MB
         setLogo(null);
         setPreview(null);
         showError("El archivo es demasiado grande (máx. 2MB)");
         return;
       }
-      
+
       setLogo(file);
       setMessage("");
     }
@@ -119,13 +119,47 @@ useEffect(() => {
     });
   };
 
-    if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
-  return (
-    <div className="container mx-auto py-8 pt-36 text-center">
-      <p>Verificando acceso...</p>
-    </div>
-  );
-}
+  if (isAuthLoading || !isAuthenticated || user?.role !== "admin") {
+    return (
+      <div className="container mx-auto py-8 pt-36 text-center">
+        <p>Verificando acceso...</p>
+      </div>
+    );
+  }
+
+
+
+
+  // Permiso para acceder a archivos del sistema
+  const requestFileSystemPermission = async () => {
+    try {
+      const [fileHandle] = await window.showOpenFilePicker({
+        types: [
+          {
+            description: "Imágenes",
+            accept: {
+              "image/*": [".png", ".jpg", ".jpeg", ".webp", ".svg"]
+            }
+          }
+        ]
+      });
+
+      const file = await fileHandle.getFile();
+
+      Swal.fire({
+        icon: "success",
+        title: "Permiso concedido",
+        text: `Acceso permitido al archivo: ${file.name}`,
+      });
+
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Permiso denegado o cancelado",
+        text: "No se pudo acceder a los archivos",
+      });
+    }
+  };
   return (
     <div className={`min-h-screen pt-36 pb-12 transition-colors duration-300 ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'}`}>
       <div className="container mx-auto px-4">
@@ -139,6 +173,8 @@ useEffect(() => {
                 </h1>
                 <p className="mt-1">Actualiza el logo de tu aplicación</p>
               </div>
+
+
               <div className="flex items-center">
                 <FiUser className="mr-2" />
                 <span>{user.name} (Admin)</span>
@@ -150,12 +186,11 @@ useEffect(() => {
           <div className="p-6">
             <div className="max-w-2xl mx-auto">
               {/* Área de arrastrar y soltar */}
-              <div 
-                className={`border-2 border-dashed rounded-lg p-8 text-center mb-6 cursor-pointer transition-colors ${
-                  theme === 'dark' 
-                    ? 'border-gray-600 hover:border-gray-500 bg-gray-700' 
+              <div
+                className={`border-2 border-dashed rounded-lg p-8 text-center mb-6 cursor-pointer transition-colors ${theme === 'dark'
+                    ? 'border-gray-600 hover:border-gray-500 bg-gray-700'
                     : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-                }`}
+                  }`}
                 onClick={() => document.getElementById('fileInput').click()}
               >
                 <input
@@ -179,9 +214,9 @@ useEffect(() => {
                     <FiImage className="mr-2" /> Vista previa del nuevo logo
                   </h3>
                   <div className="flex flex-col items-center">
-                    <img 
-                      src={preview} 
-                      alt="Vista previa del logo" 
+                    <img
+                      src={preview}
+                      alt="Vista previa del logo"
                       className="max-h-48 max-w-full object-contain border rounded-lg"
                     />
                     <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -191,18 +226,26 @@ useEffect(() => {
                 </div>
               )}
 
+
+
+              <button
+                onClick={requestFileSystemPermission}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                Solicitar permiso para acceder a archivos
+              </button>
+
               {/* Botón de acción */}
               <div className="flex justify-center">
                 <button
                   onClick={handleUploadLogo}
                   disabled={!logo || isLoading}
-                  className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all ${
-                    !logo || isLoading
+                  className={`flex items-center px-6 py-3 rounded-lg font-medium transition-all ${!logo || isLoading
                       ? 'bg-gray-400 cursor-not-allowed'
                       : theme === 'dark'
                         ? 'bg-green-600 hover:bg-green-500 text-white'
                         : 'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
+                    }`}
                 >
                   {isLoading ? (
                     <>
@@ -222,15 +265,13 @@ useEffect(() => {
               </div>
 
               {/* Consejos */}
-              <div className={`mt-8 p-4 rounded-lg ${
-                theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50'
-              }`}>
+              <div className={`mt-8 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-700' : 'bg-blue-50'
+                }`}>
                 <h4 className="font-semibold mb-2 flex items-center">
                   <FiCheckCircle className="mr-2 text-green-500" /> Recomendaciones
                 </h4>
-                <ul className={`text-sm space-y-1 ${
-                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                }`}>
+                <ul className={`text-sm space-y-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
                   <li>• Usa imágenes con fondo transparente (PNG) para mejores resultados</li>
                   <li>• El tamaño ideal es entre 200x200px y 500x500px</li>
                   <li>• Evita logos con muchos detalles pequeños</li>

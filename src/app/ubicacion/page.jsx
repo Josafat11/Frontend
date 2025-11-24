@@ -11,6 +11,24 @@ function UbicacionPage() {
   // Coordenadas de la refaccionaria
   const ubicacion = { lat: 21.130903, lng: -98.418015 };
 
+  // 🔧 Función para solicitar permiso de ubicación REAL
+  const solicitarPermisoUbicacion = () => {
+    if (!navigator.geolocation) {
+      alert("Tu navegador no soporta geolocalización");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        alert(`Permiso concedido. Tu ubicación: ${latitude}, ${longitude}`);
+      },
+      (err) => {
+        alert("Permiso denegado o no disponible");
+      }
+    );
+  };
+
   // Cargar el mapa de Google Maps
   useEffect(() => {
     if (!window.google) {
@@ -65,6 +83,16 @@ function UbicacionPage() {
       }`}
     >
       <h1 className="mb-8 text-3xl font-bold text-center">Ubicación</h1>
+
+      {/* ✅ Botón para solicitar permiso de ubicación */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={solicitarPermisoUbicacion}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Activar permiso de ubicación
+        </button>
+      </div>
 
       {/* Sección de información */}
       <div className="grid grid-cols-1 gap-8 mb-8 md:grid-cols-2">

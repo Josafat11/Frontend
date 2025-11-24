@@ -7,6 +7,20 @@ importScripts(
 // =====================================
 workbox.precaching.precacheAndRoute([
   { url: "/offline.html", revision: "1" },
+
+  // =====================================
+  // PÁGINAS QUE QUIERES PRECACHEAR
+  // =====================================
+  { url: "/", revision: null },
+  { url: "/ventaProducto", revision: null },
+  { url: "/marcas", revision: null },
+  { url: "/ofertas", revision: null },
+  { url: "/nosotros", revision: null },
+  { url: "/contacto", revision: null },
+  { url: "/politicas", revision: null },
+  { url: "/terms", revision: null },
+  { url: "/facturacion", revision: null },
+  { url: "/ubicacion", revision: null },
 ]);
 
 // =====================================
