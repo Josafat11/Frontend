@@ -12,6 +12,7 @@ workbox.precaching.precacheAndRoute([
   // PÁGINAS QUE QUIERES PRECACHEAR
   // =====================================
   { url: "/", revision: null },
+  { url: "/mispedidos", revision: null },
   { url: "/ventaProducto", revision: null },
   { url: "/marcas", revision: null },
   { url: "/ofertas", revision: null },
