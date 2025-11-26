@@ -1,76 +1,54 @@
-"use client"; // Mantenemos como Client Component
+"use client"; 
 
-import { useEffect, useState } from "react";
-import { CONFIGURACIONES } from "../config/config";
 import { useAuth } from "../../context/authContext";
 
-function PoliticasPage() {
+export default function PoliticasPage() {
   const { theme } = useAuth();
-  const [politica, setPolitica] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    // Llamada a la API para obtener la política de privacidad actual
-    const fetchPolitica = async () => {
-      try {
-        const response = await fetch(
-          `${CONFIGURACIONES.BASEURL2}/docs/privacy-policy/current`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-        
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.message || "Error al obtener la política");
-        }
-        
-        const data = await response.json();
-        setPolitica(data);
-        setError(""); // Limpiar error si hay éxito
-      } catch (error) {
-        console.error("Error al cargar la política:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Datos fijos OFFLINE
+  const politica = {
+    title: "Política de Privacidad Web Muñoz Autopartes 2025",
+    effectiveDate: "2025-12-30",
+    createdAt: "2025-07-07",
+    content: `
+En Muñoz Autopartes, respetamos y protegemos la privacidad de nuestros clientes y usuarios. Esta política de privacidad describe cómo recopilamos, utilizamos, almacenamos y protegemos la información personal que compartes con nosotros a través de nuestro sitio web.
 
-    fetchPolitica();
-  }, []);
+1. Información que Recopilamos
+Recopilamos información personal que nos proporcionas al crear una cuenta, realizar una compra o registrarte para recibir comunicaciones. La información que podemos solicitar incluye:
+- Nombre y apellidos
+- Dirección de correo electrónico
+- Número de teléfono
+- Dirección de envío y facturación
+- Información de pago (procesada de manera segura por terceros)
 
-  // SI HAY ERROR, mostrar página alternativa sin crash
-  if (error) {
-    return (
-      <main className="flex items-center justify-center min-h-screen px-4 bg-gray-100">
-        <div className="w-full max-w-3xl p-8 text-center bg-white rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold mb-2">Políticas de Privacidad</h1>
-          <p className="opacity-70">No se pudo cargar el contenido, pero la página sigue funcionando.</p>
-        </div>
-      </main>
-    );
-  }
+2. Uso de la Información
+Utilizamos tu información personal para:
+- Procesar y gestionar tus pedidos
+- Enviar confirmaciones, actualizaciones y notificaciones sobre tus compras
+- Personalizar la experiencia en nuestro sitio web, proporcionando recomendaciones de productos y ofertas especiales
+- Cumplir con nuestras obligaciones legales y regulatorias
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-gray-700">Cargando política de privacidad...</p>
-      </div>
-    );
-  }
+3. Protección y Seguridad de Datos
+Implementamos medidas de seguridad apropiadas para proteger tu información personal contra accesos no autorizados, alteraciones, divulgaciones o destrucción. Utilizamos cifrado y otros mecanismos de seguridad en nuestros sistemas de almacenamiento de datos, especialmente en las transacciones en línea.
 
-  // Si no hay error ni loading, pero tampoco política
-  if (!politica) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-gray-700">
-          No se encontró una política de privacidad actual.
-        </p>
-      </div>
-    );
-  }
+4. Divulgación de Información a Terceros
+No compartimos, vendemos ni alquilamos tu información personal a terceros sin tu consentimiento, salvo en los siguientes casos:
+- Para completar transacciones y envíos, compartimos la información necesaria con nuestros socios logísticos y proveedores de servicios de pago.
+- Cuando sea requerido por ley o en respuesta a solicitudes legales por parte de autoridades gubernamentales.
+
+5. Cookies y Tecnologías de Seguimiento
+Utilizamos cookies y tecnologías de seguimiento para mejorar la funcionalidad del sitio, analizar el comportamiento del usuario y ofrecer una experiencia personalizada. Puedes ajustar la configuración de tu navegador para rechazar cookies, aunque esto podría afectar el funcionamiento del sitio.
+
+6. Tus Derechos y Opciones
+Tienes derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. También puedes optar por no recibir comunicaciones de marketing o retirar tu consentimiento para el procesamiento de tus datos personales contactándonos a través del correo oficial.
+
+7. Actualizaciones a la Política de Privacidad
+Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Te notificaremos de los cambios a través de nuestro sitio web, y la fecha de la última actualización se reflejará en la parte inferior de esta política.
+
+8. Contacto
+Si tienes preguntas o inquietudes sobre esta política de privacidad o sobre el manejo de tus datos personales, no dudes en contactarnos a través de [correo electrónico de contacto] o en nuestra dirección física.
+`
+  };
 
   return (
     <div
@@ -87,18 +65,17 @@ function PoliticasPage() {
             : "bg-gray-50 text-gray-900"
         }`}
       >
-        {/* Título de la política */}
+        {/* Título */}
         <h1 className="mb-6 text-3xl font-bold text-center">
           {politica.title}
         </h1>
 
-        {/* Fecha de entrada en vigor */}
+        {/* Vigencia */}
         <p className="mb-4 text-sm text-center">
           <span className="font-semibold">Vigencia:</span>{" "}
           {new Date(politica.effectiveDate).toLocaleDateString()}
         </p>
 
-        {/* Separador decorativo */}
         <hr className="mb-6 border-gray-300" />
 
         {/* Contenido */}
@@ -106,7 +83,7 @@ function PoliticasPage() {
           {politica.content}
         </div>
 
-        {/* Fecha de creación */}
+        {/* Creado el */}
         <p className="mt-8 text-xs text-center">
           <span className="font-semibold">Creado el:</span>{" "}
           {new Date(politica.createdAt).toLocaleDateString()}
@@ -115,5 +92,3 @@ function PoliticasPage() {
     </div>
   );
 }
-
-export default PoliticasPage;

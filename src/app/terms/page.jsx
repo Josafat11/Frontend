@@ -1,109 +1,80 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CONFIGURACIONES } from "../config/config";
 import { useAuth } from "../../context/authContext";
 
-function TermsAndDeslindePage() {
+export default function TermsAndDeslindePage() {
   const { theme } = useAuth();
-  const [terms, setTerms] = useState(null);
-  const [deslinde, setDeslinde] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  // Llamada a la API para Términos
-  const fetchCurrentTerms = async () => {
-    try {
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/terms/current`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Error al obtener los términos");
-      }
-      const data = await response.json();
-      setTerms(data);
-    } catch (err) {
-      throw err;
-    }
+  // Datos fijos OFFLINE
+  const terms = {
+    title: "Términos y Condiciones 2025",
+    effectiveDate: "2025-12-30",
+    createdAt: "2025-07-07",
+    content: `
+Bienvenido a nuestro sitio web. Al acceder y usar este sitio, aceptas los siguientes términos y condiciones. Te recomendamos leerlos cuidadosamente, ya que regulan el uso de nuestros servicios, productos, y la interacción con nuestro sitio.
+
+1. Aceptación de los Términos
+Al navegar en nuestro sitio y realizar compras, aceptas cumplir con estos términos y condiciones, así como con las políticas adicionales mencionadas en el sitio. Si no estás de acuerdo, te solicitamos no utilizar el sitio.
+
+2. Registro y Cuenta del Usuario
+Para realizar compras, es necesario crear una cuenta en el sitio. Al registrarte, garantizas que la información proporcionada es precisa, actual y completa. Eres responsable de mantener la confidencialidad de tu cuenta y contraseña, así como de todas las actividades que ocurran bajo tu cuenta.
+
+3. Uso Permitido del Sitio
+Este sitio está destinado únicamente para fines personales y comerciales lícitos. Te comprometes a no usar el sitio para:
+- Realizar actividades ilegales o no autorizadas
+- Vulnerar derechos de propiedad intelectual
+- Distribuir virus informáticos o software dañino.
+
+4. Productos y Precios
+Hacemos nuestro mejor esfuerzo para que la información de los productos sea precisa y actual. Sin embargo, no garantizamos la disponibilidad ni exactitud total de la información en cuanto a precios, descripciones o imágenes. Los precios están sujetos a cambio sin previo aviso y se aplicarán los vigentes al momento de la compra.
+
+5. Política de Compra y Envío
+- Compras: Al realizar una compra, aceptas las condiciones de venta y confirmas que la información proporcionada es correcta.
+- Envíos: Procesamos y enviamos pedidos en los tiempos especificados, aunque pueden presentarse retrasos por causas ajenas a nuestra voluntad. Los costos de envío se calcularán al momento de la compra y dependerán de la ubicación del cliente.
+- Devoluciones: Revisa nuestra política de devoluciones para conocer los casos en los que aplican devoluciones o cambios de productos.
+
+6. Limitación de Responsabilidad
+En ningún caso Muñoz Autopartes será responsable de daños directos, indirectos, incidentales o consecuentes derivados del uso del sitio, de sus productos o de la imposibilidad de acceder a ellos, salvo en los casos especificados por la ley aplicable.
+
+7. Propiedad Intelectual
+Todo el contenido de este sitio, incluidos textos, gráficos, logotipos, imágenes y software, es propiedad de [Nombre de la Empresa] o de sus proveedores, y está protegido por leyes de propiedad intelectual. Queda prohibido el uso no autorizado del contenido sin el consentimiento previo por escrito.
+
+8. Privacidad
+La protección de tu privacidad es importante para nosotros. Consulta nuestra Política de Privacidad para entender cómo recopilamos, usamos y protegemos tu información personal.
+
+9. Modificaciones de los Términos y Condiciones
+Nos reservamos el derecho de actualizar o modificar estos términos en cualquier momento. Notificaremos sobre cambios relevantes en esta página y recomendamos revisarla periódicamente. Tu uso continuo del sitio después de cualquier cambio constituye la aceptación de los nuevos términos.
+
+10. Legislación Aplicable
+Estos términos y condiciones están regidos por las leyes de [País/Estado], y cualquier disputa que surja en relación con ellos será resuelta en los tribunales correspondientes.
+
+11. Contacto
+Para cualquier duda o aclaración sobre estos términos y condiciones, puedes contactarnos en el correo electrónico oficial.
+`
   };
 
-  // Llamada a la API para Deslinde
-  const fetchCurrentDeslinde = async () => {
-    try {
-      const response = await fetch(
-        `${CONFIGURACIONES.BASEURL2}/docs/deslinde/current`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Error al obtener el deslinde");
-      }
-      const data = await response.json();
-      setDeslinde(data);
-    } catch (err) {
-      throw err;
-    }
+  const deslinde = {
+    title: "Deslinde Legal Web – Muñoz Autopartes 2025",
+    effectiveDate: "2025-12-30",
+    createdAt: "2025-07-07",
+    content: `
+Limitación de Responsabilidad
+En ningún caso Muñoz Autopartes será responsable de daños directos, indirectos, incidentales o consecuentes derivados del uso del sitio, de sus productos o de la imposibilidad de acceder a ellos, salvo en los casos especificados por la ley aplicable.
+
+Propiedad Intelectual
+Todo el contenido de este sitio, incluidos textos, gráficos, logotipos, imágenes y software, es propiedad de [Nombre de la Empresa] o de sus proveedores, y está protegido por leyes de propiedad intelectual. Queda prohibido el uso no autorizado del contenido sin el consentimiento previo por escrito.
+
+Privacidad
+La protección de tu privacidad es importante para nosotros. Consulta nuestra Política de Privacidad para entender cómo recopilamos, usamos y protegemos tu información personal.
+
+Modificaciones de los Términos y Condiciones
+Nos reservamos el derecho de actualizar o modificar estos términos en cualquier momento. Notificaremos sobre cambios relevantes en esta página y recomendamos revisarla periódicamente. Tu uso continuo del sitio después de cualquier cambio constituye la aceptación de los nuevos términos.
+
+Legislación Aplicable
+Estos términos y condiciones están regidos por las leyes de [País/Estado], y cualquier disputa que surja en relación con ellos será resuelta en los tribunales correspondientes.
+`
   };
 
-  // useEffect principal para cargar ambos
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        await Promise.all([fetchCurrentTerms(), fetchCurrentDeslinde()]);
-        setError(""); // Limpiar error si tiene éxito
-      } catch (err) {
-        console.error("Error al cargar Términos/Deslinde:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-  }, []);
-
-  // SI HAY ERROR, mostrar página alternativa sin crash
-  if (error) {
-    return (
-      <main className="flex items-center justify-center min-h-screen px-4 bg-gray-100">
-        <div className="w-full max-w-3xl p-8 text-center bg-white rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold mb-2">Términos y Condiciones</h1>
-          <p className="opacity-70 mb-4">No se pudo cargar el contenido, pero la página sigue funcionando.</p>
-          <h2 className="text-xl font-bold mb-2">Deslinde de Responsabilidad</h2>
-          <p className="opacity-70">No se pudo cargar el contenido, pero la página sigue funcionando.</p>
-        </div>
-      </main>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-gray-700">Cargando datos...</p>
-      </div>
-    );
-  }
-
-  // Si no hay error ni loading, pero tampoco datos
-  if (!terms && !deslinde) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-gray-700">
-          No se encontraron Términos/Deslinde actuales.
-        </p>
-      </div>
-    );
-  }
-
-  // Render principal
   return (
     <div
       className={`flex items-center justify-center min-h-screen px-4 transition-colors ${
@@ -119,75 +90,51 @@ function TermsAndDeslindePage() {
             : "bg-gray-50 text-gray-900"
         }`}
       >
-        {/* Contenedor de Términos */}
-        <div className={`w-full p-8 rounded-lg shadow-lg mb-16 ${
-          theme === "dark"
-            ? "bg-gray-700 text-gray-100"
-            : "bg-gray-50 text-gray-900"
-        }`}>
-          <h1 className="mb-6 text-3xl font-bold text-center">
-            {terms ? terms.title : "Términos y Condiciones"}
-          </h1>
-          
-          {terms ? (
-            <>
-              {/* Fecha de entrada en vigor */}
-              <p className="mb-4 text-sm text-center">
-                <span className="font-semibold">Vigencia:</span>{" "}
-                {new Date(terms.effectiveDate).toLocaleDateString()}
-              </p>
 
-              <hr className="mb-6 border-gray-300" />
-              
-              <div className="leading-relaxed text-justify whitespace-pre-line">
-                {terms.content}
-              </div>
-              
-              <p className="mt-8 text-xs text-center">
-                <span className="font-semibold">Creado el:</span>{" "}
-                {new Date(terms.createdAt).toLocaleDateString()}
-              </p>
-            </>
-          ) : (
-            <p className="text-center text-gray-700">
-              No se encontraron términos actuales
-            </p>
-          )}
+        {/* Términos */}
+        <div className="w-full p-8 rounded-lg shadow-lg mb-16">
+          <h1 className="mb-6 text-3xl font-bold text-center">{terms.title}</h1>
+
+          <p className="mb-4 text-sm text-center">
+            <span className="font-semibold">Vigencia:</span>{" "}
+            {new Date(terms.effectiveDate).toLocaleDateString()}
+          </p>
+
+          <hr className="mb-6 border-gray-300" />
+
+          <div className="leading-relaxed whitespace-pre-line text-justify">
+            {terms.content}
+          </div>
+
+          <p className="mt-8 text-xs text-center">
+            <span className="font-semibold">Creado el:</span>{" "}
+            {new Date(terms.createdAt).toLocaleDateString()}
+          </p>
         </div>
 
-        {/* Contenedor de Deslinde */}
-        <div className={`w-full p-8 rounded-lg shadow-lg ${
-          theme === "dark"
-            ? "bg-gray-700 text-gray-100"
-            : "bg-gray-50 text-gray-900"
-        }`}>
+        {/* Deslinde */}
+        <div className="w-full p-8 rounded-lg shadow-lg">
           <h1 className="mb-6 text-3xl font-bold text-center">
-            {deslinde ? deslinde.title : "Deslinde de Responsabilidad"}
+            {deslinde.title}
           </h1>
-          {deslinde ? (
-            <>
-              <p className="mb-4 text-sm text-center">
-                <span className="font-semibold">Vigencia:</span>{" "}
-                {new Date(deslinde.effectiveDate).toLocaleDateString()}
-              </p>
-              <hr className="mb-6 border-gray-300" />
-              <div className="leading-relaxed text-justify whitespace-pre-line">
-                {deslinde.content}
-              </div>
-              <p className="mt-8 text-xs text-center">
-                <span className="font-semibold">Creado el:</span>{" "}
-                {new Date(deslinde.createdAt).toLocaleDateString()}
-              </p>
-            </>
-          ) : (
-            <p className="text-center text-gray-700">
-              No se encontró un deslinde actual
-            </p>
-          )}
+
+          <p className="mb-4 text-sm text-center">
+            <span className="font-semibold">Vigencia:</span>{" "}
+            {new Date(deslinde.effectiveDate).toLocaleDateString()}
+          </p>
+
+          <hr className="mb-6 border-gray-300" />
+
+          <div className="leading-relaxed whitespace-pre-line text-justify">
+            {deslinde.content}
+          </div>
+
+          <p className="mt-8 text-xs text-center">
+            <span className="font-semibold">Creado el:</span>{" "}
+            {new Date(deslinde.createdAt).toLocaleDateString()}
+          </p>
         </div>
       </div>
     </div>
   );
 }
-
-export default TermsAndDeslindePage;
