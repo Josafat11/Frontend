@@ -34,6 +34,7 @@ function Footer() {
             <Image 
               src={logo} 
               alt="Muñoz Logo" 
+                unoptimized 
               width={250} 
               height={250}
               className="mb-4"

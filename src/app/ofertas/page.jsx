@@ -291,8 +291,8 @@ function OfertasPage() {
                         src={producto.images[0].url}
                         alt={producto.name}
                         fill
+                        unoptimized 
                         className="object-cover"
-                        unoptimized={true}
                       />
                     ) : (
                       <div

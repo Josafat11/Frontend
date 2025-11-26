@@ -138,6 +138,7 @@ function UbicacionPage() {
             src="/assets/negocio.png" // Ruta de la imagen
             alt="Refaccionaria Muñoz" // Texto alternativo para accesibilidad
             layout="fill" // Hace que la imagen llene el contenedor
+              unoptimized 
             objectFit="cover" // Ajusta la imagen para cubrir el contenedor manteniendo la relación de aspecto
           />
         </div>
@@ -148,6 +149,7 @@ function UbicacionPage() {
             src="/assets/contactos.jpeg" // Ruta de la imagen
             alt="Refaccionaria Muñoz" // Texto alternativo para accesibilidad
             layout="fill" // Hace que la imagen llene el contenedor
+              unoptimized 
             objectFit="cover" // Ajusta la imagen para cubrir el contenedor manteniendo la relación de aspecto
           />
         </div>
@@ -158,6 +160,7 @@ function UbicacionPage() {
             src="/assets/negocio2.jpg" // Ruta de la imagen
             alt="Refaccionaria Muñoz" // Texto alternativo para accesibilidad
             layout="fill" // Hace que la imagen llene el contenedor
+              unoptimized 
             objectFit="cover" // Ajusta la imagen para cubrir el contenedor manteniendo la relación de aspecto
           />
         </div>

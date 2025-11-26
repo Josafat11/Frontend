@@ -304,8 +304,6 @@ function HomePage() {
           {/* Efecto de partículas sutiles */}
           <div className="absolute inset-0 opacity-20 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1IiBjeT0iNSIgcj0iMSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjIwIiBjeT0iMTAiIHI9IjEuNSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM1IiBjeT0iNSIgcj0iMSIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjEwIiBjeT0iMzAiIHI9IjEiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjIwIiByPSIxIiBmaWxsPSIjZmZmIi8+PC9zdmc+')]"></div>
 
-          {/* Imagen de fondo de auto/refacción (opcional) */}
-          <div className="absolute right-0 bottom-0 w-full md:w-1/2 h-full opacity-20 md:opacity-100 bg-[url('/images/car-parts-banner.png')] bg-contain bg-no-repeat bg-right"></div>
 
           {/* Contenido del banner */}
           <div className="absolute inset-0 flex flex-col items-start justify-center p-8 text-left md:p-12 lg:p-16">
@@ -456,8 +454,8 @@ function HomePage() {
                           src={producto.images[0].url}
                           alt={producto.name}
                           fill
+                            unoptimized 
                           className="object-cover"
-                          unoptimized={true}
                         />
                       ) : (
                         <div
@@ -688,7 +686,6 @@ function HomePage() {
             }`}
         >
           <div className="relative flex items-center h-full">
-            <div className="absolute right-0 bottom-0 w-full md:w-1/2 h-full bg-[url('/images/car-parts-bg.png')] bg-contain bg-no-repeat bg-right opacity-30 md:opacity-100"></div>
             <div className="relative z-10 max-w-2xl p-8 md:p-12">
               <h2
                 className={`text-3xl md:text-4xl font-bold mb-4 ${theme === "dark" ? "text-white" : "text-white"

@@ -47,6 +47,7 @@ const LoginPage = () => {
           src="/assets/login.jpg"
           alt="Imagen de fondo"
           layout="fill"
+            unoptimized 
           objectFit="cover"
           className="absolute inset-0"
           priority

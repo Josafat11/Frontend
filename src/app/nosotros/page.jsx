@@ -30,6 +30,7 @@ function QuienesSomosPage() {
           <div className="relative overflow-hidden rounded-lg shadow-lg h-96">
             <Image
               src="/assets/negocio.png" // Ruta de la imagen
+                unoptimized 
               alt="Historia de Refaccionaria Muñoz"
               layout="fill"
               objectFit="cover"
@@ -130,6 +131,7 @@ function QuienesSomosPage() {
           <div className="relative h-64 overflow-hidden rounded-lg shadow-lg">
             <Image
               src="/assets/negocio2.jpg" // Ruta de la imagen
+                unoptimized 
               alt="Equipo de Refaccionaria Muñoz"
               layout="fill"
               objectFit="cover"
@@ -142,6 +144,7 @@ function QuienesSomosPage() {
               src="/assets/123.jpg" // Ruta de la imagen
               alt="Instalaciones de Refaccionaria Muñoz"
               layout="fill"
+                unoptimized 
               objectFit="cover"
             />
           </div>
@@ -152,6 +155,7 @@ function QuienesSomosPage() {
               src="/assets/quienes.png" // Ruta de la imagen
               alt="Atención al cliente en Refaccionaria Muñoz"
               layout="fill"
+                unoptimized 
               objectFit="cover"
             />
           </div>

@@ -11,9 +11,8 @@ import { CartProvider } from "../context/CartContext";
 import { FavoritesProvider } from "../context/FavoritesContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// ✅ Importar el Guard
 import Guard from "../components/Guard";
+import { useEffect } from "react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,6 +26,41 @@ const geistMono = localFont({
 });
 
 export default function RootLayout({ children }) {
+
+  // ---------------------------------------
+  // 🔔 Notificación cuando se queda SIN INTERNET
+  // ---------------------------------------
+  useEffect(() => {
+    const handleOffline = () => {
+      if (Notification.permission === "granted") {
+        new Notification("Sin conexión", {
+          body: "Ahora estás sin internet. Algunas funciones pueden no estar disponibles.",
+          icon: "..//../public/icon-192x192.png",
+        });
+      } else {
+        alert("Ahora estás sin conexión a internet");
+      }
+    };
+
+    const handleOnline = () => {
+      if (Notification.permission === "granted") {
+        new Notification("Conexión restaurada", {
+          body: "Tu conexión a internet ha vuelto.",
+          icon: "..//../public/icon-192x192.png",
+        });
+      }
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+  // ---------------------------------------
+
   return (
     <html lang="es">
       <head>
@@ -39,8 +73,6 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-
-        {/* 🚨 Envolvemos TODO en Guard */}
         <Guard>
           <AuthProvider>
             <LogoProvider>
@@ -58,7 +90,7 @@ export default function RootLayout({ children }) {
           </AuthProvider>
         </Guard>
 
-        {/* SW manual */}
+        {/* Registro del Service Worker */}
         <script
           dangerouslySetInnerHTML={{
             __html: `

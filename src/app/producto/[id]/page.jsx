@@ -144,6 +144,7 @@ export default function ProductoPage({ params }) {
               <Image
                 src={producto.images[0].url}
                 alt={producto.name}
+                  unoptimized 
                 width={550}
                 height={800}
                 className="object-cover transition-transform duration-300 hover:scale-105"

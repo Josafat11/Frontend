@@ -551,6 +551,7 @@ function CarritoPage() {
                               src={item.product.images[0].url}
                               alt={item.product.name}
                               fill
+                                unoptimized 
                               className="object-cover rounded-lg"
                             />
                           ) : (
@@ -870,6 +871,7 @@ function CarritoPage() {
                       <Image
                         src="/assets/mercado-pago.png"
                         alt="Pago con Mercado Pago"
+                          unoptimized 
                         width={120}
                         height={80}
                         className="object-contain"
@@ -877,6 +879,7 @@ function CarritoPage() {
                       <Image
                         src="/assets/paypal-logo.png"
                         alt="Pago con Paypal"
+                          unoptimized 
                         width={120}
                         height={80}
                         className="object-contain"

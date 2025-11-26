@@ -14,6 +14,7 @@ const NotFoundPage = () => {
       <Image
         src={theme === 'dark' ? '/assets/cocheB.jpg' : '/assets/cocheN.jpg'} // Cambiar la imagen según el tema
         alt="Coche"
+        unoptimized 
         width={256} // Ancho de la imagen
         height={256} // Alto de la imagen
         className="w-64 h-64 mb-8"

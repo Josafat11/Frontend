@@ -228,6 +228,7 @@ function MisPedidosPage() {
                                 src={item.producto.images[0].url}
                                 alt={item.producto.name}
                                 fill
+                                  unoptimized 
                                 className="rounded-lg object-cover"
                                 sizes="64px"
                               />

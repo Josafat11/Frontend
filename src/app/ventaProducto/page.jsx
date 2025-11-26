@@ -710,8 +710,8 @@ const { refreshCart, setRecomendaciones } = useCart();
                               src={producto.images[0].url}
                               alt={producto.name}
                               fill
+                              unoptimized 
                               className="object-cover"
-                              unoptimized={true}
                             />
                           ) : (
                             <div className={`w-full h-full flex items-center justify-center ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"}`}>

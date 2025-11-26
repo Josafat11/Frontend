@@ -19,9 +19,11 @@ function FacturaPage() {
         {/* Imagen ilustrativa */}
         <div className="relative overflow-hidden rounded-lg shadow-lg h-96">
           <Image
+          
             src="/assets/facturacion.jpg" // Ruta de la imagen
             alt="Factura Electrónica"
             layout="fill"
+              unoptimized 
             objectFit="cover"
           />
         </div>

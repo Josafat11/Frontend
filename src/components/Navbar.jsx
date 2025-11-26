@@ -251,6 +251,7 @@ function Navbar() {
                   <Image
                     src="/logo.png"
                     alt="Logo"
+                      unoptimized 
                     width={120}
                     height={50}
                     priority

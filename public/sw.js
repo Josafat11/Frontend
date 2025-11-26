@@ -3,26 +3,88 @@ importScripts(
 );
 
 // =====================================
-// PRECACHE
+// ACTIVACIÓN INMEDIATA
+// =====================================
+self.skipWaiting();
+self.clients.claim();
+
+// =====================================
+// PRECACHE COMPLETO - TODO SE GUARDA AL INSTALAR
 // =====================================
 workbox.precaching.precacheAndRoute([
   { url: "/offline.html", revision: "1" },
 
-  // =====================================
-  // PÁGINAS QUE QUIERES PRECACHEAR
-  // =====================================
-  { url: "/", revision: null },
-  { url: "/mispedidos", revision: null },
-  { url: "/ventaProducto", revision: null },
-  { url: "/marcas", revision: null },
-  { url: "/ofertas", revision: null },
-  { url: "/nosotros", revision: null },
-  { url: "/contacto", revision: null },
-  { url: "/politicas", revision: null },
-  { url: "/terms", revision: null },
-  { url: "/facturacion", revision: null },
-  { url: "/ubicacion", revision: null },
+  // Páginas principales
+  { url: "/", revision: "1" },
+  { url: "/mispedidos", revision: "1" },
+  { url: "/ventaProducto", revision: "1" },
+  { url: "/marcas", revision: "1" },
+  { url: "/ofertas", revision: "1" },
+  { url: "/nosotros", revision: "1" },
+  { url: "/contacto", revision: "1" },
+  { url: "/politicas", revision: "1" },
+  { url: "/terms", revision: "1" },
+  { url: "/facturacion", revision: "1" },
+  { url: "/ubicacion", revision: "1" },
+
+  // TODAS LAS IMÁGENES LOCALES
+  { url: "/assets/123.jpg", revision: "1" },
+  { url: "/assets/a.jpg", revision: "1" },
+  { url: "/assets/audi-logo.png", revision: "1" },
+  { url: "/assets/b.jpg", revision: "1" },
+  { url: "/assets/bmw-logo.png", revision: "1" },
+  { url: "/assets/chevrolet-logo.png", revision: "1" },
+  { url: "/assets/cocheB.jpg", revision: "1" },
+  { url: "/assets/cocheN.jpg", revision: "1" },
+  { url: "/assets/contactos.jpeg", revision: "1" },
+  { url: "/assets/facturacion.jpg", revision: "1" },
+  { url: "/assets/ford-logo.png", revision: "1" },
+  { url: "/assets/honda-logo.png", revision: "1" },
+  { url: "/assets/hyundai-logo.png", revision: "1" },
+  { url: "/assets/kia-logo.png", revision: "1" },
+  { url: "/assets/login.jpg", revision: "1" },
+  { url: "/assets/mazda-logo.png", revision: "1" },
+  { url: "/assets/mercado-pago.png", revision: "1" },
+  { url: "/assets/mercedes-logo.png", revision: "1" },
+  { url: "/assets/motor.jpg", revision: "1" },
+  { url: "/assets/munoz-logo-alt.png", revision: "1" },
+  { url: "/assets/munoz-logo.png", revision: "1" },
+  { url: "/assets/negocio.png", revision: "1" },
+  { url: "/assets/negocio2.jpg", revision: "1" },
+  { url: "/assets/nissan-logo.png", revision: "1" },
+  { url: "/assets/paypal-logo.png", revision: "1" },
+  { url: "/assets/qr.jpg", revision: "1" },
+  { url: "/assets/quienes.png", revision: "1" },
+  { url: "/assets/toyota-logo.png", revision: "1" },
+  { url: "/assets/volkswagen-logo.png", revision: "1" },
 ]);
+
+// =====================================
+// CACHE DE RESPALDO PARA /assets/
+// =====================================
+workbox.routing.registerRoute(
+  ({ url }) => url.pathname.startsWith("/assets/"),
+  new workbox.strategies.CacheFirst({
+    cacheName: "local-images",
+    plugins: [
+      new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [0, 200] }),
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 200,
+        maxAgeSeconds: 60 * 24 * 60 * 60, // 60 días
+      }),
+    ],
+  })
+);
+
+// =====================================
+// NEXT STATIC
+// =====================================
+workbox.routing.registerRoute(
+  ({ url }) => url.pathname.startsWith("/_next/static/"),
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: "next-static",
+  })
+);
 
 // =====================================
 // STATIC FILES (Scripts, CSS)
@@ -47,19 +109,9 @@ workbox.routing.registerRoute(
     plugins: [
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 80,
-        maxAgeSeconds: 30 * 24 * 60 * 60,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 días
       }),
     ],
-  })
-);
-
-// =====================================
-// NEXT STATIC (_next/static/)
-// =====================================
-workbox.routing.registerRoute(
-  ({ url }) => url.pathname.startsWith("/_next/static/"),
-  new workbox.strategies.StaleWhileRevalidate({
-    cacheName: "next-static",
   })
 );
 
@@ -84,42 +136,48 @@ workbox.routing.registerRoute(
 // =====================================
 workbox.routing.registerRoute(
   ({ url }) =>
-    url.href.startsWith("http://localhost:4000/api/productos"),
+    url.origin === "https://backmunoz.onrender.com" &&
+    url.pathname.startsWith("/productos"),
   new workbox.strategies.NetworkFirst({
     cacheName: "api-productos",
     networkTimeoutSeconds: 4,
     plugins: [
-      new workbox.cacheableResponse.CacheableResponsePlugin({
-        statuses: [0, 200],
+      new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [0, 200] }),
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 24 * 60 * 60, // 1 día
       }),
     ],
   })
 );
 
 // =====================================
-// GLOBAL CATCH HANDLER (a prueba de fallos)
+// API OFERTAS
 // =====================================
-workbox.routing.setCatchHandler(async ({ event, request }) => {
-  // Fallback solo para navegación
-  if (request && request.destination === "document") {
-    try {
-      const cache = await caches.open(workbox.core.cacheNames.precache);
-      const cachedOffline = await cache.match("/offline.html");
+workbox.routing.registerRoute(
+  ({ url }) =>
+    url.origin === "https://backmunoz.onrender.com" &&
+    url.pathname.startsWith("/productos/ofertas"),
+  new workbox.strategies.NetworkFirst({
+    cacheName: "api-ofertas",
+    networkTimeoutSeconds: 4,
+    plugins: [
+      new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [0, 200] }),
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 20,
+        maxAgeSeconds: 24 * 60 * 60, // 1 día
+      }),
+    ],
+  })
+);
 
-      if (cachedOffline) {
-        return cachedOffline;
-      }
-    } catch (e) {
-      // ignorar errores
-    }
-
-    // Fallback final (si offline.html NO existe)
-    return new Response(
-      `<h1>Sin conexión</h1><p>No se pudo cargar esta página.</p>`,
-      { headers: { "Content-Type": "text/html" } }
-    );
+// =====================================
+// FALLBACK GLOBAL
+// =====================================
+workbox.routing.setCatchHandler(async ({ request }) => {
+  if (request.destination === "document") {
+    const cache = await caches.open(workbox.core.cacheNames.precache);
+    return (await cache.match("/offline.html")) || Response.error();
   }
-
-  // Para images, scripts, APIs → respuesta de error genérica
   return Response.error();
 });

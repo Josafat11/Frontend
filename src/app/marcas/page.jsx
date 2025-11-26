@@ -208,6 +208,7 @@ const CarBrandsPage = () => {
                             src={brand.image}
                             alt={`Logo de ${brand.name}`}
                             fill
+                            unoptimized 
                             className={`
                             object-contain transition-transform duration-700
                             ${isCenterCard ? "scale-110" : "group-hover:scale-110"}
