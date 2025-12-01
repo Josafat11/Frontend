@@ -6,14 +6,14 @@ import Breadcrumbs from "../../components/Breadcrumbs";
 import Image from "next/image";
 
 const CarBrandsPage = () => {
-  const { theme } = useAuth(); 
+  const { theme } = useAuth();
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const intervalRef = useRef(null)
   const itemsPerPage = 3
 
   const carBrands = [
-    { id: 1, name: "Toyota", image: "/assets/toyota-logo.png"},
+    { id: 1, name: "Toyota", image: "/assets/toyota-logo.png" },
     { id: 2, name: "Honda", image: "/assets/honda-logo.png" },
     { id: 3, name: "Ford", image: "/assets/ford-logo.png" },
     { id: 4, name: "Chevrolet", image: "/assets/chevrolet-logo.png" },
@@ -46,13 +46,13 @@ const CarBrandsPage = () => {
 
   // Iconos SVG
   const ChevronLeft = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
       <polyline points="15,18 9,12 15,6"></polyline>
     </svg>
   )
 
   const ChevronRight = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <svg width="16" height="16" viewBox="0 0 24 24"  stroke="currentColor" strokeWidth="2">
       <polyline points="9,18 15,12 9,6"></polyline>
     </svg>
   )
@@ -111,16 +111,16 @@ const CarBrandsPage = () => {
   const visibleBrands = getVisibleBrands()
   const centerIndex = Math.floor(itemsPerPage / 2)
 
-    const breadcrumbsPages = [
+  const breadcrumbsPages = [
     { name: "Home", path: "/" },
     { name: "Marcas", path: "/marcas" },
   ];
 
   return (
     <div className={`min-h-screen py-12 font-sans transition-colors ${theme === "dark"
-          ? "bg-gray-900 text-gray-100"
-          : "bg-gray-100 text-gray-900"
-    }`}>
+      ? "bg-gray-900 text-gray-100"
+      : "bg-gray-100 text-gray-900"
+      }`}>
       <style>
         {`
           @keyframes pulse-center {
@@ -152,19 +152,17 @@ const CarBrandsPage = () => {
         {/* Header */}
         <div className="mb-12 text-center">
           <div className="relative inline-block">
-            <h1 className={`relative mb-4 text-4xl font-bold md:text-5xl ${
-                theme === "dark"
+            <h1 className={`relative mb-4 text-4xl font-bold md:text-5xl ${theme === "dark"
                 ? "text-gray-100"
                 : "text-slate-800"
-            }`}>
+              }`}>
               Nuestras Marcas
               <div className="absolute w-24 h-1 transform -translate-x-1/2 rounded-full -bottom-2 left-1/2 bg-gradient-to-r from-yellow-400 to-amber-500"></div>
             </h1>
           </div>
-          <p className={`max-w-2xl mx-auto text-lg leading-relaxed ${
-                theme === "dark"
-                ? "text-gray-100"
-                : "text-slate-600"
+          <p className={`max-w-2xl mx-auto text-lg leading-relaxed ${theme === "dark"
+              ? "text-gray-100"
+              : "text-slate-600"
             }`}>
             Descubre la amplia gama de marcas en refacciones para automóviles que manejamos. Calidad, confianza y excelencia en cada vehículo.
           </p>
@@ -173,10 +171,9 @@ const CarBrandsPage = () => {
         {/* Carousel Container */}
         <div className="relative max-w-6xl mx-auto">
           {/* Carousel Content */}
-          <div className={`overflow-hidden border shadow-xl rounded-2xl backdrop-blur-sm pt-16 pb-16 border-yellow-100/50 ${
-                theme === "dark"
-                ? "bg-gray-800 text-gray-100"
-                : "bg-gray-400/50 text-gray-900"
+          <div className={`overflow-hidden border shadow-xl rounded-2xl backdrop-blur-sm pt-16 pb-16 border-yellow-100/50 ${theme === "dark"
+              ? "bg-gray-800 text-gray-100"
+              : "bg-gray-400/50 text-gray-900"
             }`}>
             <div className="grid grid-cols-1 gap-6 p-8 md:grid-cols-2 lg:grid-cols-3">
               {visibleBrands.map((brand, index) => {
@@ -186,13 +183,11 @@ const CarBrandsPage = () => {
                     key={`${brand.id}-${currentIndex}`}
                     className={`
                       group cursor-pointer transition-all duration-700 rounded-2xl shadow-lg hover:shadow-2xl
-                      ${
-                        isCenterCard
-                          ? "center-card scale-110 ring-2 ring-yellow-400/60 shadow-2xl border-2 border-yellow-300/30 z-10"
-                          : "hover:-translate-y-2 hover:ring-2 hover:ring-yellow-200/50"
+                      ${isCenterCard
+                        ? "center-card scale-110 ring-2 ring-yellow-400/60 shadow-2xl border-2 border-yellow-300/30 z-10"
+                        : "hover:-translate-y-2 hover:ring-2 hover:ring-yellow-200/50"
                       }
-                      ${
-                        theme === "dark"
+                      ${theme === "dark"
                         ? "bg-gray-800 text-gray-100"
                         : "bg-gray-50 text-gray-900"
                       }
@@ -204,12 +199,13 @@ const CarBrandsPage = () => {
                         {isCenterCard && (
                           <div className="absolute inset-0 z-10 border-2 border-yellow-300/40 rounded-xl"></div>
                         )}
-                          <Image
-                            src={brand.image}
-                            alt={`Logo de ${brand.name}`}
-                            fill
-                            unoptimized 
-                            className={`
+                        <Image
+                          src={brand.image}
+                          alt={`Logo de ${brand.name}`}
+                          width={300}
+                          height={200}
+                          unoptimized
+                          className={`
                             object-contain transition-transform duration-700
                             ${isCenterCard ? "scale-110" : "group-hover:scale-110"}
                             `}
@@ -219,16 +215,14 @@ const CarBrandsPage = () => {
                       <h3
                         className={`
                         text-xl font-semibold text-center transition-colors duration-300 mb-2
-                        ${
-                          isCenterCard
+                        ${isCenterCard
                             ? "text-yellow-600 font-bold text-2xl"
                             : " group-hover:text-yellow-600"
-                        }
-                        ${
-                        theme === "dark"
-                        ? "bg-gray-800 text-gray-100"
-                        : "bg-gray-50 text-gray-900"
-                        }
+                          }
+                        ${theme === "dark"
+                            ? "bg-gray-800 text-gray-100"
+                            : "bg-gray-50 text-gray-900"
+                          }
                       `}
                       >
                         {brand.name}
@@ -247,10 +241,9 @@ const CarBrandsPage = () => {
                 key={index}
                 className={`
                   w-3 h-3 rounded-full transition-all duration-300 border-2
-                  ${
-                    currentIndex === index
-                      ? "bg-yellow-400 border-yellow-500 scale-125 shadow-lg shadow-yellow-400/50"
-                      : "bg-slate-200 border-slate-300 hover:bg-yellow-200 hover:border-yellow-300"
+                  ${currentIndex === index
+                    ? "bg-yellow-400 border-yellow-500 scale-125 shadow-lg shadow-yellow-400/50"
+                    : "bg-slate-200 border-slate-300 hover:bg-yellow-200 hover:border-yellow-300"
                   }
                 `}
                 onClick={() => goToSlide(index)}

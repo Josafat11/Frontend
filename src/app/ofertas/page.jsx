@@ -250,11 +250,10 @@ function OfertasPage() {
 
   return (
     <div
-      className={`min-h-screen transition-colors ${
-        theme === "dark"
+      className={`min-h-screen transition-colors ${theme === "dark"
           ? "bg-gray-900 text-gray-100"
           : "bg-gray-100 text-gray-900"
-      }`}
+        }`}
     >
       <div className="container px-4 py-8 mx-auto">
         <Breadcrumbs pages={breadcrumbsPages} />
@@ -269,9 +268,8 @@ function OfertasPage() {
             {productosPaginados.map((producto) => (
               <div
                 key={producto.id}
-                className={`relative rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 ${
-                  theme === "dark" ? "bg-gray-800" : "bg-white"
-                }`}
+                className={`relative rounded-xl overflow-hidden shadow-lg transition-all hover:shadow-xl hover:-translate-y-1 ${theme === "dark" ? "bg-gray-800" : "bg-white"
+                  }`}
               >
                 <div
                   className="cursor-pointer"
@@ -286,24 +284,22 @@ function OfertasPage() {
                   {/* Imagen del producto */}
                   <div className="relative bg-gray-100 h-60">
                     {Array.isArray(producto.images) &&
-                    producto.images.length > 0 ? (
+                      producto.images.length > 0 ? (
                       <Image
                         src={producto.images[0].url}
                         alt={producto.name}
                         fill
-                        unoptimized 
+                        unoptimized
                         className="object-cover"
                       />
                     ) : (
                       <div
-                        className={`w-full h-full flex items-center justify-center ${
-                          theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                        }`}
+                        className={`w-full h-full flex items-center justify-center ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                          }`}
                       >
                         <span
-                          className={`text-lg ${
-                            theme === "dark" ? "text-gray-500" : "text-gray-400"
-                          }`}
+                          className={`text-lg ${theme === "dark" ? "text-gray-500" : "text-gray-400"
+                            }`}
                         >
                           Sin imagen
                         </span>
@@ -312,15 +308,14 @@ function OfertasPage() {
                     {/* Badge de stock */}
                     <div className="absolute top-2 right-2">
                       <span
-                        className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          producto.stock > 0
+                        className={`px-2 py-1 rounded-full text-xs font-bold ${producto.stock > 0
                             ? theme === "dark"
                               ? "bg-green-800 text-green-300"
                               : "bg-green-100 text-green-800"
                             : theme === "dark"
-                            ? "bg-red-800 text-red-300"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                              ? "bg-red-800 text-red-300"
+                              : "bg-red-100 text-red-800"
+                          }`}
                       >
                         {producto.stock > 0
                           ? `Stock: ${producto.stock}`
@@ -343,15 +338,14 @@ function OfertasPage() {
                         $
                         {producto.discount
                           ? (
-                              producto.price *
-                              (1 - producto.discount / 100)
-                            ).toFixed(2)
+                            producto.price *
+                            (1 - producto.discount / 100)
+                          ).toFixed(2)
                           : producto.price.toFixed(2)}
                       </span>
                       <p
-                        className={`text-xs ${
-                          theme === "dark" ? "text-gray-500" : "text-gray-400"
-                        }`}
+                        className={`text-xs ${theme === "dark" ? "text-gray-500" : "text-gray-400"
+                          }`}
                       >
                         <span className="line-through">
                           ${producto.price.toFixed(2)}
@@ -370,18 +364,16 @@ function OfertasPage() {
                           .map((comp, index) => (
                             <span
                               key={index}
-                              className={`px-2 py-1 rounded-full text-xs ${
-                                theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                              }`}
+                              className={`px-2 py-1 rounded-full text-xs ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                                }`}
                             >
                               {comp.make} {comp.model}
                             </span>
                           ))}
                         {producto.compatibilities.length > 3 && (
                           <span
-                            className={`px-2 py-1 rounded-full text-xs ${
-                              theme === "dark" ? "bg-gray-700" : "bg-gray-200"
-                            }`}
+                            className={`px-2 py-1 rounded-full text-xs ${theme === "dark" ? "bg-gray-700" : "bg-gray-200"
+                              }`}
                           >
                             +{producto.compatibilities.length - 3} más
                           </span>
@@ -396,13 +388,12 @@ function OfertasPage() {
                       <button
                         onClick={() => comprarAhora(producto.id)}
                         disabled={isAddingToCart || producto.stock <= 0}
-                        className={`flex-1 py-2 px-4 rounded ${
-                          producto.stock <= 0
+                        className={`flex-1 py-2 px-4 rounded ${producto.stock <= 0
                             ? "bg-gray-400 cursor-not-allowed"
                             : theme === "dark"
-                            ? "bg-green-600 hover:bg-green-500"
-                            : "bg-green-500 hover:bg-green-400"
-                        } text-white flex items-center justify-center`}
+                              ? "bg-green-600 hover:bg-green-500"
+                              : "bg-green-500 hover:bg-green-400"
+                          } text-white flex items-center justify-center`}
                       >
                         <FiShoppingCart className="mr-2" />
                         Comprar ahora
@@ -412,13 +403,12 @@ function OfertasPage() {
                         onClick={() => agregarAlCarrito(producto.id)}
                         disabled={isAddingToCart || producto.stock <= 0}
                         title="Agregar al Carrito"
-                        className={`p-2 rounded transition-colors ${
-                          producto.stock <= 0
+                        className={`p-2 rounded transition-colors ${producto.stock <= 0
                             ? "bg-gray-400 cursor-not-allowed"
                             : theme === "dark"
-                            ? "bg-yellow-600 hover:bg-yellow-500 hover:text-gray-900"
-                            : "bg-yellow-500 hover:bg-yellow-400 hover:text-gray-900"
-                        } text-white`}
+                              ? "bg-yellow-600 hover:bg-yellow-500 hover:text-gray-900"
+                              : "bg-yellow-500 hover:bg-yellow-400 hover:text-gray-900"
+                          } text-white`}
                       >
                         <FiPlus />
                       </button>
@@ -433,18 +423,16 @@ function OfertasPage() {
                         className={`
                                                       p-2 rounded-lg flex items-center justify-center
                                                       transition-colors duration-200
-                                                      ${
-                                                        producto.esFavorito
-                                                          ? "text-red-500 hover:text-red-600"
-                                                          : theme === "dark"
-                                                          ? "text-gray-300 hover:text-red-400"
-                                                          : "text-gray-500 hover:text-red-500"
-                                                      }
-                                                    ${
-                                                      isAddingToFavorites
-                                                        ? "opacity-50 cursor-not-allowed"
-                                                        : "cursor-pointer"
-                                                    }
+                                                      ${producto.esFavorito
+                            ? "text-red-500 hover:text-red-600"
+                            : theme === "dark"
+                              ? "text-gray-300 hover:text-red-400"
+                              : "text-gray-500 hover:text-red-500"
+                          }
+                                                    ${isAddingToFavorites
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer"
+                          }
                                                   `}
                         title={
                           producto.esFavorito
@@ -481,25 +469,22 @@ function OfertasPage() {
                         ) : (
                           <FaHeart
                             className={`
-                                                        ${
-                                                          producto.esFavorito
-                                                            ? "fill-red-500"
-                                                            : "fill-transparent"
-                                                        }
+                                                        ${producto.esFavorito
+                                ? "fill-red-500"
+                                : "fill-transparent"
+                              }
                                                         stroke-current
                                                         stroke-[3px]
-                                                        ${
-                                                          theme === "dark"
-                                                            ? "text-gray-300"
-                                                            : "text-gray-500"
-                                                        }
+                                                        ${theme === "dark"
+                                ? "text-gray-300"
+                                : "text-gray-500"
+                              }
                                                         transition-all duration-200
                                                       group-hover:text-red-500
-                                                        ${
-                                                          producto.esFavorito
-                                                            ? "scale-110"
-                                                            : "scale-100"
-                                                        }
+                                                        ${producto.esFavorito
+                                ? "scale-110"
+                                : "scale-100"
+                              }
                                                         `}
                             size={20}
                           />
